@@ -1,0 +1,468 @@
+from __future__ import annotations
+from abc import ABC, abstractmethod
+from typing import List
+from modules.physical_quantities import Current, Power, Voltage, Time, Energy, Charge
+from modules.json_utilities import json_to_dict
+import os
+
+
+class Component:
+    
+    def __str__(self) -> str:
+        return(f'{self.name}: {self.voltage}, {self.current}, {self.power}')
+    
+    @classmethod
+    def from_voltage_current(cls, name: str, voltage: Voltage, current: Current):
+        return cls(name, voltage=voltage, current=current)
+
+    @classmethod
+    def from_voltage_power(cls, name: str, voltage: Voltage, power: Power):
+        return cls(name, voltage=voltage, power=power)
+
+    @classmethod
+    def from_current_power(cls, name: str, current: Current, power: Power):
+        return cls(name, current=current, power=power)
+    
+    """_summary_
+    """
+    def __init__(self, name: str, voltage:Voltage = None, current:Current = None, power:Power = None, power_supply: DCPowerSupply = None) -> None:
+        self._name: str = name
+        self._voltage: Voltage = voltage
+        self._current: Current = current
+        self._power: Power = power
+        self._power_supply: DCPowerSupply = power_supply
+        
+        if (voltage is not None and current is not None):
+            self.compute_power()
+        elif(voltage is not None and power is not None):
+            self.compute_current()
+        elif(current is not None and power is not None):
+            self.compute_voltage()
+        else:
+            raise ValueError('At least two parameters (voltage, current, power) must be provided.')
+        
+        
+    def energy_consumption(self, t: Time) -> Energy:
+        return Energy( self.power.convert_to('W').value * t.convert_to('s').value )
+    
+    def compute_power(self):
+        self.power =  Power(self.voltage.convert_to('V').value * self.current.convert_to('A').value )
+    
+    def compute_current(self):
+        self.current = Current(self.power.convert_to('W').value / self.voltage.convert_to('V').value)
+        
+    def compute_voltage(self):
+        self.voltage = Voltage(self.power.convert_to('W').value / self.current.convert_to('A').value)
+    
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, value: str) -> None:
+        if not isinstance(value, str):
+            raise ValueError("Name must be a string")
+        self._name = value
+
+    @property
+    def voltage(self) -> Voltage:
+        return self._voltage
+
+    @voltage.setter
+    def voltage(self, value: Voltage) -> None:
+        if not isinstance(value, Voltage) and value is not None:
+            raise ValueError("Voltage must be of type Voltage")
+        self._voltage = value
+
+    @property
+    def current(self) -> Current:
+        return self._current
+
+    @current.setter
+    def current(self, value: Current) -> None:
+        if not isinstance(value, Current) and value is not None:
+            raise ValueError("Current must be of type Current")
+        self._current = value
+
+    @property
+    def power(self) -> Power:
+        return self._power
+
+    @power.setter
+    def power(self, value: Power) -> None:
+        if not isinstance(value, Power) and value is not None:
+            raise ValueError("Power must be of type Power")
+        self._power = value
+    
+    @property
+    def power_supply(self) -> DCPowerSupply:
+        return self.power_supply
+
+    @power_supply.setter
+    def power_supply(self, new_power_supply: DCPowerSupply) -> None:
+        if not isinstance(new_power_supply, DCPowerSupply):
+            raise ValueError("new_power_supply must be a DCPowerSupply")
+        self._power_supply = new_power_supply
+    
+    def __str__(self) -> str:
+        return f'Component name: {self.name} V={self.voltage} I={self.current} P={self.power}'\
+            f''
+        
+class DCPowerSupply():
+    
+    def __init__(self, name: str ,supply_type: str, supply_subtype:str,output_voltage: Voltage, max_output_current: Current, min_input_voltage: Voltage = 0, max_input_voltage: Voltage = 0, efficiency: float = None, components: Component=None, comment: str = '') -> None:
+        """_summary_
+
+        Args:
+            name (str): _description_
+            supply_type (str): _description_
+            supply_subtype (str): _description_
+            output_voltage (Voltage): _description_
+            max_output_current (Current): _description_
+            min_input_voltage (Voltage, optional): _description_. Defaults to 0.
+            max_input_voltage (Voltage, optional): _description_. Defaults to 0.
+            efficiency (float, optional): _description_. Defaults to None.
+            components (Component, optional): _description_. Defaults to None.
+            comment (str, optional): _description_. Defaults to ''.
+
+        Raises:
+            ValueError: _description_
+            ValueError: _description_
+        """
+        filename: str = './power_supplies.json'
+        filepath: str = os.path.join(os.path.dirname(__file__), filename)
+        power_suppply_dict: dict = json_to_dict(filepath)
+        print(power_suppply_dict)
+        
+        if(supply_type not in power_suppply_dict.keys()):
+            raise ValueError('Invalid DC power supply type.')
+        
+        if(supply_subtype not in power_suppply_dict[supply_type]):
+            raise ValueError(f'Invalid {supply_type} subtype: {supply_subtype}')
+            
+        
+        
+        self._supply_type = supply_type
+        self._name = name
+        self._output_voltage = output_voltage
+        self._max_output_current = max_output_current
+        self._min_input_voltage = min_input_voltage
+        self._max_input_voltage = max_input_voltage
+        self._efficiency = efficiency
+        self._comment: str = comment or ''
+        
+        if components is None:
+            self._components: List = [Component]
+        elif isinstance(components,List) and all(isinstance(comp, Component) for comp in components):
+            self._components = components
+        else:
+            raise ValueError('Components must be a list of Component objects.')
+    
+    @property
+    def supply_type(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
+        return self._supply_type
+    
+    @supply_type.setter
+    def supply_type(self, supply_type: Voltage):
+        """_summary_
+
+        Args:
+            supply_type (Voltage): _description_
+        """
+        self._supply_type = supply_type
+    
+    
+    
+    @property
+    def output_voltage(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
+        return self._output_voltage
+    
+    @output_voltage.setter
+    def output_voltage(self, output_voltage: Voltage):
+        """_summary_
+
+        Args:
+            output_voltage (float): _description_
+        """
+        self._output_voltage = output_voltage
+        
+    
+    def add_component(self, component: Component):
+        """_summary_
+
+        Args:
+            component (CircuitBase): _description_
+        """
+        if(component.power_supply is not self):
+            raise ValueError('Component is associated with a different power supply.')
+        self.components.append(component)
+    
+    def remove_component(self, component_name:str):
+        """_summary_
+
+        Args:
+            component_name (str): _description_
+        """
+        self._components = [comp for comp in self._components if comp.name != component_name]
+    
+    
+    
+    def __str__(self) -> str:
+        """_summary_
+
+        Returns:
+            str: _description_
+        """
+        attrs = [f'{key}: {value}' for key, value in self.__dict__.items()]
+        return('Power Supply Settings:\n' + '\n'.join(attrs))
+
+
+
+class BasePowerSupply(ABC):
+    
+    def __init__(self, nominal_voltage: Voltage, max_output_current: Current) -> None:
+        self._nominal_voltage = nominal_voltage
+        self._max_output_current = max_output_current
+        self._components: List[List[Component,int]] = []
+        self._total_current: Current = Current(0.0,'mA')
+        self._total_power: Power = Power(0.0,'mW')
+    
+    @property
+    def components(self) -> List[List[Component,int]]:
+        return self._components
+    
+    @property
+    def nominal_voltage(self):
+        return self._nominal_voltage
+
+    @nominal_voltage.setter
+    def nominal_voltage(self,new_nominal_voltage: Voltage):
+        self._nominal_voltage = new_nominal_voltage
+    
+    @property
+    def max_output_current(self):
+        return self._max_output_current
+
+    @max_output_current.setter
+    def max_output_current(self,new_max_output_current: Current):
+        self._max_output_current = new_max_output_current
+    
+    def add_component(self, component: Component, quantity: int = 1):
+        self._components.append((component,quantity))
+    
+    def remove_component(self,index: int):
+        if(len(self.components) > 0):
+            self.components.pop(index)
+        else:
+            raise ValueError('Component index not found')
+    
+    def modify_component_quantity(self,index: int, new_qty: int):
+        # Check if the index is valid
+        if 0 <= index < len(self.components):
+            if new_qty == 0:
+                self.remove_component(index)
+            else:
+                # Update the quantity in the tuple
+                component, _ = self.components[index]
+                self.components[index] = (component, new_qty)
+        else:
+            raise IndexError("Component index out of range.")
+        
+    def compute_power_budget(self):
+        normalized_current: float = 0
+        for component in self.components:
+            normalized_current += Current.convert_to(component[0].current,'mA').value * component[1]
+        self._total_current.unit = 'mA'
+        self._total_current.value = normalized_current
+        self._total_power.unit = 'mW'
+        self._total_power.value = Voltage.convert_to(self.nominal_voltage,'V').value * self._total_current.value 
+        
+        
+        
+    @property
+    def total_current(self) -> Current:
+        return self._total_current
+
+    @property
+    def total_power(self) -> Power:
+        return self._total_power
+    
+    @abstractmethod
+    def _restrict_instantiation(self):
+        pass
+
+class Battery(BasePowerSupply):
+    def __init__(self, chemistry: str,cell_voltage: Voltage, max_output_current: Current, capacity: Charge, subchemistry: str, cell_count: int = 1, ) -> None:
+        if(cell_count <= 0):
+            raise ValueError('Cell number must be a positive integer')
+        if(cell_voltage.value < 0.0):
+            raise ValueError('Cell voltage must be a positive floating-point value')
+        if(capacity.value < 0.0):
+            raise ValueError('Battery capacity must be a positive floating-point value')
+        self._cell_count = cell_count
+        self._capacity = capacity
+        self._cell_voltage = cell_voltage
+        self._chemistry = chemistry
+        self._subchemistry = subchemistry
+        nominal_voltage_value = cell_count * cell_voltage.value
+        nominal_voltage_units = cell_voltage.unit
+        nominal_voltage = Voltage(nominal_voltage_value,nominal_voltage_units)
+        super().__init__(nominal_voltage, max_output_current)
+        
+    
+    @property
+    def cell_count(self) -> int:
+        return self._cell_count
+
+    @cell_count.setter
+    def cell_count(self,new_cell_count: int):
+        self._cell_count = new_cell_count
+    
+    @property
+    def cell_voltage(self) -> Voltage:
+        return self._cell_voltage
+
+    @cell_voltage.setter
+    def cell_voltage(self,new_cell_voltage: Voltage):
+        self._cell_voltage = new_cell_voltage
+
+    @property
+    def capacity(self) -> Charge:
+        return self._capacity
+
+    @capacity.setter
+    def capacity(self,new_capacity: Charge):
+        self._capacity = new_capacity
+
+    @abstractmethod
+    def _restrict_instantiation(self):
+        pass
+    
+    @property    
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self,new_name: str):
+        self._name = new_name
+    
+    @property
+    def chemistry(self) -> str:
+        return self._chemistry
+
+    @chemistry.setter
+    def chemistry(self,new_chemistry: str):
+        self._chemistry = new_chemistry
+    
+    @property
+    def subchemistry(self) -> str:
+        return self._subchemistry
+
+    @subchemistry.setter
+    def subchemistry(self,new_subchemistry: str):
+        self._subchemistry = new_subchemistry
+        
+    def __str__(self) -> str:
+        ret_str: str = (f'Battery name: {self.name}\n\t* Chemistry: {self.chemistry}({self.subchemistry})\n\t* Nominal voltage = {self.nominal_voltage}\n\t* Cell voltage = {self.cell_voltage}\n\t' 
+        f'* Cell count = {self.cell_count}\n\t* Capacity = {self.capacity}\n\t* Max. output current = {self.max_output_current}\n\t* Components associated:')
+        for component in self.components:
+            ret_str += f'\n\t\t- {component[0]} (x{component[1]})'
+        ret_str += f'\n\t* Total current: {self.total_current}. Total power = {self.total_power}'
+        return ret_str
+
+class LithiumBattery(Battery):
+    LITHIUM_CELL_VOLTAGES = (  3.7 ,   3.6  ,   3.2   ,   3.7   ,  3.6   ,  0)
+    LITHIUM_SUBCHEMISTRIES =   ('LiPo','Li-ion','LiFePO4','LiMn2O4','LiCoO2','Other')
+    
+    
+    # This method is required to fulfill the abstractmethod contract
+    def _restrict_instantiation(self):
+        pass
+    
+    def __init__(self, name: str, max_output_current: Current, capacity: Charge, cell_voltage: Voltage = None ,cell_count: int = 1, subchemistry: str = 'Other') -> None:
+        self._name = name
+        if(subchemistry is None):
+            subchemistry = self.LITHIUM_SUBCHEMISTRIES[0]
+        elif (subchemistry not in self.LITHIUM_SUBCHEMISTRIES):
+            raise ValueError(f'Invalid chemistry, must be in {self.LITHIUM_SUBCHEMISTRIES} range')
+        if(cell_voltage is None):
+            if(subchemistry == 'Other'):
+                raise ValueError('Cell voltage must be provided if using custom chemistry')
+        cell_voltage = cell_voltage if subchemistry == 'Other' else Voltage(self.LITHIUM_CELL_VOLTAGES[self.LITHIUM_SUBCHEMISTRIES.index(subchemistry)])
+        super().__init__(chemistry='Lithium',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, subchemistry=subchemistry,cell_count=cell_count)
+
+class LeadAcidBattery(Battery):
+    
+    LEAD_ACID_CELL_VOLTAGE = 2.0
+    LEAD_ACID_SUBCHEMISTRY = 'undefined subchemistry'
+    
+    # This method is required to fulfill the abstractmethod contract
+    def _restrict_instantiation(self):
+        pass  
+    
+    def __init__(self, name: str, max_output_current: Current, capacity: Charge, cell_count: int = 1) -> None:
+        self._name = name 
+        cell_voltage = Voltage(self.LEAD_ACID_CELL_VOLTAGE)
+        super().__init__(chemistry='Lead-Acid',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, cell_count=cell_count, subchemistry=self.LEAD_ACID_SUBCHEMISTRY)
+
+
+
+
+
+
+
+class PowerBudget:
+    
+    def __str__(self) -> str:
+        return(f'{self.name}: {self.components}, {self.dc_power_supplies}')
+    
+    def __init__(self, name: str) -> None:
+        self._name: str = name
+        self._components: List[List[Component,int]] = []
+        self._dc_power_supplies: List[DCPowerSupply] = []
+        
+    @property
+    def name(self):
+        return self._name
+    
+    @name.setter
+    def name(self, new_name:str):
+        self._name = new_name
+        
+    @property
+    def dc_power_supplies(self):
+        return self._dc_power_supplies
+    
+    @property
+    def components(self):
+        return self._components     
+    
+    def add_component(self, component: Component, quantity:int = 1):
+        self._components.append((component,quantity))
+    
+    def add_power_supply(self, power_supply: DCPowerSupply):
+        self._dc_power_supplies.append(power_supply)
+    
+    def remove_component(self, index: int):
+        if index < 0 or index >= len(self._components):
+            raise IndexError(f'Index {index} does not exist')
+        self._components.pop(index)
+    
+    def remove_power_supply(self, index: int):
+        if index < 0 or index >= len(self._dc_power_supplies):
+            raise IndexError(f'Index {index} does not exist')
+        self._dc_power_supplies.pop(index)
+        
+
+
+

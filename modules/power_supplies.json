@@ -1,0 +1,11 @@
+{
+    "Battery":[
+        "Pb","LiPo","Li-ion","NiMH","NiCd","Alkaline","Other"
+    ],
+    "Linear regulator":[
+        "Conventional","LDO","Voltage reference","Other"
+    ],
+    "DC-DC converter":[
+        "Buck","Boost","Buck-boost","Other"
+    ]
+}
