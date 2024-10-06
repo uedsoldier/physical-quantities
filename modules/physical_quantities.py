@@ -74,7 +74,7 @@ class BaseConversionManager:
             Exception: _description_
         """
         self._quantity_type = quantity_type
-        filename: str = f'conversion_tables/{self._quantity_type}.json'
+        filename: str = f'../conversion_tables/{self._quantity_type}.json'
         conversions_filepath: str = os.path.join(os.path.dirname(__file__), filename)
         try: 
             self._conversion_table = json_to_dict(conversions_filepath)
