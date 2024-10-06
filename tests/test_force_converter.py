@@ -1,18 +1,22 @@
-import unittest
-from modules.physical_quantities import TemperatureConversionManager
+import sys
+import os
 
-class TestTemperatureConverter(unittest.TestCase):
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+import unittest
+from modules.physical_quantities import BaseConversionManager
+
+class TestForceConverter(unittest.TestCase):
     def setUp(self) -> None:
-        self.converter = TemperatureConversionManager()
+        self.converter = BaseConversionManager('force')
     
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)
         test_cases = [
-            (373.15,'K','C',100,6),
-            (212.0,'F','C',100,6),
-            (0,'C','F',32,6),
-            (0,'K','C',-273.15,6),
-
+            (0.5,'kN','N',500,6),
+            (1,'kgf','N',9.80665,6),
+            (1,'lbf','N',4.44822,6),
+            (1,'ozf','N',0.2780139,6)
         ]
         for value,from_unit,to_unit,expected,decimal_places in test_cases:
             with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
@@ -24,10 +28,10 @@ class TestTemperatureConverter(unittest.TestCase):
                 
     def test_invalid_units(self):
         with self.assertRaises(ValueError):
-            self.converter.convert(1, 'invalid_unit', 'K')
+            self.converter.convert(1, 'invalid_unit', 'N')
         
         with self.assertRaises(ValueError):
-            self.converter.convert(1, 'K', 'invalid_unit')
+            self.converter.convert(1, 'N', 'invalid_unit')
 
 if __name__ == '__main__':
     unittest.main()

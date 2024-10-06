@@ -1,16 +1,20 @@
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import unittest
 from modules.physical_quantities import BaseConversionManager
 
-class TestTimeConverter(unittest.TestCase):
+class TestMassConverter(unittest.TestCase):
     def setUp(self) -> None:
-        self.converter = BaseConversionManager('time')
+        self.converter = BaseConversionManager('mass')
     
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)
         test_cases = [
-            (2,'hour','s',7200,6),
-            (1200,'s','hour',0.33333333,8)
-
+            (1.0,'kg','g',1000,6),
+            (454,'g','lb',1,2)
         ]
         for value,from_unit,to_unit,expected,decimal_places in test_cases:
             with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
@@ -22,10 +26,10 @@ class TestTimeConverter(unittest.TestCase):
                 
     def test_invalid_units(self):
         with self.assertRaises(ValueError):
-            self.converter.convert(1, 'invalid_unit', 's')
+            self.converter.convert(1, 'invalid_unit', 'kg')
         
         with self.assertRaises(ValueError):
-            self.converter.convert(1, 's', 'invalid_unit')
+            self.converter.convert(1, 'kg', 'invalid_unit')
 
 if __name__ == '__main__':
     unittest.main()

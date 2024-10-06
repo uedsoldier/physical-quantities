@@ -1,3 +1,8 @@
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from modules.electrical_quantitites import AC_Voltage
 from modules.physical_quantities import Voltage, Frequency, Angle, BaseConversionManager
 from math import pi 
