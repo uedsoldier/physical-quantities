@@ -1,6 +1,6 @@
 import os
 import json
-from modules.json_utilities import json_to_dict
+from modules.json_utilities import json_to_dict, dict_to_json
 
 class BaseQuantity:
     
@@ -23,6 +23,15 @@ class BaseQuantity:
             str: _description_
         """
         return f'{self._value} [{self._unit}]'
+    
+    def to_dict(self) -> dict:
+        return {
+            'value': self._value,
+            'unit': self._unit
+        }
+        
+    def to_json(self) -> str:
+        return dict_to_json(self.to_dict())
     
     @property
     def value(self):
