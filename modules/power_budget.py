@@ -105,8 +105,7 @@ class Component:
         self._power_supply = new_power_supply
     
     def __str__(self) -> str:
-        return f'Component name: {self.name} V={self.voltage} I={self.current} P={self.power}'\
-            f''
+        return f'Component name: {self.name} V={self.voltage} I={self.current} P={self.power}'
         
 class DCPowerSupply():
     
@@ -226,8 +225,6 @@ class DCPowerSupply():
         attrs = [f'{key}: {value}' for key, value in self.__dict__.items()]
         return('Power Supply Settings:\n' + '\n'.join(attrs))
 
-
-
 class BasePowerSupply(ABC):
     
     def __init__(self, nominal_voltage: Voltage, max_output_current: Current) -> None:
@@ -259,10 +256,12 @@ class BasePowerSupply(ABC):
     
     def add_component(self, component: Component, quantity: int = 1):
         self._components.append((component,quantity))
+        self.compute_power_budget()
     
     def remove_component(self,index: int):
         if(len(self.components) > 0):
             self.components.pop(index)
+            self.compute_power_budget()
         else:
             raise ValueError('Component index not found')
     
@@ -275,17 +274,25 @@ class BasePowerSupply(ABC):
                 # Update the quantity in the tuple
                 component, _ = self.components[index]
                 self.components[index] = (component, new_qty)
+            self.compute_power_budget()
         else:
             raise IndexError("Component index out of range.")
         
     def compute_power_budget(self):
         normalized_current: float = 0
-        for component in self.components:
-            normalized_current += Current.convert_to(component[0].current,'mA').value * component[1]
+        normalized_power: float = 0
+        normalized_voltage = Voltage.convert_to(self.nominal_voltage,'V').value
+        for component_type in self.components:
+            component: Component = component_type[0]
+            component_qty: int = component_type[1]
+            component_current_value: float = Current.convert_to(component.current,'mA').value
+            normalized_current += component_current_value * component_qty
+        
+        normalized_power = normalized_current * normalized_voltage
         self._total_current.unit = 'mA'
         self._total_current.value = normalized_current
         self._total_power.unit = 'mW'
-        self._total_power.value = Voltage.convert_to(self.nominal_voltage,'V').value * self._total_current.value 
+        self._total_power.value = normalized_power 
         
         
         
@@ -377,7 +384,7 @@ class Battery(BasePowerSupply):
         f'* Cell count = {self.cell_count}\n\t* Capacity = {self.capacity}\n\t* Max. output current = {self.max_output_current}\n\t* Components associated:')
         for component in self.components:
             ret_str += f'\n\t\t- {component[0]} (x{component[1]})'
-        ret_str += f'\n\t* Total current: {self.total_current}. Total power = {self.total_power}'
+        ret_str += f'\n\t* Power budget:\n\t\tCurrent: {self.total_current}\n\t\tPower = {self.total_power}'
         return ret_str
 
 class LithiumBattery(Battery):
@@ -414,11 +421,6 @@ class LeadAcidBattery(Battery):
         self._name = name 
         cell_voltage = Voltage(self.LEAD_ACID_CELL_VOLTAGE)
         super().__init__(chemistry='Lead-Acid',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, cell_count=cell_count, subchemistry=self.LEAD_ACID_SUBCHEMISTRY)
-
-
-
-
-
 
 
 class PowerBudget:
