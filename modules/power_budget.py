@@ -371,14 +371,6 @@ class Battery(BasePowerSupply):
     def _restrict_instantiation(self):
         pass
     
-    @property    
-    def name(self) -> str:
-        return self._name
-
-    @name.setter
-    def name(self,new_name: str):
-        self._name = new_name
-    
     @property
     def chemistry(self) -> str:
         return self._chemistry
@@ -396,13 +388,105 @@ class Battery(BasePowerSupply):
         self._subchemistry = new_subchemistry
         
     def __str__(self) -> str:
-        ret_str: str = (f'Battery name: {self.name}\n\t* Chemistry: {self.chemistry}({self.subchemistry})\n\t* Nominal voltage = {self.nominal_voltage}\n\t* Cell voltage = {self.cell_voltage}\n\t' 
+        ret_str: str = (f'Battery name: {self.name}\n\t* Chemistry: {self.chemistry}(subchemistry: {self.subchemistry})\n\t* Nominal voltage = {self.nominal_voltage}\n\t* Cell voltage = {self.cell_voltage}\n\t' 
         f'* Cell count = {self.cell_count}\n\t* Capacity = {self.capacity}\n\t* Max. output current = {self.max_output_current}\n\t* Components associated:')
         for component in self.components:
             ret_str += f'\n\t\t- {component[0]} (x{component[1]})'
         ret_str += f'\n\t* Power budget:\n\t\tCurrent: {self.total_current}\n\t\tPower = {self.total_power}'
         return ret_str
 
+class DCDCConverter(BasePowerSupply):
+    
+    MAX_EFFICIENCY: float = 1.0
+    MIN_EFFICIENCY: float = 0.0
+    
+    def __init__(self, name: str, dcdc_type: str,nominal_voltage: Voltage, max_output_current: Current, min_input_voltage: Voltage, max_input_voltage: Voltage ,efficiency: float):
+        if(min_input_voltage > max_input_voltage):
+            raise ValueError('Minimum input voltage must be less or equal than maximum input voltage.')
+        if( efficiency < self.MIN_EFFICIENCY or efficiency > self.MAX_EFFICIENCY):
+            raise ValueError(f'Efficiency must be between {self.MIN_EFFICIENCY} and {self.MAX_EFFICIENCY}')
+        self._dcdc_type = dcdc_type
+        self._min_input_voltage = min_input_voltage
+        self._max_input_voltage = max_input_voltage
+        self._efficiency: float = efficiency
+        super().__init__(name, nominal_voltage, max_output_current)
+    
+    @property
+    def dcdc_type(self) -> str:
+        return self._dcdc_type
+    
+    @property
+    def efficiency(self) -> float:
+        return self._efficiency
+    
+
+    @efficiency.setter
+    def efficiency(self,new_efficiency: float):
+        self._efficiency = new_efficiency
+    
+    @property
+    def min_input_voltage(self) -> Voltage:
+        return self._min_input_voltage
+    
+
+    @min_input_voltage.setter
+    def min_input_voltage(self,new_min_input_voltage: Voltage):
+        self._min_input_voltage = new_min_input_voltage
+        
+    @property
+    def max_input_voltage(self) -> Voltage:
+        return self._max_input_voltage
+
+    @max_input_voltage.setter
+    def max_input_voltage(self,new_max_input_voltage: Voltage):
+        self._max_input_voltage = new_max_input_voltage
+
+    @abstractmethod
+    def _restrict_instantiation(self):
+        pass
+
+    def __str__(self):
+        ret_str: str = f'{self.dcdc_type} converter name: {self.name}\n\t\n\t* Nominal voltage = {self.nominal_voltage}\n\t' \
+        f'* Min. input voltage = {self._min_input_voltage}\n\t* Max. input voltage = {self._max_input_voltage}'\
+            f'\n\t* Efficiency = {self._efficiency * 100.0}%'
+        for component in self.components:
+            ret_str += f'\n\t\t- {component[0]} (x{component[1]})'
+        ret_str += f'\n\t* Power budget:\n\t\tCurrent: {self.total_current}\n\t\tPower = {self.total_power}'
+        return ret_str
+
+class BuckConverter(DCDCConverter):
+    # This method is required to fulfill the abstractmethod contract
+    def _restrict_instantiation(self):
+        pass
+    
+    def __init__(self, name: str, nominal_voltage: Voltage, max_output_current: Current, min_input_voltage: Voltage, max_input_voltage: Voltage, efficiency: float = DCDCConverter.MAX_EFFICIENCY):
+        if(nominal_voltage > min_input_voltage):
+            raise ValueError('Nominal voltage must be lower than min. input voltage')
+        dcdc_type: str = 'Buck'
+        super().__init__(name,dcdc_type,nominal_voltage, max_output_current, min_input_voltage, max_input_voltage,efficiency)
+
+class BoostConverter(DCDCConverter):
+    # This method is required to fulfill the abstractmethod contract
+    def _restrict_instantiation(self):
+        pass
+    
+    def __init__(self, name: str, nominal_voltage: Voltage, max_output_current: Current, min_input_voltage: Voltage, max_input_voltage: Voltage, efficiency: float = DCDCConverter.MAX_EFFICIENCY):
+        if(nominal_voltage < max_input_voltage):
+            raise ValueError('Nominal voltage must be greater than max. input voltage')
+        dcdc_type: str = 'Boost'
+        super().__init__(name,dcdc_type,nominal_voltage, max_output_current, min_input_voltage, max_input_voltage,efficiency)
+
+class BuckBoostConverter(DCDCConverter):
+    # This method is required to fulfill the abstractmethod contract
+    def _restrict_instantiation(self):
+        pass
+    
+    def __init__(self, name: str, nominal_voltage: Voltage, max_output_current: Current, min_input_voltage: Voltage, max_input_voltage: Voltage, efficiency: float = DCDCConverter.MAX_EFFICIENCY):
+        dcdc_type: str = 'Buck-Boost'
+        super().__init__(name,dcdc_type,nominal_voltage, max_output_current, min_input_voltage, max_input_voltage,efficiency)
+
+    
+    
 class LithiumBattery(Battery):
     LITHIUM_CELL_VOLTAGES = (  3.7 ,   3.6  ,   3.2   ,   3.7   ,  3.6   ,  0)
     LITHIUM_SUBCHEMISTRIES =   ('LiPo','Li-ion','LiFePO4','LiMn2O4','LiCoO2','Other')
@@ -426,7 +510,7 @@ class LithiumBattery(Battery):
 class LeadAcidBattery(Battery):
     
     LEAD_ACID_CELL_VOLTAGE = 2.0
-    LEAD_ACID_SUBCHEMISTRY = 'undefined subchemistry'
+    LEAD_ACID_SUBCHEMISTRY = 'Undefined'
     
     # This method is required to fulfill the abstractmethod contract
     def _restrict_instantiation(self):
