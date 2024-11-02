@@ -1,8 +1,30 @@
 import os
 import json
 from modules.json_utilities import json_to_dict, dict_to_json_string
+from functools import total_ordering
 
+@total_ordering
 class BaseQuantity:
+    
+    def _compare(self,other,method):
+        if not isinstance(other, BaseQuantity):
+            return NotImplemented
+        if type(self) is not type(other):
+            raise TypeError(f'Cannot compare different quantity types: {type(self)} and {type(other)}')
+        try:
+            other_value_in_self_unit = other.convert_to(self.unit).value
+        except ValueError:
+            raise ValueError(f'Cannot compare incompatible units: {self.unit} and {other.unit}')
+
+        return method(self.value, other_value_in_self_unit)
+    
+    def __eq__(self, other):
+        return self._compare(other, lambda x, y: x == y)
+        
+    
+    def __lt__(self, other) -> bool:
+        return self._compare(other, lambda x, y: x < y)
+    
     
     def __init__(self, value: float, unit: str) -> None:
         """_summary_
@@ -110,6 +132,8 @@ class Length(BaseQuantity):
         self.conversion_manager = BaseConversionManager('length')
     
     def convert_to(self, target_unit: str):
+        if(self.unit == target_unit):
+            return Length(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Length(value=converted_value, unit=target_unit)
 
@@ -120,6 +144,8 @@ class Mass(BaseQuantity):
         self.conversion_manager = BaseConversionManager('mass')
     
     def convert_to(self, target_unit: str):
+        if(self.unit == target_unit):
+            return Mass(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Mass(converted_value, target_unit)
     
@@ -129,6 +155,8 @@ class Temperature(BaseQuantity):
         self.conversion_manager = TemperatureConversionManager()
     
     def convert_to(self, target_unit: str):
+        if(self.unit == target_unit):
+            return Temperature(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Temperature(value=converted_value, unit=target_unit)
     
@@ -154,6 +182,8 @@ class Time(BaseQuantity):
         self.conversion_manager = BaseConversionManager('time')
     
     def convert_to(self, target_unit: str):
+        if(self.unit == target_unit):
+            return Time(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Time(value=converted_value, unit=target_unit)
     
@@ -163,6 +193,8 @@ class Power(BaseQuantity):
         self.conversion_manager = BaseConversionManager('power')
     
     def convert_to(self, target_unit: str):
+        if(self.unit == target_unit):
+            return Power(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Power(value=converted_value, unit=target_unit)
     
@@ -172,6 +204,8 @@ class Frequency(BaseQuantity):
         self.conversion_manager = BaseConversionManager('frequency')
     
     def convert_to(self, target_unit: str):
+        if(self.unit == target_unit):
+            return Frequency(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Frequency(value=converted_value, unit=target_unit)
 
@@ -195,6 +229,8 @@ class Force(BaseQuantity):
         Returns:
             _type_: _description_
         """
+        if(self.unit == target_unit):
+            return Force(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Force(value=converted_value, unit=target_unit)
     
@@ -218,6 +254,8 @@ class Energy(BaseQuantity):
         Returns:
             _type_: _description_
         """
+        if(self.unit == target_unit):
+            return Energy(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Energy(value=converted_value, unit=target_unit)
     
@@ -241,6 +279,8 @@ class Charge(BaseQuantity):
         Returns:
             _type_: _description_
         """
+        if(self.unit == target_unit):
+            return Charge(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Charge(value=converted_value, unit=target_unit)
     
@@ -264,6 +304,8 @@ class Voltage(BaseQuantity):
         Returns:
             _type_: _description_
         """
+        if(self.unit == target_unit):
+            return Voltage(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Voltage(value=converted_value, unit=target_unit)
 
@@ -287,6 +329,8 @@ class Current(BaseQuantity):
         Returns:
             _type_: _description_
         """
+        if(self.unit == target_unit):
+            return Current(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Current(value=converted_value, unit=target_unit)
     
@@ -310,6 +354,8 @@ class Resistance(BaseQuantity):
         Returns:
             _type_: _description_
         """
+        if(self.unit == target_unit):
+            return Resistance(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Resistance(value=converted_value, unit=target_unit)
     
@@ -333,6 +379,8 @@ class Angle(BaseQuantity):
         Returns:
             _type_: _description_
         """
+        if(self.unit == target_unit):
+            return Angle(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
         return Angle(value=converted_value, unit=target_unit)
     
