@@ -5,6 +5,11 @@ from .baseDAO import BaseDAO
 
 class PowerSupplyDAO(BaseDAO):
     
+    def __init__(self, filepath):
+        super().__init__(filepath)
+        self.create_table()
+        
+    
     # This method is required to fulfill the abstractmethod contract
     def _restrict_instantiation(self):
         pass  
@@ -19,7 +24,7 @@ class PowerSupplyDAO(BaseDAO):
                 "nominal_voltage" TEXT NOT NULL,
                 "max_output_current" TEXT NOT NULL,
                 "additional_information" TEXT NOT NULL,
-                "total_components" INTEGER NOT NULL,
+                "component_count" INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY("power_supply_id" AUTOINCREMENT)
             )
             """,
@@ -61,15 +66,14 @@ class PowerSupplyDAO(BaseDAO):
         nominal_voltage: str = power_supply.nominal_voltage.to_json_string()
         max_output_current: str = power_supply.max_output_current.to_json_string()
         additional_information: str = self.get_power_supply_additional_information(power_supply)
-        total_components: int = 0
         
         with self.connection:
             self.cursor.execute(
                 f"""
-                INSERT INTO {self.POWER_SUPPLIES_TABLE_NAME} ("name","nominal_voltage","max_output_current","additional_information","total_components")
-                VALUES (?,?,?,?,?);
+                INSERT INTO {self.POWER_SUPPLIES_TABLE_NAME} ("name","nominal_voltage","max_output_current","additional_information")
+                VALUES (?,?,?,?);
                 """,
-                (name,nominal_voltage,max_output_current,additional_information,total_components)
+                (name,nominal_voltage,max_output_current,additional_information)
             )
     
     def get_power_supply(self,power_supply_id: int):

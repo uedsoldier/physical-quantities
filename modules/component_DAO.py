@@ -5,9 +5,44 @@ from .baseDAO import BaseDAO
 
 class ComponentDAO(BaseDAO):
     
+    def __init__(self, filepath):
+        super().__init__(filepath)
+        self.create_table()
+        self.create_triggers()
+    
     # This method is required to fulfill the abstractmethod contract
     def _restrict_instantiation(self):
         pass  
+    
+    def create_triggers(self):
+        # Create triggers to automatically update component counts in PowerSupply table.
+        with self.connection:
+            # Trigger to increment component_count when a component is added
+            self.connection.execute(
+                f"""
+                CREATE TRIGGER IF NOT EXISTS increment_component_count
+                AFTER UPDATE ON {self.COMPONENTS_TABLE_NAME}
+                FOR EACH ROW
+                BEGIN
+                    UPDATE {self.POWER_SUPPLIES_TABLE_NAME}
+                    SET component_count = component_count + 1
+                    WHERE power_supply_id = NEW.power_supply_id;
+                END;
+                """,()
+            )
+            
+            # Trigger to decrement component_count when a component is deleted
+            self.connection.execute(
+                f"""
+                CREATE TRIGGER IF NOT EXISTS decrement_component_count
+                AFTER DELETE ON {self.COMPONENTS_TABLE_NAME}
+                FOR EACH ROW
+                BEGIN
+                    UPDATE {self.POWER_SUPPLIES_TABLE_NAME}
+                    SET component_count = component_count - 1
+                    WHERE power_supply_id = OLD.power_supply_id;
+                END;
+            """)
     
     def create_table(self):
         with self.connection:
@@ -51,8 +86,23 @@ class ComponentDAO(BaseDAO):
                 """,
                 (name,voltage,current,power,power_supply_id)
             )
+            
+    def is_component_assigned_to_power_supply(self,component_id: int, power_supply_id: int):
+        # Check if a component is already assigned to a specific power supply.
+        with self.connection:
+            self.cursor.execute(
+                f"""
+                SELECT COUNT(*) FROM {self.COMPONENTS_TABLE_NAME}
+                WHERE component_id = ? AND power_supply_id = ?
+                """,(component_id,power_supply_id)
+                )
+            count = self.cursor.fetchone()[0]
+            return count > 0        # Returns True if assigned, False otherwise
     
     def assign_power_supply(self, component_id: int,power_supply_id: int):
+        if(self.is_component_assigned_to_power_supply(component_id,power_supply_id)):
+            print(f'Component {component_id} is already assigned to Power Supply {power_supply_id}.')
+            return
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -61,14 +111,21 @@ class ComponentDAO(BaseDAO):
                 WHERE component_id = ?
                 """
                 ,(power_supply_id,component_id)
-                
             )
         
     
-    def get_components_by_power_supply(self, power_supply_id):
+    def get_components_by_power_supply(self, power_supply_id: int) -> list:
         with self.connection:
             self.cursor.execute(
                 f"""SELECT * FROM {self.COMPONENTS_TABLE_NAME} WHERE power_supply_id = ?"""
                 , (power_supply_id,)
             )
             return self.cursor.fetchall()
+    
+    def count_components_per_power_supply(self, power_supply_id: int) -> int:
+        with self.connection:
+            self.cursor.execute(
+                f"""SELECT COUNT(*) FROM {self.COMPONENTS_TABLE_NAME} WHERE power_supply_id = ?"""
+                , (power_supply_id,)
+            )
+            return self.cursor.fetchone()[0]
