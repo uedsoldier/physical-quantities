@@ -1,4 +1,4 @@
-from modules.physical_quantities import Current, Voltage, Frequency, Angle, BaseConversionManager
+from .physical_quantities import Current, Voltage, Frequency, Angle, BaseConversionManager
 from math import isclose, sqrt, pi
 
 ABS_TOLERANCE_FROM_ZERO: float = 1e-6

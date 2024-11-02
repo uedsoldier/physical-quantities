@@ -1,8 +1,8 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import List
-from modules.physical_quantities import Current, Power, Voltage, Time, Energy, Charge
-from modules.json_utilities import json_to_dict
+from .physical_quantities import Current, Power, Voltage, Time, Energy, Charge
+from .utilities.json_utilities import json_to_dict
 import os
 
 class Component:
@@ -24,12 +24,12 @@ class Component:
     
     """_summary_
     """
-    def __init__(self, name: str, voltage:Voltage = None, current:Current = None, power:Power = None, power_supply: DCPowerSupply = None) -> None:
+    def __init__(self, name: str, voltage:Voltage = None, current:Current = None, power:Power = None, power_supply: BasePowerSupply = None) -> None:
         self._name: str = name
         self._voltage: Voltage = voltage
         self._current: Current = current
         self._power: Power = power
-        self._power_supply: DCPowerSupply = power_supply
+        self._power_supply: BasePowerSupply = power_supply
         
         if (voltage is not None and current is not None):
             self.compute_power()
@@ -94,135 +94,136 @@ class Component:
         self._power = value
     
     @property
-    def power_supply(self) -> DCPowerSupply:
+    def power_supply(self) -> BasePowerSupply:
         return self.power_supply
 
     @power_supply.setter
-    def power_supply(self, new_power_supply: DCPowerSupply) -> None:
-        if not isinstance(new_power_supply, DCPowerSupply):
-            raise ValueError("new_power_supply must be a DCPowerSupply")
+    def power_supply(self, new_power_supply: BasePowerSupply) -> None:
+        if not isinstance(new_power_supply, BasePowerSupply):
+            raise ValueError("new_power_supply must be a BasePowerSupply")
         self._power_supply = new_power_supply
     
     def __str__(self) -> str:
         return f'Component name: {self.name} V={self.voltage} I={self.current} P={self.power}'
-        
-class DCPowerSupply():
     
-    def __init__(self, name: str ,supply_type: str, supply_subtype:str,output_voltage: Voltage, max_output_current: Current, min_input_voltage: Voltage = 0, max_input_voltage: Voltage = 0, efficiency: float = None, components: Component=None, comment: str = '') -> None:
-        """_summary_
 
-        Args:
-            name (str): _description_
-            supply_type (str): _description_
-            supply_subtype (str): _description_
-            output_voltage (Voltage): _description_
-            max_output_current (Current): _description_
-            min_input_voltage (Voltage, optional): _description_. Defaults to 0.
-            max_input_voltage (Voltage, optional): _description_. Defaults to 0.
-            efficiency (float, optional): _description_. Defaults to None.
-            components (Component, optional): _description_. Defaults to None.
-            comment (str, optional): _description_. Defaults to ''.
+# class DCPowerSupply():
+    
+#     def __init__(self, name: str ,supply_type: str, supply_subtype:str,output_voltage: Voltage, max_output_current: Current, min_input_voltage: Voltage = 0, max_input_voltage: Voltage = 0, efficiency: float = None, components: Component=None, comment: str = '') -> None:
+#         """_summary_
 
-        Raises:
-            ValueError: _description_
-            ValueError: _description_
-        """
-        filename: str = './power_supplies.json'
-        filepath: str = os.path.join(os.path.dirname(__file__), filename)
-        power_suppply_dict: dict = json_to_dict(filepath)
-        print(power_suppply_dict)
+#         Args:
+#             name (str): _description_
+#             supply_type (str): _description_
+#             supply_subtype (str): _description_
+#             output_voltage (Voltage): _description_
+#             max_output_current (Current): _description_
+#             min_input_voltage (Voltage, optional): _description_. Defaults to 0.
+#             max_input_voltage (Voltage, optional): _description_. Defaults to 0.
+#             efficiency (float, optional): _description_. Defaults to None.
+#             components (Component, optional): _description_. Defaults to None.
+#             comment (str, optional): _description_. Defaults to ''.
+
+#         Raises:
+#             ValueError: _description_
+#             ValueError: _description_
+#         """
+#         filename: str = './power_supplies.json'
+#         filepath: str = os.path.join(os.path.dirname(__file__), filename)
+#         power_suppply_dict: dict = json_to_dict(filepath)
+#         print(power_suppply_dict)
         
-        if(supply_type not in power_suppply_dict.keys()):
-            raise ValueError('Invalid DC power supply type.')
+#         if(supply_type not in power_suppply_dict.keys()):
+#             raise ValueError('Invalid DC power supply type.')
         
-        if(supply_subtype not in power_suppply_dict[supply_type]):
-            raise ValueError(f'Invalid {supply_type} subtype: {supply_subtype}')
+#         if(supply_subtype not in power_suppply_dict[supply_type]):
+#             raise ValueError(f'Invalid {supply_type} subtype: {supply_subtype}')
             
         
         
-        self._supply_type = supply_type
-        self._name = name
-        self._output_voltage = output_voltage
-        self._max_output_current = max_output_current
-        self._min_input_voltage = min_input_voltage
-        self._max_input_voltage = max_input_voltage
-        self._efficiency = efficiency
-        self._comment: str = comment or ''
+#         self._supply_type = supply_type
+#         self._name = name
+#         self._output_voltage = output_voltage
+#         self._max_output_current = max_output_current
+#         self._min_input_voltage = min_input_voltage
+#         self._max_input_voltage = max_input_voltage
+#         self._efficiency = efficiency
+#         self._comment: str = comment or ''
         
-        if components is None:
-            self._components: List = [Component]
-        elif isinstance(components,List) and all(isinstance(comp, Component) for comp in components):
-            self._components = components
-        else:
-            raise ValueError('Components must be a list of Component objects.')
+#         if components is None:
+#             self._components: List = [Component]
+#         elif isinstance(components,List) and all(isinstance(comp, Component) for comp in components):
+#             self._components = components
+#         else:
+#             raise ValueError('Components must be a list of Component objects.')
     
-    @property
-    def supply_type(self):
-        """_summary_
+#     @property
+#     def supply_type(self):
+#         """_summary_
 
-        Returns:
-            _type_: _description_
-        """
-        return self._supply_type
+#         Returns:
+#             _type_: _description_
+#         """
+#         return self._supply_type
     
-    @supply_type.setter
-    def supply_type(self, supply_type: Voltage):
-        """_summary_
+#     @supply_type.setter
+#     def supply_type(self, supply_type: Voltage):
+#         """_summary_
 
-        Args:
-            supply_type (Voltage): _description_
-        """
-        self._supply_type = supply_type
+#         Args:
+#             supply_type (Voltage): _description_
+#         """
+#         self._supply_type = supply_type
     
     
     
-    @property
-    def output_voltage(self):
-        """_summary_
+#     @property
+#     def output_voltage(self):
+#         """_summary_
 
-        Returns:
-            _type_: _description_
-        """
-        return self._output_voltage
+#         Returns:
+#             _type_: _description_
+#         """
+#         return self._output_voltage
     
-    @output_voltage.setter
-    def output_voltage(self, output_voltage: Voltage):
-        """_summary_
+#     @output_voltage.setter
+#     def output_voltage(self, output_voltage: Voltage):
+#         """_summary_
 
-        Args:
-            output_voltage (float): _description_
-        """
-        self._output_voltage = output_voltage
+#         Args:
+#             output_voltage (float): _description_
+#         """
+#         self._output_voltage = output_voltage
         
     
-    def add_component(self, component: Component):
-        """_summary_
+#     def add_component(self, component: Component):
+#         """_summary_
 
-        Args:
-            component (CircuitBase): _description_
-        """
-        if(component.power_supply is not self):
-            raise ValueError('Component is associated with a different power supply.')
-        self.components.append(component)
+#         Args:
+#             component (CircuitBase): _description_
+#         """
+#         if(component.power_supply is not self):
+#             raise ValueError('Component is associated with a different power supply.')
+#         self.components.append(component)
     
-    def remove_component(self, component_name:str):
-        """_summary_
+#     def remove_component(self, component_name:str):
+#         """_summary_
 
-        Args:
-            component_name (str): _description_
-        """
-        self._components = [comp for comp in self._components if comp.name != component_name]
+#         Args:
+#             component_name (str): _description_
+#         """
+#         self._components = [comp for comp in self._components if comp.name != component_name]
     
     
     
-    def __str__(self) -> str:
-        """_summary_
+#     def __str__(self) -> str:
+#         """_summary_
 
-        Returns:
-            str: _description_
-        """
-        attrs = [f'{key}: {value}' for key, value in self.__dict__.items()]
-        return('Power Supply Settings:\n' + '\n'.join(attrs))
+#         Returns:
+#             str: _description_
+#         """
+#         attrs = [f'{key}: {value}' for key, value in self.__dict__.items()]
+#         return('Power Supply Settings:\n' + '\n'.join(attrs))
 
 class BasePowerSupply(ABC):
     
@@ -395,31 +396,24 @@ class Battery(BasePowerSupply):
         ret_str += f'\n\t* Power budget:\n\t\tCurrent: {self.total_current}\n\t\tPower = {self.total_power}'
         return ret_str
 
-class DCDCConverter(BasePowerSupply):
-    
+class VoltageRegulator(BasePowerSupply):
     MAX_EFFICIENCY: float = 1.0
     MIN_EFFICIENCY: float = 0.0
     
-    def __init__(self, name: str, dcdc_type: str,nominal_voltage: Voltage, max_output_current: Current, min_input_voltage: Voltage, max_input_voltage: Voltage ,efficiency: float):
+    def __init__(self, name: str,nominal_voltage: Voltage, max_output_current: Current, min_input_voltage: Voltage, max_input_voltage: Voltage ,efficiency: float):
         if(min_input_voltage > max_input_voltage):
             raise ValueError('Minimum input voltage must be less or equal than maximum input voltage.')
         if( efficiency < self.MIN_EFFICIENCY or efficiency > self.MAX_EFFICIENCY):
             raise ValueError(f'Efficiency must be between {self.MIN_EFFICIENCY} and {self.MAX_EFFICIENCY}')
-        self._dcdc_type = dcdc_type
         self._min_input_voltage = min_input_voltage
         self._max_input_voltage = max_input_voltage
         self._efficiency: float = efficiency
         super().__init__(name, nominal_voltage, max_output_current)
     
     @property
-    def dcdc_type(self) -> str:
-        return self._dcdc_type
-    
-    @property
     def efficiency(self) -> float:
         return self._efficiency
     
-
     @efficiency.setter
     def efficiency(self,new_efficiency: float):
         self._efficiency = new_efficiency
@@ -444,6 +438,20 @@ class DCDCConverter(BasePowerSupply):
     @abstractmethod
     def _restrict_instantiation(self):
         pass
+
+class DCDCConverter(VoltageRegulator):
+    
+    @abstractmethod
+    def _restrict_instantiation(self):
+        pass
+    
+    def __init__(self, name: str, dcdc_type: str,nominal_voltage: Voltage, max_output_current: Current, min_input_voltage: Voltage, max_input_voltage: Voltage ,efficiency: float):
+        self._dcdc_type = dcdc_type
+        super().__init__(name, nominal_voltage, max_output_current, min_input_voltage, max_input_voltage, efficiency)
+    
+    @property
+    def dcdc_type(self) -> str:
+        return self._dcdc_type
 
     def __str__(self):
         ret_str: str = f'{self.dcdc_type} converter name: {self.name}\n\t\n\t* Nominal voltage = {self.nominal_voltage}\n\t' \
@@ -485,8 +493,6 @@ class BuckBoostConverter(DCDCConverter):
         dcdc_type: str = 'Buck-Boost'
         super().__init__(name,dcdc_type,nominal_voltage, max_output_current, min_input_voltage, max_input_voltage,efficiency)
 
-    
-    
 class LithiumBattery(Battery):
     LITHIUM_CELL_VOLTAGES = (  3.7 ,   3.6  ,   3.2   ,   3.7   ,  3.6   ,  0)
     LITHIUM_SUBCHEMISTRIES =   ('LiPo','Li-ion','LiFePO4','LiMn2O4','LiCoO2','Other')
@@ -520,6 +526,12 @@ class LeadAcidBattery(Battery):
         cell_voltage = Voltage(self.LEAD_ACID_CELL_VOLTAGE)
         super().__init__(name,chemistry='Lead-Acid',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, cell_count=cell_count, subchemistry=self.LEAD_ACID_SUBCHEMISTRY)
 
+class LinearRegulator(VoltageRegulator):
+    
+    def __init__(self, name: str, nominal_voltage: Voltage, max_output_current: Current):
+        super().__init__(name, nominal_voltage, max_output_current)
+
+
 
 class PowerBudget:
     
@@ -529,7 +541,7 @@ class PowerBudget:
     def __init__(self, name: str) -> None:
         self._name: str = name
         self._components: List[List[Component,int]] = []
-        self._dc_power_supplies: List[DCPowerSupply] = []
+        self._dc_power_supplies: List[BasePowerSupply] = []
         
     @property
     def name(self):
@@ -550,7 +562,7 @@ class PowerBudget:
     def add_component(self, component: Component, quantity:int = 1):
         self._components.append((component,quantity))
     
-    def add_power_supply(self, power_supply: DCPowerSupply):
+    def add_power_supply(self, power_supply: BasePowerSupply):
         self._dc_power_supplies.append(power_supply)
     
     def remove_component(self, index: int):
