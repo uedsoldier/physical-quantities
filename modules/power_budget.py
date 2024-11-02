@@ -5,7 +5,6 @@ from modules.physical_quantities import Current, Power, Voltage, Time, Energy, C
 from modules.json_utilities import json_to_dict
 import os
 
-
 class Component:
     
     def __str__(self) -> str:
@@ -227,12 +226,29 @@ class DCPowerSupply():
 
 class BasePowerSupply(ABC):
     
-    def __init__(self, nominal_voltage: Voltage, max_output_current: Current) -> None:
+    def __init__(self, name: str, nominal_voltage: Voltage, max_output_current: Current) -> None:
+        self._name = name
         self._nominal_voltage = nominal_voltage
         self._max_output_current = max_output_current
         self._components: List[List[Component,int]] = []
         self._total_current: Current = Current(0.0,'mA')
         self._total_power: Power = Power(0.0,'mW')
+        self._total_components: int = 0
+    
+    @property
+    def name(self) -> str:
+        return self._name
+    
+    @name.setter
+    def name(self,new_name: str):
+        self._name = new_name
+    
+    @property
+    def total_components(self) -> int :
+        cnt: int = 0
+        for component_type in self.components:
+            cnt += component_type[1]
+        return cnt
     
     @property
     def components(self) -> List[List[Component,int]]:
@@ -309,7 +325,7 @@ class BasePowerSupply(ABC):
         pass
 
 class Battery(BasePowerSupply):
-    def __init__(self, chemistry: str,cell_voltage: Voltage, max_output_current: Current, capacity: Charge, subchemistry: str, cell_count: int = 1, ) -> None:
+    def __init__(self, name: str,chemistry: str,cell_voltage: Voltage, max_output_current: Current, capacity: Charge, subchemistry: str, cell_count: int = 1, ) -> None:
         if(cell_count <= 0):
             raise ValueError('Cell number must be a positive integer')
         if(cell_voltage.value < 0.0):
@@ -324,7 +340,7 @@ class Battery(BasePowerSupply):
         nominal_voltage_value = cell_count * cell_voltage.value
         nominal_voltage_units = cell_voltage.unit
         nominal_voltage = Voltage(nominal_voltage_value,nominal_voltage_units)
-        super().__init__(nominal_voltage, max_output_current)
+        super().__init__(name,nominal_voltage, max_output_current)
         
     
     @property
@@ -397,7 +413,6 @@ class LithiumBattery(Battery):
         pass
     
     def __init__(self, name: str, max_output_current: Current, capacity: Charge, cell_voltage: Voltage = None ,cell_count: int = 1, subchemistry: str = 'Other') -> None:
-        self._name = name
         if(subchemistry is None):
             subchemistry = self.LITHIUM_SUBCHEMISTRIES[0]
         elif (subchemistry not in self.LITHIUM_SUBCHEMISTRIES):
@@ -406,7 +421,7 @@ class LithiumBattery(Battery):
             if(subchemistry == 'Other'):
                 raise ValueError('Cell voltage must be provided if using custom chemistry')
         cell_voltage = cell_voltage if subchemistry == 'Other' else Voltage(self.LITHIUM_CELL_VOLTAGES[self.LITHIUM_SUBCHEMISTRIES.index(subchemistry)])
-        super().__init__(chemistry='Lithium',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, subchemistry=subchemistry,cell_count=cell_count)
+        super().__init__(name,chemistry='Lithium',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, subchemistry=subchemistry,cell_count=cell_count)
 
 class LeadAcidBattery(Battery):
     
@@ -418,9 +433,8 @@ class LeadAcidBattery(Battery):
         pass  
     
     def __init__(self, name: str, max_output_current: Current, capacity: Charge, cell_count: int = 1) -> None:
-        self._name = name 
         cell_voltage = Voltage(self.LEAD_ACID_CELL_VOLTAGE)
-        super().__init__(chemistry='Lead-Acid',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, cell_count=cell_count, subchemistry=self.LEAD_ACID_SUBCHEMISTRY)
+        super().__init__(name,chemistry='Lead-Acid',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, cell_count=cell_count, subchemistry=self.LEAD_ACID_SUBCHEMISTRY)
 
 
 class PowerBudget:
