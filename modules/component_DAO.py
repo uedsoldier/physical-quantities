@@ -17,24 +17,25 @@ class ComponentDAO(BaseDAO):
     def create_triggers(self):
         # Create triggers to automatically update component counts in PowerSupply table.
         with self.connection:
-            # Trigger to increment component_count when a component is added
-            self.connection.execute(
+            
+            # Trigger to increment component count on insert
+            self.cursor.execute(
                 f"""
-                CREATE TRIGGER IF NOT EXISTS increment_component_count
-                AFTER UPDATE ON {self.COMPONENTS_TABLE_NAME}
+                CREATE TRIGGER IF NOT EXISTS increment_component_count_on_insert
+                AFTER INSERT ON {self.COMPONENTS_TABLE_NAME}
                 FOR EACH ROW
                 BEGIN
                     UPDATE {self.POWER_SUPPLIES_TABLE_NAME}
                     SET component_count = component_count + 1
                     WHERE power_supply_id = NEW.power_supply_id;
                 END;
-                """,()
+            """,()
             )
             
-            # Trigger to decrement component_count when a component is deleted
-            self.connection.execute(
+            # Trigger to decrement component count on delete
+            self.cursor.execute(
                 f"""
-                CREATE TRIGGER IF NOT EXISTS decrement_component_count
+                CREATE TRIGGER IF NOT EXISTS decrement_component_count_on_delete
                 AFTER DELETE ON {self.COMPONENTS_TABLE_NAME}
                 FOR EACH ROW
                 BEGIN
@@ -42,7 +43,37 @@ class ComponentDAO(BaseDAO):
                     SET component_count = component_count - 1
                     WHERE power_supply_id = OLD.power_supply_id;
                 END;
-            """)
+            """,()
+            )
+            
+            # Trigger to decrement component count on power_supply_id update (old power supply)
+            self.cursor.execute(
+                f"""
+                CREATE TRIGGER IF NOT EXISTS decrement_component_count_on_update
+                AFTER UPDATE OF power_supply_id ON {self.COMPONENTS_TABLE_NAME}
+                FOR EACH ROW
+                BEGIN
+                    UPDATE {self.POWER_SUPPLIES_TABLE_NAME}
+                    SET component_count = component_count - 1
+                    WHERE power_supply_id = OLD.power_supply_id;
+                END;
+            """,()
+            )
+            
+            # Trigger to increment component count on power_supply_id update (new power supply)
+            self.cursor.execute(
+                f"""
+                CREATE TRIGGER IF NOT EXISTS increment_component_count_on_update
+                AFTER UPDATE OF power_supply_id ON {self.COMPONENTS_TABLE_NAME}
+                FOR EACH ROW
+                BEGIN
+                    UPDATE {self.POWER_SUPPLIES_TABLE_NAME}
+                    SET component_count = component_count + 1
+                    WHERE power_supply_id = NEW.power_supply_id;
+                END;
+            """,()
+            )
+            
     
     def create_table(self):
         with self.connection:
@@ -61,7 +92,6 @@ class ComponentDAO(BaseDAO):
             """,
             ()
             )
-    
     
     def truncate_table(self):
         with self.connection:
@@ -113,7 +143,6 @@ class ComponentDAO(BaseDAO):
                 ,(power_supply_id,component_id)
             )
         
-    
     def get_components_by_power_supply(self, power_supply_id: int) -> list:
         with self.connection:
             self.cursor.execute(
