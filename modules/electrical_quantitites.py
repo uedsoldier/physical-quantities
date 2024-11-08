@@ -1,11 +1,11 @@
-from .physical_quantities import Current, Voltage, Frequency, Angle, BaseConversionManager
+from .physical_quantities import ElectricCurrentQuantity, VoltageQuantity, FrequencyQuantity, AngleQuantity, BaseConversionManager
 from math import isclose, sqrt, pi
 
 ABS_TOLERANCE_FROM_ZERO: float = 1e-6
 SQRT_2: float = 1.4142135623730950488
 
 
-def normalize_phase(phase_angle: Angle):
+def normalize_phase(phase_angle: AngleQuantity):
     """
     Normalize phase angle to be in the -180 to 180 degrees range
     Args:
@@ -22,7 +22,7 @@ def normalize_phase(phase_angle: Angle):
     phase_angle.value = conversion_manager.convert(phase_angle_rad, 'rad', original_unit)
     
 class AC_Voltage():
-    def __init__(self, rms_value: Voltage, frequency: Frequency, phase_angle: Angle = 0) -> None:
+    def __init__(self, rms_value: VoltageQuantity, frequency: FrequencyQuantity, phase_angle: AngleQuantity = 0) -> None:
         """AC voltage object
         Args:
             rms_value (Voltage): Root mean square equivalent value
@@ -35,7 +35,7 @@ class AC_Voltage():
         if(frequency.value < 0.0 or isclose(frequency.value,0.0,abs_tol=ABS_TOLERANCE_FROM_ZERO,rel_tol=0)):
             raise ValueError('Frequency must be positive and different from zero (0)')
         self._rms_value = rms_value
-        self._amplitude: Voltage = Voltage(rms_value.value * SQRT_2, rms_value.unit)
+        self._amplitude: VoltageQuantity = VoltageQuantity(rms_value.value * SQRT_2, rms_value.unit)
         self._frequency = frequency
         normalize_phase(phase_angle)
         self._phase_angle = phase_angle

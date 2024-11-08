@@ -1,14 +1,14 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import random
 import string
 
 from modules.power_supply_DAO import PowerSupplyDAO
 from modules.power_budget import LithiumBattery,LeadAcidBattery,BuckConverter,BoostConverter,BuckBoostConverter
-from modules.physical_quantities import Voltage, Current, Charge
+from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity
 def generate_random_id(length: int=6):
     # Choose from letters and digits
     characters = string.digits
@@ -24,7 +24,7 @@ possible_currents: list[float] = [0.25,0.5,1.0,2.0,5.0]
 
 random_type: str = random.choice(possible_ps_types)
 random_current_value: float =  random.choice(possible_currents)
-random_current = Voltage(random_current_value,'A')
+random_current = VoltageQuantity(random_current_value,'A')
 random_name: str = f'{random_type}'
 match(random_type):
     case 'Battery':
@@ -38,7 +38,7 @@ match(random_type):
         random_cell_value: int =  random.choice(possible_cells)
         random_capacity_value: float = random.choice(possible_capacities)
         
-        random_capacity = Charge(random_capacity_value,'mAh')
+        random_capacity = ElectricChargeQuantity(random_capacity_value,'mAh')
         
         match(random_battery_type):
             case 'Lithium':
@@ -62,19 +62,19 @@ match(random_type):
         
         match(random_dcdc_type):
             case 'Buck':
-                output_voltage = Voltage(3.3)
-                min_in = Voltage(12.0)
-                max_in = Voltage(24.0)
+                output_voltage = VoltageQuantity(3.3)
+                min_in = VoltageQuantity(12.0)
+                max_in = VoltageQuantity(24.0)
                 test_ps = BuckConverter(random_name,output_voltage,random_current,min_in,max_in,random_efficiency)
             case 'Boost':
-                output_voltage = Voltage(32.0)
-                min_in = Voltage(12.0)
-                max_in = Voltage(24.0)
+                output_voltage = VoltageQuantity(32.0)
+                min_in = VoltageQuantity(12.0)
+                max_in = VoltageQuantity(24.0)
                 test_ps = BoostConverter(random_name,output_voltage,random_current,min_in,max_in,random_efficiency)
             case 'Buck-Boost':
-                output_voltage = Voltage(18.0)
-                min_in = Voltage(12.0)
-                max_in = Voltage(24.0)
+                output_voltage = VoltageQuantity(18.0)
+                min_in = VoltageQuantity(12.0)
+                max_in = VoltageQuantity(24.0)
                 test_ps = BuckBoostConverter(random_name,output_voltage,random_current,min_in,max_in,random_efficiency)
 
             case _:

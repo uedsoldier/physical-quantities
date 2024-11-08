@@ -1,20 +1,23 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import unittest
-from modules.physical_quantities import BaseConversionManager
-from math import pi
+from modules.physical_quantities import TemperatureConversionManager
+from modules.unit import TemperatureUnits, MockUnits
 
-class TestAngleConverter(unittest.TestCase):
+class TestTemperatureConverter(unittest.TestCase):
     def setUp(self) -> None:
-        self.converter = BaseConversionManager('angle')
+        self.converter = TemperatureConversionManager()
     
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)
         test_cases = [
-            (90,'deg','rad',pi/2,6),
+            (373.15,TemperatureUnits.KELVIN.value,TemperatureUnits.CELSIUS.value,100,6),
+            (212.0,TemperatureUnits.FAHRENHEIT.value,TemperatureUnits.CELSIUS.value,100,6),
+            (0,TemperatureUnits.CELSIUS.value,TemperatureUnits.FAHRENHEIT.value,32,6),
+            (0,TemperatureUnits.KELVIN.value,TemperatureUnits.CELSIUS.value,-273.15,6),
 
         ]
         for value,from_unit,to_unit,expected,decimal_places in test_cases:
@@ -27,10 +30,10 @@ class TestAngleConverter(unittest.TestCase):
                 
     def test_invalid_units(self):
         with self.assertRaises(ValueError):
-            self.converter.convert(1, 'invalid_unit', 'deg')
+            self.converter.convert(1, MockUnits.MOCK_UNIT.value, TemperatureUnits.KELVIN.value)
         
         with self.assertRaises(ValueError):
-            self.converter.convert(1, 'deg', 'invalid_unit')
+            self.converter.convert(1, TemperatureUnits.KELVIN.value, MockUnits.MOCK_UNIT.value)
 
 if __name__ == '__main__':
     unittest.main()

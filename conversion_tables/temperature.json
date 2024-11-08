@@ -3,11 +3,11 @@
             "to_base": "lambda x: x",
             "from_base": "lambda x: x"
         },
-        "F": {
+        "°F": {
             "to_base": "lambda x: (x-32)*5/9 + 273.15",
             "from_base": "lambda x: (x-273.15)*9/5 + 32"
         },
-        "C": {
+        "°C": {
             "to_base": "lambda x: x + 273.15",
             "from_base": "lambda x: x - 273.15"
         }
