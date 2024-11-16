@@ -1,8 +1,7 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 from modules.power_budget import Component, DCPowerSupply, PowerBudget
 from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity, EnergyQuantity, TimeQuantity
