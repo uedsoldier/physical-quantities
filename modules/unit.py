@@ -5,6 +5,25 @@ class Dimensions:
     def  __init__(self, dimensions_dict: Dict[str,int] = None) -> None:
         self._dimensions_dict: Dict[str,int] = dimensions_dict or {}
     
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Dimensions):
+            return False
+        return self._dimensions_dict == other._dimensions_dict
+
+    def __pow__(self, exponent: float | int) -> "Dimensions":
+        """Raise each dimension's exponent to the power of a constant exponent."""
+    
+        # Ensure the exponent is a numeric value (either int or float)
+        if not isinstance(exponent, (int, float)):
+            raise TypeError(f"Exponent must be a numeric value, got {type(exponent)}.")
+        
+        # Apply exponentiation to each dimension's exponent
+        new_dimensions = {}
+        for key, value in self._dimensions_dict.items():
+            new_dimensions[key] = value * exponent  # Multiply the exponent by the constant exponent
+        
+        return Dimensions(new_dimensions)
+    
     # @property
     # def dimensions_dict(self) -> Dict[str,int]:
     #     return self._dimensions_dict
@@ -23,7 +42,7 @@ class Dimensions:
     def __str__(self) -> str:
         """Format dimensions for display, consolidating exponents."""
         parts = []
-        for dim, exp in self.dimensions_dict.items():
+        for dim, exp in self._dimensions_dict.items():
             if exp == 1:
                 parts.append(dim)
             else:
@@ -86,6 +105,38 @@ class Dimensions:
     def is_dimensionless(self) -> bool:
         """Check if the dimensions are dimensionless (empty dictionary)."""
         return not bool(self._dimensions_dict)
+
+LENGTH_DIMENSIONS = Dimensions({'L':1})
+TIME_DIMENSIONS = Dimensions({'T': 1})
+MASS_DIMENSIONS = Dimensions({'M': 1})
+TEMPERATURE_DIMENSIONS = Dimensions({'Θ': 1})
+ELECTRIC_CURRENT_DIMENSIONS = Dimensions({'I': 1})
+AMOUNT_SUBSTANCE_DIMENSIONS = Dimensions({'N': 1})
+LUMINOUS_INTENSITY_DIMENSIONS = Dimensions({'J': 1})
+FORCE_DIMENSIONS=Dimensions({'M': 1, 'L': 1, 'T': -2})
+PRESSURE_DIMENSIONS=Dimensions({'M': 1, 'L': -1, 'T': -2})
+ENERGY_DIMENSIONS=Dimensions({'L': 2, 'M': 1, 'T': -2})
+POWER_DIMENSIONS=Dimensions({'M': 1, 'L': 2, 'T': -3})
+VOLTAGE_DIMENSIONS=Dimensions({'M': 1, 'L': 2, 'T': -3, 'I': -1})
+FREQUENCY_DIMENSIONS=Dimensions({'T': -1})
+ANGULAR_VELOCITY_DIMENSIONS = Dimensions({'T': -1})
+ELECTRIC_CHARGE_DIMENSIONS=Dimensions({'T': 1, 'I': 1})
+MAGNETIC_FLUX_DIMENSIONS=Dimensions({'M': 1, 'L': 2, 'T': -2, 'I': -1})
+MAGNETIC_FIELD_DIMENSIONS=Dimensions({'M': 1, 'L': -1, 'T': -2, 'I': -1})
+INDUCTANCE_DIMENSIONS=Dimensions({'M': 1, 'L': 2, 'T': -2, 'I': -2})
+CAPACITANCE_DIMENSIONS=Dimensions({'L': -2, 'M': -1, 'T': 4, 'I': 2})
+RESISTANCE_DIMENSIONS=Dimensions({'M': 1, 'L': 2, 'T': -3, 'I': -2})
+CONDUCTANCE_DIMENSIONS=Dimensions({'M': -1, 'L': -2, 'T': 3, 'I': 2})
+ILLUMINATION_DIMENSIONS= Dimensions({'L': 2, 'M': -1, 'T': -3})
+ANGLE_DIMENSIONS=Dimensions({'': 1})
+AREA_DIMENSIONS=Dimensions({'L': 2})
+VOLUME_DIMENSIONS=Dimensions({'L': 3})
+FLOW_RATE_DIMENSIONS=Dimensions({'L': 3, 'T': -1})
+MASS_FLOW_RATE_DIMENSIONS=Dimensions({'M': 1, 'T': -1})
+SPEED_DIMENSIONS=Dimensions({'L': 1, 'T': -1})
+ACCELERATION_DIMENSIONS = Dimensions({'L': 1, 'T': -2})
+THERMAL_CONDUCTIVITY_DIMENSIONS = Dimensions({'M':1,'L':1,'T':-3,'Θ':-1})
+
 
 class Unit:
 
@@ -177,7 +228,6 @@ class Unit:
 
 # Length Unit
 class LengthUnits(Enum):
-    LENGTH_DIMENSIONS = Dimensions({'L':1})
     METER = Unit('meter', 'm', LENGTH_DIMENSIONS)          
     MICROMETER = Unit('micrometer', 'μm', LENGTH_DIMENSIONS)
     NANOMETER = Unit('nanometer', 'nm', LENGTH_DIMENSIONS)
@@ -191,7 +241,6 @@ class LengthUnits(Enum):
 
 # Time Unit
 class TimeUnits(Enum):
-    TIME_DIMENSIONS = Dimensions({'T': 1})
     SECOND = Unit('second', 's', TIME_DIMENSIONS)          
     MILLISECOND = Unit('millisecond', 'ms', TIME_DIMENSIONS)
     MICROSECOND = Unit('microsecond', 'μs', TIME_DIMENSIONS)
@@ -205,7 +254,6 @@ class TimeUnits(Enum):
 
 # Define MassUnits Enum with explicit unit assignment
 class MassUnits(Enum):
-    MASS_DIMENSIONS = Dimensions({'M': 1})
     KILOGRAM = Unit('kilogram', 'kg', MASS_DIMENSIONS)
     GRAM = Unit('gram', 'g', MASS_DIMENSIONS)
     MILLIGRAM = Unit('milligram', 'mg', MASS_DIMENSIONS)
@@ -217,14 +265,12 @@ class MassUnits(Enum):
 
 # Temperature Unit
 class TemperatureUnits(Enum):
-    TEMPERATURE_DIMENSIONS = Dimensions({'Θ': 1})
     KELVIN = Unit('kelvin', 'K', TEMPERATURE_DIMENSIONS)
     CELSIUS = Unit('celsius', '°C', TEMPERATURE_DIMENSIONS)
     FAHRENHEIT = Unit('fahrenheit', '°F', TEMPERATURE_DIMENSIONS)
 
 # Electric Current Unit
 class ElectricCurrentUnits(Enum):
-    ELECTRIC_CURRENT_DIMENSIONS = Dimensions({'I': 1})
     AMPERE = Unit('ampere', 'A', ELECTRIC_CURRENT_DIMENSIONS)          
     NANOAMPERE = Unit('nanoampere', 'nA', ELECTRIC_CURRENT_DIMENSIONS)
     MICROAMPERE = Unit('microampere', 'μA', ELECTRIC_CURRENT_DIMENSIONS)
@@ -234,13 +280,10 @@ class ElectricCurrentUnits(Enum):
 
 # Amount of Substance Unit
 class AmountSubstanceUnits(Enum):
-    AMOUNT_SUBSTANCE_DIMENSIONS = Dimensions({'N': 1})
     MOLE = Unit('mole', 'mol', AMOUNT_SUBSTANCE_DIMENSIONS)
 
 # Luminous Intensity Unit
 class LuminousIntensityUnits(Enum):
-    LUMINOUS_INTENSITY_DIMENSIONS = Dimensions({'J': 1})
-    
     # Define the units for luminous intensity
     CANDELA = Unit('candela', 'cd', LUMINOUS_INTENSITY_DIMENSIONS)
     MILLICANDELA = Unit('millicandela', 'mcd', LUMINOUS_INTENSITY_DIMENSIONS)
@@ -252,7 +295,6 @@ class LuminousIntensityUnits(Enum):
 
 # Force Unit
 class ForceUnits(Enum):
-    FORCE_DIMENSIONS=Dimensions({'M': 1, 'L': 1, 'T': -2})
     NEWTON = Unit('newton', 'N', FORCE_DIMENSIONS)          
     KILONEWTON = Unit('kilonewton', 'kN', FORCE_DIMENSIONS)
     KILOGRAM_FORCE = Unit('kilogram force', 'kgf', FORCE_DIMENSIONS)
@@ -262,7 +304,6 @@ class ForceUnits(Enum):
 
 # Pressure Unit
 class PressureUnits(Enum):
-    PRESSURE_DIMENSIONS=Dimensions({'M': 1, 'L': -1, 'T': -2})
     PASCAL = Unit('pascal', 'Pa', PRESSURE_DIMENSIONS)          
     KILOPASCAL = Unit('kilopascal', 'kPa', PRESSURE_DIMENSIONS)
     MEGAPASCAL = Unit('megapascal', 'MPa', PRESSURE_DIMENSIONS)
@@ -277,7 +318,6 @@ class PressureUnits(Enum):
 
 # Energy Unit
 class EnergyUnits(Enum):
-    ENERGY_DIMENSIONS=Dimensions({'L': 2, 'M': 1, 'T': -2})
     JOULE = Unit('joule', 'J', ENERGY_DIMENSIONS)          
     NANOJOULE = Unit('nanojoule', 'nJ', ENERGY_DIMENSIONS)
     MICROJOULE = Unit('microjoule', 'μJ', ENERGY_DIMENSIONS)
@@ -296,7 +336,6 @@ class EnergyUnits(Enum):
 
 # Power Unit
 class PowerUnits(Enum):
-    POWER_DIMENSIONS=Dimensions({'M': 1, 'L': 2, 'T': -3})
     WATT = Unit('watt', 'W', POWER_DIMENSIONS)          
     NANOWATT = Unit('nanowatt', 'nW', POWER_DIMENSIONS)
     MICROWATT = Unit('microwatt', 'μW', POWER_DIMENSIONS)
@@ -317,7 +356,6 @@ class PowerUnits(Enum):
 
 # Voltage (Electrical Potential) Unit
 class VoltageUnits(Enum):
-    VOLTAGE_DIMENSIONS=Dimensions({'M': 1, 'L': 2, 'T': -3, 'I': -1})
     VOLT = Unit('volt', 'V', VOLTAGE_DIMENSIONS)          
     NANOVOLT = Unit('nanovolt', 'nV', VOLTAGE_DIMENSIONS)
     MICROVOLT = Unit('microvolt', 'μV', VOLTAGE_DIMENSIONS)
@@ -326,13 +364,11 @@ class VoltageUnits(Enum):
 
 # Frequency and Angular velocity Unit
 class FrequencyUnits(Enum):
-    FREQUENCY_DIMENSIONS=Dimensions({'T': -1})
     HERTZ = Unit('hertz', 'Hz', FREQUENCY_DIMENSIONS)          
     KILOHERTZ = Unit('kilohertz', 'kHz', FREQUENCY_DIMENSIONS)
     MEGAHERTZ = Unit('megahertz', 'MHz', FREQUENCY_DIMENSIONS)
     GIGAHERTZ = Unit('gigahertz', 'GHz', FREQUENCY_DIMENSIONS)
 
-    ANGULAR_VELOCITY_DIMENSIONS = Dimensions({'T': -1})
     REV_PER_MINUTE = Unit('revolutions per minute', 'rpm', ANGULAR_VELOCITY_DIMENSIONS)
     RAD_PER_SECOND = Unit('radian per second', 'rad/s', ANGULAR_VELOCITY_DIMENSIONS)
     DEG_PER_SECOND = Unit('degree per second', '°/s', ANGULAR_VELOCITY_DIMENSIONS)
@@ -340,7 +376,6 @@ class FrequencyUnits(Enum):
 
 # Electric Charge Unit
 class ElectricChargeUnits(Enum):
-    ELECTRIC_CHARGE_DIMENSIONS=Dimensions({'T': 1, 'I': 1})
     COULOMB = Unit('coulomb', 'C', ELECTRIC_CHARGE_DIMENSIONS)          
     NANOCOULOMB = Unit('nanocoulomb', 'nC', ELECTRIC_CHARGE_DIMENSIONS)
     MICROCOULOMB = Unit('microcoulomb', 'μC', ELECTRIC_CHARGE_DIMENSIONS)
@@ -354,7 +389,6 @@ class ElectricChargeUnits(Enum):
 
 # Magnetic Flux Unit
 class MagneticFluxUnits(Enum):
-    MAGNETIC_FLUX_DIMENSIONS=Dimensions({'M': 1, 'L': 2, 'T': -2, 'I': -1})
     WEBER = Unit('weber', 'Wb', MAGNETIC_FLUX_DIMENSIONS)
     MILLIWEBER = Unit('milliweber', 'mWb', MAGNETIC_FLUX_DIMENSIONS)
     MICROWEBER = Unit('microweber', 'μWb', MAGNETIC_FLUX_DIMENSIONS)
@@ -363,7 +397,6 @@ class MagneticFluxUnits(Enum):
 
 # Magnetic Field Unit
 class MagneticFieldUnits(Enum):
-    MAGNETIC_FIELD_DIMENSIONS=Dimensions({'M': 1, 'L': -1, 'T': -2, 'I': -1})
     TESLA = Unit('tesla', 'T', MAGNETIC_FIELD_DIMENSIONS)
     GAUSS = Unit('gauss', 'G', MAGNETIC_FIELD_DIMENSIONS)
     MILLIGAUSS = Unit('milligauss', 'mG', MAGNETIC_FIELD_DIMENSIONS)
@@ -373,7 +406,6 @@ class MagneticFieldUnits(Enum):
 
 # Inductance Units
 class InductanceUnits(Enum):
-    INDUCTANCE_DIMENSIONS=Dimensions({'M': 1, 'L': 2, 'T': -2, 'I': -2})
     HENRY = Unit('henry', 'H', INDUCTANCE_DIMENSIONS)
     MILLIHENRY = Unit('millihenry', 'mH', INDUCTANCE_DIMENSIONS)
     MICROHENRY = Unit('microhenry', 'μH', INDUCTANCE_DIMENSIONS)
@@ -381,8 +413,7 @@ class InductanceUnits(Enum):
     PICOHENRY = Unit('picohenry', 'pH', INDUCTANCE_DIMENSIONS)
 
 # Capacitance Unit
-class CapacitanceUnits(Enum):
-    CAPACITANCE_DIMENSIONS=Dimensions({'L': -2, 'M': -1, 'T': 4, 'I': 2})
+class CapacitanceUnits(Enum): 
     FARAD = Unit('farad', 'F', CAPACITANCE_DIMENSIONS)          
     MILLIFARAD = Unit('millifarad', 'mF', CAPACITANCE_DIMENSIONS)
     MICROFARAD = Unit('microfarad', 'μF', CAPACITANCE_DIMENSIONS)
@@ -391,7 +422,6 @@ class CapacitanceUnits(Enum):
 
 # Electrical Resistance Unit
 class ResistanceUnits(Enum):
-    RESISTANCE_DIMENSIONS=Dimensions({'M': 1, 'L': 2, 'T': -3, 'I': -2})
     OHM = Unit('ohm', 'Ω', RESISTANCE_DIMENSIONS)          
     MILLIOHM = Unit('milliohm', 'mΩ', RESISTANCE_DIMENSIONS)
     MICROOHM = Unit('microohm', 'μΩ', RESISTANCE_DIMENSIONS)
@@ -402,7 +432,6 @@ class ResistanceUnits(Enum):
 
 # Electrical Conductance Unit
 class ConductanceUnits(Enum):
-    CONDUCTANCE_DIMENSIONS=Dimensions({'M': -1, 'L': -2, 'T': 3, 'I': 2})
     SIEMENS = Unit('siemens', 'S', CONDUCTANCE_DIMENSIONS)
     MILLI_SIEMENS = Unit('milli siemens', 'mS', CONDUCTANCE_DIMENSIONS)
     KILO_SIEMENS = Unit('kilo siemens', 'kS', CONDUCTANCE_DIMENSIONS)
@@ -411,7 +440,7 @@ class ConductanceUnits(Enum):
 
 # Illumination Unit (Luminous Flux/Area)
 class IlluminationUnits(Enum):
-    ILLUMINATION_DIMENSIONS= Dimensions({'L': 2, 'M': -1, 'T': -3})
+    
     LUX = Unit('lux', 'lx',ILLUMINATION_DIMENSIONS)
     FOOT_CANDLE = Unit('foot-candle', 'fc',ILLUMINATION_DIMENSIONS)
     MILLILUX = Unit('millilux', 'mlx',ILLUMINATION_DIMENSIONS)
@@ -421,7 +450,6 @@ class IlluminationUnits(Enum):
 
 # Angle Unit
 class AngleUnits(Enum):
-    ANGLE_DIMENSIONS=Dimensions({'': 1})
     DEGREE = Unit('degree', '°', ANGLE_DIMENSIONS)     # Degrees
     RADIAN = Unit('radian', 'rad', ANGLE_DIMENSIONS)    # Radians
     GRADIAN = Unit('gradian', 'gon', ANGLE_DIMENSIONS)  # Gradians
@@ -430,7 +458,6 @@ class AngleUnits(Enum):
 
 # Area Unit
 class AreaUnits(Enum):
-    AREA_DIMENSIONS=Dimensions({'L': 2})
     SQUARE_METER = Unit('square meter', 'm²', AREA_DIMENSIONS)          
     SQUARE_CENTIMETER = Unit('square centimeter', 'cm²', AREA_DIMENSIONS)
     SQUARE_DECIMETER = Unit('square decimeter', 'dm²', AREA_DIMENSIONS)
@@ -445,7 +472,6 @@ class AreaUnits(Enum):
 
 # Volume Unit
 class VolumeUnits(Enum):
-    VOLUME_DIMENSIONS=Dimensions({'L': 3})
     CUBIC_METER = Unit('cubic meter', 'm³', VOLUME_DIMENSIONS)
     CUBIC_CENTIMETER = Unit('cubic centimeter', 'cm³', VOLUME_DIMENSIONS)
     CUBIC_DECIMETER = Unit('cubic decimeter', 'dm³', VOLUME_DIMENSIONS)
@@ -461,7 +487,6 @@ class VolumeUnits(Enum):
 
 # Flow Rate Unit (Volume/Time)
 class FlowRateUnits(Enum):
-    FLOW_RATE_DIMENSIONS=Dimensions({'L': 3, 'T': -1})
     CUBIC_METER_PER_SECOND = Unit('cubic meter per second', 'm³/s', FLOW_RATE_DIMENSIONS)
     LITER_PER_SECOND = Unit('liter per second', 'L/s', FLOW_RATE_DIMENSIONS)
     GALLON_PER_MINUTE = Unit('gallon per minute', 'gal/min', FLOW_RATE_DIMENSIONS)
@@ -474,7 +499,6 @@ class FlowRateUnits(Enum):
 
 # Mass Flow Rate Unit (Mass/Time)
 class MassFlowRateUnits(Enum):
-    MASS_FLOW_RATE_DIMENSIONS=Dimensions({'M': 1, 'T': -1})
     KILOGRAM_PER_SECOND = Unit('kilogram per second', 'kg/s', MASS_FLOW_RATE_DIMENSIONS)
     GRAM_PER_SECOND = Unit('gram per second', 'g/s', MASS_FLOW_RATE_DIMENSIONS)
     TON_PER_SECOND = Unit('ton per second', 'ton/s', MASS_FLOW_RATE_DIMENSIONS)
@@ -493,26 +517,33 @@ class MassFlowRateUnits(Enum):
 
 # Speed Unit (Distance/Time)
 class SpeedUnits(Enum):
-    SPEED_UNIT_DIMENSIONS=Dimensions({'L': 1, 'T': -1})
-    METER_PER_SECOND = Unit('meter per second', 'm/s', SPEED_UNIT_DIMENSIONS)
-    KILOMETER_PER_HOUR = Unit('kilometer per hour', 'km/h', SPEED_UNIT_DIMENSIONS)
-    MILE_PER_HOUR = Unit('mile per hour', 'mph', SPEED_UNIT_DIMENSIONS)
-    KNOT = Unit('knot', 'kn', SPEED_UNIT_DIMENSIONS)
-    MILLIMETER_PER_SECOND = Unit('millimeter per second', 'mm/s', SPEED_UNIT_DIMENSIONS)
-    CENTIMETER_PER_SECOND = Unit('centimeter per second', 'cm/s', SPEED_UNIT_DIMENSIONS)
-    MICROMETER_PER_SECOND = Unit('micrometer per second', 'μm/s', SPEED_UNIT_DIMENSIONS)
-    KILOMETER_PER_SECOND = Unit('kilometer per second', 'km/s', SPEED_UNIT_DIMENSIONS)
-    MILE_PER_SECOND = Unit('mile per second', 'mi/s', SPEED_UNIT_DIMENSIONS)
+    METER_PER_SECOND = Unit('meter per second', 'm/s', SPEED_DIMENSIONS)
+    KILOMETER_PER_HOUR = Unit('kilometer per hour', 'km/h', SPEED_DIMENSIONS)
+    MILE_PER_HOUR = Unit('mile per hour', 'mph', SPEED_DIMENSIONS)
+    KNOT = Unit('knot', 'kn', SPEED_DIMENSIONS)
+    MILLIMETER_PER_SECOND = Unit('millimeter per second', 'mm/s', SPEED_DIMENSIONS)
+    CENTIMETER_PER_SECOND = Unit('centimeter per second', 'cm/s', SPEED_DIMENSIONS)
+    MICROMETER_PER_SECOND = Unit('micrometer per second', 'μm/s', SPEED_DIMENSIONS)
+    KILOMETER_PER_SECOND = Unit('kilometer per second', 'km/s', SPEED_DIMENSIONS)
+    MILE_PER_SECOND = Unit('mile per second', 'mi/s', SPEED_DIMENSIONS)
 
 # Acceleration Unit (Distance/Time^2)
 class AccelerationUnits(Enum):
-    ACCELERATION_UNIT_DIMENSIONS = Dimensions({'L': 1, 'T': -2})
-    METER_PER_SECOND_SQUARED = Unit('meter per second squared', 'm/s²', ACCELERATION_UNIT_DIMENSIONS)
-    KILOMETER_PER_HOUR_SQUARED = Unit('kilometer per hour squared', 'km/h²', ACCELERATION_UNIT_DIMENSIONS)
-    MILE_PER_HOUR_SQUARED = Unit('mile per hour squared', 'mph²', ACCELERATION_UNIT_DIMENSIONS)
-    CENTIMETER_PER_SECOND_SQUARED = Unit('centimeter per second squared', 'cm/s²', ACCELERATION_UNIT_DIMENSIONS)
-    MILLIMETER_PER_SECOND_SQUARED = Unit('millimeter per second squared', 'mm/s²', ACCELERATION_UNIT_DIMENSIONS)
-    G_FORCE = Unit('g-force', 'g', ACCELERATION_UNIT_DIMENSIONS)  # Assuming 1 g = 9.80665 m/s² for context
+    METER_PER_SECOND_SQUARED = Unit('meter per second squared', 'm/s²', ACCELERATION_DIMENSIONS)
+    KILOMETER_PER_HOUR_SQUARED = Unit('kilometer per hour squared', 'km/h²', ACCELERATION_DIMENSIONS)
+    MILE_PER_HOUR_SQUARED = Unit('mile per hour squared', 'mph²', ACCELERATION_DIMENSIONS)
+    CENTIMETER_PER_SECOND_SQUARED = Unit('centimeter per second squared', 'cm/s²', ACCELERATION_DIMENSIONS)
+    MILLIMETER_PER_SECOND_SQUARED = Unit('millimeter per second squared', 'mm/s²', ACCELERATION_DIMENSIONS)
+    G_FORCE = Unit('g-force', 'g', ACCELERATION_DIMENSIONS)  # Assuming 1 g = 9.80665 m/s² for context
+
+# Thermal conductivity Unit
+class ThermalConductivityUnits(Enum):
+    WATT_PER_METER_KELVIN = Unit('watt per meter kelvin', 'W/m·K', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    MILLIWATT_PER_METER_KELVIN = Unit('milliwatt per meter kelvin', 'mW/m·K', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    KILOWATT_PER_METER_KELVIN = Unit('kilowatt per meter kelvin', 'kW/m·K', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    BTU_PER_HOUR_FOOT_FAHRENHEIT = Unit('BTU per hour foot fahrenheit', 'BTU/h·ft·°F', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    CALORIE_PER_SECOND_CENTIMETER_CELSIUS = Unit('calorie per second centimeter celsius', 'cal/s·cm·°C', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    WATT_PER_CENTIMETER_CELSIUS = Unit('watt per centimeter celsius', 'W/cm·°C', THERMAL_CONDUCTIVITY_DIMENSIONS)
 
 # Mock Unit (for testing/mock)
 class MockUnits(Enum):
