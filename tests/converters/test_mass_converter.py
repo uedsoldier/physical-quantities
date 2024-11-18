@@ -1,22 +1,21 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import unittest
 from modules.physical_quantities import BaseConversionManager
+from modules.unit import MassUnits, MockUnits
 
-class TestForceConverter(unittest.TestCase):
+class TestMassConverter(unittest.TestCase):
     def setUp(self) -> None:
-        self.converter = BaseConversionManager('force')
+        self.converter = BaseConversionManager('mass')
     
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)
         test_cases = [
-            (0.5,'kN','N',500,6),
-            (1,'kgf','N',9.80665,6),
-            (1,'lbf','N',4.44822,6),
-            (1,'ozf','N',0.2780139,6)
+            (1.0,MassUnits.KILOGRAM.value,MassUnits.GRAM.value,1000,6),
+            (454,MassUnits.GRAM.value,MassUnits.POUND.value,1,2)
         ]
         for value,from_unit,to_unit,expected,decimal_places in test_cases:
             with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
@@ -28,10 +27,10 @@ class TestForceConverter(unittest.TestCase):
                 
     def test_invalid_units(self):
         with self.assertRaises(ValueError):
-            self.converter.convert(1, 'invalid_unit', 'N')
+            self.converter.convert(1, MockUnits.MOCK_UNIT.value, MassUnits.KILOGRAM.value)
         
         with self.assertRaises(ValueError):
-            self.converter.convert(1, 'N', 'invalid_unit')
+            self.converter.convert(1, MassUnits.KILOGRAM.value, MockUnits.MOCK_UNIT.value)
 
 if __name__ == '__main__':
     unittest.main()

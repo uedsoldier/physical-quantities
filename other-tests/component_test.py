@@ -1,14 +1,13 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 from modules.power_budget import Component, DCPowerSupply, PowerBudget
-from modules.physical_quantities import Voltage, Current, Power, Energy, Time
+from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity, EnergyQuantity, TimeQuantity
 
-voltage = Voltage(5.0)
-current = Current(5,'mA')
+voltage = VoltageQuantity(5.0)
+current = ElectricCurrentQuantity(5,'mA')
 
 cmp1 = Component.from_voltage_current('LED_VI',voltage,current)
 power = cmp1.power
@@ -16,7 +15,7 @@ print(cmp1)
 print(f'power conversion of {cmp1.name}: {cmp1.power.convert_to('mW')}')
 
 voltage.value = 10
-power = Power(0.025,'W')
+power = PowerQuantity(0.025,'W')
 
 cmp2 = Component.from_voltage_power('LED_PV',voltage,power)
 cmp2.current = cmp2.current.convert_to('mA')
@@ -24,10 +23,10 @@ print(cmp2)
 print(f'current conversion of {cmp2.name}: {cmp2.current.convert_to('mA')}')
 
 
-t = Time(1,'year')
+t = TimeQuantity(1,'year')
 
-bat_voltage = Voltage(12.0)
-bat_max_current = Current(500,'mA')
+bat_voltage = VoltageQuantity(12.0)
+bat_max_current = ElectricCurrentQuantity(500,'mA')
 
 battery = DCPowerSupply(name='Battery',supply_type='Battery',supply_subtype='Pb',output_voltage=bat_voltage,max_output_current=bat_max_current,components=[cmp1,cmp2])
 

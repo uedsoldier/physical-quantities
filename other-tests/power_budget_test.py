@@ -1,25 +1,24 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 from modules.power_budget import *
 from modules.physical_quantities import *
 from termcolor import colored
 
-V = Voltage(5)
-Imax = Current(2)
-C = Charge(1000,'mAh')
+V = VoltageQuantity(5)
+Imax = ElectricCurrentQuantity(2)
+C = ElectricChargeQuantity(1000,'mAh')
 
 
 # lipo = LithiumBattery(name='Batería',max_output_current=Imax,capacity=C,cell_count=9,subchemistry='LiPo')
 # li_ion = LithiumBattery(name='Pila',max_output_current=Imax,capacity=Charge(C.value*2,C.unit),subchemistry='Li-ion')
 # sensthys = LithiumBattery(name='SensThys',max_output_current=Imax,capacity=C,cell_voltage=Voltage(3.8),cell_count=9)
 # life = LithiumBattery(name='LiFe',max_output_current=Current(4),capacity=Charge(5000,'mAh'),subchemistry='LiFePO4', cell_count=5)
-pb = LeadAcidBattery(name='Plomo-ácido',max_output_current=Current(3.5),capacity=Charge(2,'Ah'),cell_count=6)
+pb = LeadAcidBattery(name='Plomo-ácido',max_output_current=ElectricCurrentQuantity(3.5),capacity=ElectricChargeQuantity(2,'Ah'),cell_count=6)
 
-resistor = Component('Divisor resistivo',current=Current(2,'mA'),voltage=pb.nominal_voltage)    ## μ
-led = Component('LEDs',current=Current(10,'mA'),voltage=pb.nominal_voltage)
+resistor = Component('Divisor resistivo',current=ElectricCurrentQuantity(2,'mA'),voltage=pb.nominal_voltage)    ## μ
+led = Component('LEDs',current=ElectricCurrentQuantity(10,'mA'),voltage=pb.nominal_voltage)
 
 pb.add_component(resistor,5)
 pb.add_component(led,3)

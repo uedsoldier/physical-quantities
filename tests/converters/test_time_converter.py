@@ -1,10 +1,11 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import unittest
 from modules.physical_quantities import BaseConversionManager
+from modules.unit import TimeUnits, MockUnits
 
 class TestTimeConverter(unittest.TestCase):
     def setUp(self) -> None:
@@ -13,8 +14,8 @@ class TestTimeConverter(unittest.TestCase):
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)
         test_cases = [
-            (2,'hour','s',7200,6),
-            (1200,'s','hour',0.33333333,8)
+            (2,TimeUnits.HOUR.value,TimeUnits.SECOND.value,7200,6),
+            (1200,TimeUnits.SECOND.value,TimeUnits.HOUR.value,0.33333333,8)
 
         ]
         for value,from_unit,to_unit,expected,decimal_places in test_cases:
@@ -27,10 +28,10 @@ class TestTimeConverter(unittest.TestCase):
                 
     def test_invalid_units(self):
         with self.assertRaises(ValueError):
-            self.converter.convert(1, 'invalid_unit', 's')
+            self.converter.convert(1, MockUnits.MOCK_UNIT.value, TimeUnits.SECOND.value)
         
         with self.assertRaises(ValueError):
-            self.converter.convert(1, 's', 'invalid_unit')
+            self.converter.convert(1, TimeUnits.SECOND.value, MockUnits.MOCK_UNIT.value)
 
 if __name__ == '__main__':
     unittest.main()

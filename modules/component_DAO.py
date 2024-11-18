@@ -104,9 +104,9 @@ class ComponentDAO(BaseDAO):
 
     def add_component(self, component: Component):   
         name: str = component.name
-        voltage: Voltage = component.voltage.to_json_string()
-        current: Current = component.current.to_json_string()
-        power: Power = component.power.to_json_string()
+        voltage: VoltageQuantity = component.voltage.to_json_string()
+        current: ElectricCurrentQuantity = component.current.to_json_string()
+        power: PowerQuantity = component.power.to_json_string()
         power_supply_id: int = None
         with self.connection:
             self.cursor.execute(

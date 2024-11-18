@@ -1,15 +1,15 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 import random
 import string
 
 from modules.component_DAO import ComponentDAO
 from modules.power_supply_DAO import PowerSupplyDAO
 from modules.power_budget import Component
-from modules.physical_quantities import Voltage, Current, Charge, Power
+from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity, PowerQuantity
+from modules.unit import ElectricCurrentUnits, VoltageUnits, ElectricChargeUnits, PowerUnits
 
 def generate_random_id(length: int=6):
     # Choose from letters and digits
@@ -33,7 +33,7 @@ random_current_value: float =  random.choice(possible_currents)
 random_power_value: float = random.choice(possible_powers)
 random_name: str = f'{random_component_type}'
 
-test_component = Component(random_name,current=Current(random_current_value,'mA'),power=Power(random_power_value,'mW'))
+test_component = Component(random_name,current=ElectricCurrentQuantity(random_current_value,ElectricCurrentUnits.MILLIAMPERE.value),power=PowerQuantity(random_power_value,PowerUnits.MILLIWATT.value))
 
 
 print(test_component)

@@ -1,13 +1,63 @@
 import os
 import json
+
+from modules.unit import Unit
 from .utilities.json_utilities import json_to_dict, dict_to_json_string
 from .conversion_managers import BaseConversionManager, TemperatureConversionManager
+from .unit import *
 from functools import total_ordering
 
 @total_ordering
 class BaseQuantity:
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}(value={self._value}, unit={repr(self._unit)})'
+
+    def _assert_compatible(self, other: "BaseQuantity") -> None:
+        """Check if two quantities are compatible for addition or subtraction."""
+        if not isinstance(other, BaseQuantity):
+            raise TypeError('Can only operate on another BaseQuantity.')
+        if type(self) is not type(other):
+            raise TypeError(f'Cannot operate on different quantity types: {type(self)} and {type(other)}')
+        if not self.unit.is_compatible_with(other.unit):
+            raise ValueError(f'Cannot operate on incompatible units: {self.unit} and {other.unit}')
     
-    def _compare(self,other,method):
+    def __add__(self, other: "BaseQuantity") -> "BaseQuantity":
+        self._assert_compatible(other)
+        # Convert the other value to the same unit as self
+        other_converted = other.convert_to(self.unit)
+        new_value = self.value + other_converted.value
+        return type(self)(new_value, self.unit)
+    
+    def __sub__(self, other: "BaseQuantity") -> "BaseQuantity":
+        self._assert_compatible(other)
+        # Convert the other value to the same unit as self
+        other_converted = other.convert_to(self.unit)
+        new_value = self.value - other_converted.value
+        return type(self)(new_value, self.unit)
+    
+    def __truediv__(self, other: "BaseQuantity"):
+        if not isinstance(other, BaseQuantity):
+            return NotImplemented
+        
+        # Create a new unit by dividing the dimensions
+        new_unit = self.unit / other.unit
+        new_value = self.value / other.value
+        
+        # Return a new instance of the appropriate type
+        return type(self)(new_value, new_unit)
+    
+    def __mul__(self, other: "BaseQuantity"):
+        if not isinstance(other, BaseQuantity):
+            return NotImplemented
+        
+        # Combine units and multiply values
+        new_unit = self.unit * other.unit
+        new_value = self.value * other.value
+        
+        # Return a new instance of the appropriate type
+        return type(self)(new_value, new_unit)
+    
+    def _compare(self,other: "BaseQuantity",method):
         if not isinstance(other, BaseQuantity):
             return NotImplemented
         if type(self) is not type(other):
@@ -29,27 +79,17 @@ class BaseQuantity:
     def __gt__(self, other) -> bool:
         return self._compare(other, lambda x, y: x > y)
     
-    def __init__(self, value: float, unit: str) -> None:
-        """_summary_
-
-        Args:
-            value (float): _description_
-            unit (str): _description_
-        """
+    def __init__(self, value: float, unit: Unit, quantity_type: str) -> None:
+        if type(self) is BaseQuantity:
+            raise TypeError('BaseQuantity cannot be instantiated directly.')
         self._value = value
         self._unit = unit
-        # self._conversion_dict: dict = None
+        self._conversion_manager = BaseConversionManager(quantity_type)
         
-    
     def __str__(self) -> str:
-        """_summary_
-
-        Returns:
-            str: _description_
-        """
         return f'{self._value} [{self._unit}]'
     
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[float,Unit]:
         return {
             'value': self._value,
             'unit': self._unit
@@ -59,273 +99,102 @@ class BaseQuantity:
         return dict_to_json_string(self.to_dict())
     
     @property
-    def value(self):
-        """_summary_
-
-        Returns:
-            _type_: _description_
-        """
+    def value(self) -> float:
         return self._value
     
     @value.setter
-    def value(self, new_value: float):
-        """_summary_
-
-        Args:
-            new_value (float): _description_
-        """
+    def value(self, new_value: float) -> None:
         self._value = new_value
     
     @property
-    def unit(self):
+    def unit(self) -> Unit:
         return self._unit
     
     @unit.setter
-    def unit(self, new_unit: str):
+    def unit(self, new_unit: Unit) -> None:
         self._unit = new_unit
     
-    def convert_to(self):
-        raise NotImplementedError('Specific quantities must implement this method')
+    def convert_to(self, target_unit: Unit) -> "BaseQuantity":
+        # Check if the units are the same
+        if self.unit == target_unit:
+            return type(self)(self.value, self.unit)  # Create a new instance of the same class
+        # Check if the units are compatible
+        if not self.unit.is_compatible_with(target_unit):
+            raise ValueError(f'Cannot convert between incompatible units: {self.unit} and {target_unit}')
 
-class Length(BaseQuantity):
-    def __init__(self, value: float, unit: str = 'm') -> None:
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('length')
+        # Perform the conversion using the conversion manager
+        converted_value = self._conversion_manager.convert(self.value, self.unit, target_unit)
+
+        # Return a new instance of the same class with the converted value and unit
+        return type(self)(converted_value, target_unit)
+
+class LengthQuantity(BaseQuantity):
+    def __init__(self, value: float, unit: Unit = LengthUnits.METER.value) -> None:
+        super().__init__(value, unit,'length')
+
+class MassQuantity(BaseQuantity):
+
+    def __init__(self, value: float,unit: Unit = MassUnits.KILOGRAM.value) -> None:
+        super().__init__(value, unit,'mass')
     
-    def convert_to(self, target_unit: str):
+class TemperatureQuantity(BaseQuantity):
+    def __init__(self, value: float,unit: Unit = LengthUnits.METER.value) -> None:
+        super().__init__(value, unit,'temperature')
+        self._conversion_manager = TemperatureConversionManager()
+    
+    def convert_to(self, target_unit: Unit):
         if(self.unit == target_unit):
-            return Length(self.value,self.unit)
+            return TemperatureQuantity(self.value,self.unit)
         converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Length(value=converted_value, unit=target_unit)
-
-class Mass(BaseQuantity):
-
-    def __init__(self, value: float, unit: str = 'kg') -> None:
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('mass')
+        return TemperatureQuantity(value=converted_value, unit=target_unit)
     
-    def convert_to(self, target_unit: str):
-        if(self.unit == target_unit):
-            return Mass(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Mass(converted_value, target_unit)
+class TimeQuantity(BaseQuantity):
+    def __init__(self, value: float,unit: Unit = TimeUnits.SECOND.value) -> None:
+        super().__init__(value, unit,'time')
     
-class Temperature(BaseQuantity):
-    def __init__(self, value: float, unit: str = 'C') -> None:
-        super().__init__(value, unit)
-        self.conversion_manager = TemperatureConversionManager()
+class PowerQuantity(BaseQuantity):
+    def __init__(self, value: float,unit: Unit = PowerUnits.WATT.value) -> None:
+        super().__init__(value, unit,'power')
+
+class FrequencyQuantity(BaseQuantity):
+    def __init__(self, value: float,unit: Unit = FrequencyUnits.HERTZ.value) -> None:
+        super().__init__(value, unit,'frequency')
+
+class ForceQuantity(BaseQuantity):
+    def __init__(self, value: float,unit: Unit = ForceUnits.NEWTON.value) -> None:
+        super().__init__(value, unit,'force')
     
-    def convert_to(self, target_unit: str):
-        if(self.unit == target_unit):
-            return Temperature(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Temperature(value=converted_value, unit=target_unit)
+class EnergyQuantity(BaseQuantity):
+    def __init__(self, value: float ,unit: Unit = EnergyUnits.JOULE.value) -> None:
+        super().__init__(value, unit,'energy')
+
     
-class Time(BaseQuantity):
-    def __init__(self, value: float, unit: str = 's') -> None:
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('time')
+class ElectricChargeQuantity(BaseQuantity):
+    def __init__(self, value: float ,unit: Unit = ElectricChargeUnits.COULOMB.value) -> None:
+        super().__init__(value, unit,'electric_charge')
     
-    def convert_to(self, target_unit: str):
-        if(self.unit == target_unit):
-            return Time(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Time(value=converted_value, unit=target_unit)
+class VoltageQuantity(BaseQuantity):
+    def __init__(self, value: float,unit: Unit = VoltageUnits.VOLT.value) -> None:
+        super().__init__(value, unit, 'voltage')
+
+class ElectricCurrentQuantity(BaseQuantity):
+    def __init__(self, value: float,unit: Unit = LengthUnits.METER.value) -> None:
+        super().__init__(value, unit, 'electric_current')
+
     
-class Power(BaseQuantity):
-    def __init__(self, value: float, unit: str = 'W') -> None:
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('power')
-    
-    def convert_to(self, target_unit: str):
-        if(self.unit == target_unit):
-            return Power(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Power(value=converted_value, unit=target_unit)
-    
-class Frequency(BaseQuantity):
-    def __init__(self, value: float, unit: str = 'Hz') -> None:
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('frequency')
-    
-    def convert_to(self, target_unit: str):
-        if(self.unit == target_unit):
-            return Frequency(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Frequency(value=converted_value, unit=target_unit)
+class ResistanceQuantity(BaseQuantity):
+    def __init__(self, value: float,unit: Unit = ResistanceUnits.OHM.value) -> None:
+        super().__init__(value, unit,'resistance')
 
-class Force(BaseQuantity):
-    def __init__(self, value: float, unit: str = 'N') -> None:
-        """_summary_
+class AngleQuantity(BaseQuantity):
+    def __init__(self, value: float,unit: Unit = AngleUnits.DEGREE.value) -> None:
+        super().__init__(value, unit,'angle')
 
-        Args:
-            value (float): _description_
-            unit (str, optional): _description_. Defaults to 'N'.
-        """
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('force')
-    
-    def convert_to(self, target_unit: str):
-        """_summary_
 
-        Args:
-            target_unit (str): _description_
+class VolumeQuantity(BaseQuantity):
+    def __init__(self, value: float,unit: Unit = VolumeUnits.CUBIC_METER.value) -> None:
+        super().__init__(value, unit, 'volume')
 
-        Returns:
-            _type_: _description_
-        """
-        if(self.unit == target_unit):
-            return Force(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Force(value=converted_value, unit=target_unit)
-    
-class Energy(BaseQuantity):
-    def __init__(self, value: float , unit: str = 'J') -> None:
-        """_summary_
-
-        Args:
-            value (float): _description_
-            unit (str, optional): _description_. Defaults to 'J'.
-        """
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('energy')
-    
-    def convert_to(self, target_unit: str):
-        """_summary_
-
-        Args:
-            target_unit (str): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        if(self.unit == target_unit):
-            return Energy(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Energy(value=converted_value, unit=target_unit)
-    
-class Charge(BaseQuantity):
-    def __init__(self, value: float , unit: str = 'C') -> None:
-        """_summary_
-
-        Args:
-            value (float): _description_
-            unit (str, optional): _description_. Defaults to 'C'.
-        """
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('charge')
-    
-    def convert_to(self, target_unit: str):
-        """_summary_
-
-        Args:
-            target_unit (str): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        if(self.unit == target_unit):
-            return Charge(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Charge(value=converted_value, unit=target_unit)
-    
-class Voltage(BaseQuantity):
-    def __init__(self, value: float, unit: str = 'V') -> None:
-        """_summary_
-
-        Args:
-            value (float): _description_
-            unit (str, optional): _description_. Defaults to 'V'.
-        """
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('voltage')
-    
-    def convert_to(self, target_unit: str):
-        """_summary_
-
-        Args:
-            target_unit (str): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        if(self.unit == target_unit):
-            return Voltage(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Voltage(value=converted_value, unit=target_unit)
-
-class Current(BaseQuantity):
-    def __init__(self, value: float, unit: str = 'A') -> None:
-        """_summary_
-
-        Args:
-            value (float): _description_
-            unit (str, optional): _description_. Defaults to 'A'.
-        """
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('current')
-    
-    def convert_to(self, target_unit: str):
-        """_summary_
-
-        Args:
-            target_unit (str): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        if(self.unit == target_unit):
-            return Current(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Current(value=converted_value, unit=target_unit)
-    
-class Resistance(BaseQuantity):
-    def __init__(self, value: float, unit: str = 'ohm') -> None:
-        """_summary_
-
-        Args:
-            value (float): _description_
-            unit (str, optional): _description_. Defaults to 'ohm'.
-        """
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('resistance')
-    
-    def convert_to(self, target_unit: str):
-        """_summary_
-
-        Args:
-            target_unit (str): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        if(self.unit == target_unit):
-            return Resistance(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Resistance(value=converted_value, unit=target_unit)
-    
-class Angle(BaseQuantity):
-    def __init__(self, value: float, unit: str = 'deg') -> None:
-        """_summary_
-
-        Args:
-            value (float): _description_
-            unit (str, optional): _description_. Defaults to 'deg'.
-        """
-        super().__init__(value, unit)
-        self.conversion_manager = BaseConversionManager('angle')
-    
-    def convert_to(self, target_unit: str):
-        """_summary_
-
-        Args:
-            target_unit (str): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        if(self.unit == target_unit):
-            return Angle(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return Angle(value=converted_value, unit=target_unit)
-    
+class MassFlowRateQuantity(BaseQuantity):
+    def __init__(self, value: float, unit: Unit = MassFlowRateUnits.KILOGRAM_PER_SECOND.value) -> None:
+        super().__init__(value, unit, 'mass_flow_rate')

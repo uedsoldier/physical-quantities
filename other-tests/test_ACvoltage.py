@@ -1,15 +1,14 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 from modules.electrical_quantitites import AC_Voltage
-from modules.physical_quantities import Voltage, Frequency, Angle, BaseConversionManager
+from modules.physical_quantities import VoltageQuantity, FrequencyQuantity, AngleQuantity, BaseConversionManager
 from math import pi 
 
-voltage = Voltage(0.5,'kV')
-frequency = Frequency(60)
-phase = Angle(0.125*pi,'rad')
+voltage = VoltageQuantity(0.5,'kV')
+frequency = FrequencyQuantity(60)
+phase = AngleQuantity(0.125*pi,'rad')
 
 conversion_manager = BaseConversionManager('angle')
 
