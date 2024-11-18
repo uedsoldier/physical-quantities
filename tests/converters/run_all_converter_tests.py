@@ -22,7 +22,8 @@ tests = (
     "luminous_intensity",
     "speed",
     "mass_flow_rate",
-    "resistance"
+    "resistance",
+    "thermal_conductivity"
 )
 
 for test in tests:
