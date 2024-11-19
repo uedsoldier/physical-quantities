@@ -22,7 +22,7 @@ tests = (
     "luminous_intensity",
     "speed",
     "mass_flow_rate",
-    "resistance",
+    "electrical_resistance",
     "thermal_conductivity"
 )
 
