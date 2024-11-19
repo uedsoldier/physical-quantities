@@ -51,6 +51,15 @@ class TestDimensions(unittest.TestCase):
     def test_str_dimension3(self):
         test_str = str(VOLTAGE_DIMENSIONS)
         self.assertEqual(test_str,'M*L^2*T^-3*I^-1')
+    
+    def test_dimensionless1(self):
+        test_dim = FORCE_DIMENSIONS/FORCE_DIMENSIONS
+        self.assertEqual(test_dim.is_dimensionless(),True)
+        
+    def test_dimensionless2(self):
+        test_dim = CAPACITANCE_DIMENSIONS * FORCE_DIMENSIONS * LENGTH_DIMENSIONS * TIME_DIMENSIONS / (FORCE_DIMENSIONS * LENGTH_DIMENSIONS * TIME_DIMENSIONS * CAPACITANCE_DIMENSIONS)
+        print(test_dim)
+        self.assertEqual(test_dim.is_dimensionless(),True)
         
         
         # # Test cases: (input value, input unit, output unit,expected value, decimal places)

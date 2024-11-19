@@ -104,7 +104,7 @@ class Dimensions:
     
     def is_dimensionless(self) -> bool:
         """Check if the dimensions are dimensionless (empty dictionary)."""
-        return not bool(self._dimensions_dict)
+        return all( dim == 0 for dim in self._dimensions_dict.values())
 
 LENGTH_DIMENSIONS = Dimensions({'L':1})
 TIME_DIMENSIONS = Dimensions({'T': 1})
