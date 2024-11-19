@@ -23,7 +23,8 @@ tests = (
     "speed",
     "mass_flow_rate",
     "electrical_resistance",
-    "thermal_conductivity"
+    "thermal_conductivity",
+    "thermal_resistance",
 )
 
 for test in tests:

@@ -593,6 +593,15 @@ class ThermalConductivityUnits(Enum):
     CALORIE_PER_SECOND_CENTIMETER_CELSIUS = Unit('calorie per second centimeter celsius', 'cal/s·cm·°C', THERMAL_CONDUCTIVITY_DIMENSIONS)
     WATT_PER_CENTIMETER_CELSIUS = Unit('watt per centimeter celsius', 'W/cm·°C', THERMAL_CONDUCTIVITY_DIMENSIONS)
 
+# Thermal Resistance Unit
+class ThermalResistanceUnits(Enum):
+    KELVIN_PER_WATT = Unit('kelvin per watt', 'K/W', THERMAL_RESISTANCE_DIMENSIONS)
+    MILLIKELVIN_PER_WATT = Unit('millikelvin per watt', 'mK/W', THERMAL_RESISTANCE_DIMENSIONS)
+    MICROKELVIN_PER_WATT = Unit('microkelvin per watt', 'μK/W', THERMAL_RESISTANCE_DIMENSIONS)
+    KILOKELVIN_PER_WATT = Unit('kilokelvin per watt', 'kK/W', THERMAL_RESISTANCE_DIMENSIONS)
+    MEGAKELVIN_PER_WATT = Unit('megakelvin per watt', 'MK/W', THERMAL_RESISTANCE_DIMENSIONS)
+    GIGAKELVIN_PER_WATT = Unit('gigakelvin per watt', 'GK/W', THERMAL_RESISTANCE_DIMENSIONS)
+
 # Mock Unit (for testing/mock)
 class MockUnits(Enum):
     MOCK_UNIT=Unit('mock unit','mock',None)
