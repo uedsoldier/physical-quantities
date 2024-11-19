@@ -5,6 +5,10 @@ class Dimensions:
     def  __init__(self, dimensions_dict: Dict[str,int] = None) -> None:
         self._dimensions_dict: Dict[str,int] = dimensions_dict or {}
     
+    def is_dimensionless(self) -> bool:
+        """Check if the dimensions are dimensionless (empty dictionary)."""
+        return all( dim == 0 for dim in self._dimensions_dict.values())
+    
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Dimensions):
             return False
@@ -23,21 +27,6 @@ class Dimensions:
             new_dimensions[key] = value * exponent  # Multiply the exponent by the constant exponent
         
         return Dimensions(new_dimensions)
-    
-    # @property
-    # def dimensions_dict(self) -> Dict[str,int]:
-    #     return self._dimensions_dict
-    
-    # def __setitem__(self, key, value) -> None:
-    #     """Set the exponent for a dimension, removing zero-exponent entries."""
-    #     if value == 0:
-    #         self.dimensions.pop(key, None)
-    #     else:
-    #         self.dimensions[key] = value
-    
-    # def __getitem__(self, key) -> int:
-    #     """Get the exponent for a dimension, defaulting to 0 if not present."""
-    #     return self._dimensions_dict.get(key, 0)
     
     def __str__(self) -> str:
         """Format dimensions for display, consolidating exponents."""
@@ -59,11 +48,9 @@ class Dimensions:
         for key, value in other._dimensions_dict.items():
             # Add the exponents of matching dimension symbols
             new_dimensions[key] = new_dimensions.get(key, 0) + value
-        
+        # Remove zero exponents
+        new_dimensions = {k: v for k, v in new_dimensions.items() if v != 0}
         return Dimensions(new_dimensions)
-    
-    def __repr__(self):
-        return f"Dimensions({self._dimensions_dict})"
     
     def __truediv__(self, other: "Dimensions") -> "Dimensions":
         """Divide two Dimensions objects, subtracting the exponents."""
@@ -75,8 +62,36 @@ class Dimensions:
         for key, value in other._dimensions_dict.items():
             # Subtract the exponents of matching dimension symbols
             new_dimensions[key] = new_dimensions.get(key, 0) - value
-        
+        # Remove zero exponents
+        new_dimensions = {k: v for k, v in new_dimensions.items() if v != 0}
         return Dimensions(new_dimensions)
+    
+        
+    
+    def __repr__(self):
+        return f'{self._dimensions_dict}'
+    
+    def validate_dimension(self, expected: "Dimensions") -> bool:
+        """Validate if the current Dimensions match the expected Dimensions."""
+        return self._dimensions_dict == expected._dimensions_dict
+        
+    
+    # @property
+    # def dimensions_dict(self) -> Dict[str,int]:
+    #     return self._dimensions_dict
+    
+    # def __setitem__(self, key, value) -> None:
+    #     """Set the exponent for a dimension, removing zero-exponent entries."""
+    #     if value == 0:
+    #         self.dimensions.pop(key, None)
+    #     else:
+    #         self.dimensions[key] = value
+    
+    # def __getitem__(self, key) -> int:
+    #     """Get the exponent for a dimension, defaulting to 0 if not present."""
+    #     return self._dimensions_dict.get(key, 0)
+    
+    
     
     def _combine_dimensions(self, other: "Dimensions") -> "Dimensions":
         """Combine the dimensions of this object with another Dimensions object."""
@@ -101,10 +116,6 @@ class Dimensions:
                 combined_dict[dim] = -exp  # Otherwise, add the negative exponent for division
 
         return Dimensions(combined_dict)
-    
-    def is_dimensionless(self) -> bool:
-        """Check if the dimensions are dimensionless (empty dictionary)."""
-        return all( dim == 0 for dim in self._dimensions_dict.values())
 
 LENGTH_DIMENSIONS = Dimensions({'L':1})
 TIME_DIMENSIONS = Dimensions({'T': 1})
@@ -136,7 +147,44 @@ MASS_FLOW_RATE_DIMENSIONS=Dimensions({'M': 1, 'T': -1})
 SPEED_DIMENSIONS=Dimensions({'L': 1, 'T': -1})
 ACCELERATION_DIMENSIONS = Dimensions({'L': 1, 'T': -2})
 THERMAL_CONDUCTIVITY_DIMENSIONS = Dimensions({'M':1,'L':1,'T':-3,'Θ':-1})
+THERMAL_RESISTANCE_DIMENSIONS = Dimensions({'M': -1, 'L': -1, 'T': 3, 'Θ': 1})
 
+# TODO More dimensions...
+
+ALL_DIMENSIONS = (
+    LENGTH_DIMENSIONS,
+    TIME_DIMENSIONS,
+    MASS_DIMENSIONS,
+    TEMPERATURE_DIMENSIONS,
+    ELECTRIC_CURRENT_DIMENSIONS,
+    AMOUNT_SUBSTANCE_DIMENSIONS,
+    LUMINOUS_INTENSITY_DIMENSIONS,
+    FORCE_DIMENSIONS,
+    PRESSURE_DIMENSIONS,
+    ENERGY_DIMENSIONS,
+    POWER_DIMENSIONS,
+    VOLTAGE_DIMENSIONS,
+    FREQUENCY_DIMENSIONS,
+    ANGULAR_VELOCITY_DIMENSIONS,
+    ELECTRIC_CHARGE_DIMENSIONS,
+    MAGNETIC_FLUX_DIMENSIONS,
+    MAGNETIC_FIELD_DIMENSIONS,
+    INDUCTANCE_DIMENSIONS,
+    CAPACITANCE_DIMENSIONS,
+    RESISTANCE_DIMENSIONS,
+    CONDUCTANCE_DIMENSIONS,
+    ILLUMINATION_DIMENSIONS,
+    ANGLE_DIMENSIONS,
+    AREA_DIMENSIONS,
+    VOLUME_DIMENSIONS,
+    FLOW_RATE_DIMENSIONS,
+    MASS_FLOW_RATE_DIMENSIONS,
+    SPEED_DIMENSIONS,
+    ACCELERATION_DIMENSIONS,
+    THERMAL_CONDUCTIVITY_DIMENSIONS,
+    THERMAL_RESISTANCE_DIMENSIONS,
+    # TODO More dimensions...
+)
 
 class Unit:
 
