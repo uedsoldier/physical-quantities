@@ -48,17 +48,23 @@ class TestUnits(unittest.TestCase):
         test_unit1 = LengthUnits.METER.value
         test_unit2 = LengthUnits.METER.value
         test_unit_mul = test_unit1 * test_unit2
-        self.assertTrue(test_unit_mul.is_compatible_with(AreaUnits.SQUARE_METER.value))
+        self.assertTrue(test_unit_mul == AreaUnits.SQUARE_METER.value)
+
+    def test_mul_units2(self):
+        test_unit1 = ElectricCurrentUnits.AMPERE.value
+        test_unit2 = TimeUnits.SECOND.value
+        test_unit_mul = test_unit1 * test_unit2
+        self.assertTrue(test_unit_mul == ElectricChargeUnits.COULOMB.value)
     
-    def test_div_dimension1(self):
+    def test_div_units1(self):
         test_unit1 = LengthUnits.METER.value / TimeUnits.SECOND.value
         self.assertTrue(test_unit1.is_compatible_with(SpeedUnits.CENTIMETER_PER_SECOND.value))
     
-    def test_div_dimension2(self):
+    def test_div_units2(self):
         test_unit1 = LengthUnits.METER.value / TimeUnits.SECOND.value
         self.assertEqual(test_unit1,SpeedUnits.METER_PER_SECOND.value)
     
-    def test_div_dimension3(self):
+    def test_div_units3(self):
         test_unit1 = ForceUnits.NEWTON.value / AreaUnits.SQUARE_METER.value
         self.assertEqual(test_unit1,PressureUnits.PASCAL.value)
     
