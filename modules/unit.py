@@ -66,8 +66,6 @@ class Dimensions:
         new_dimensions = {k: v for k, v in new_dimensions.items() if v != 0}
         return Dimensions(new_dimensions)
     
-        
-    
     def __repr__(self):
         return f'{self._dimensions_dict}'
     
@@ -91,31 +89,13 @@ class Dimensions:
     #     """Get the exponent for a dimension, defaulting to 0 if not present."""
     #     return self._dimensions_dict.get(key, 0)
     
-    
-    
     def _combine_dimensions(self, other: "Dimensions") -> "Dimensions":
-        """Combine the dimensions of this object with another Dimensions object."""
-        combined_dict = self._dimensions_dict.copy()
-
-        for dim, exp in other._dimensions_dict.items():
-            if dim in combined_dict:
-                combined_dict[dim] += exp  # Add exponents if dimension exists
-            else:
-                combined_dict[dim] = exp  # Otherwise, just add the new dimension
-
-        return Dimensions(combined_dict)
+        """Combines two Dimensions, used for Unit multiplication."""
+        return self * other
     
     def _divide_dimensions(self, other: "Dimensions") -> "Dimensions":
-        """Divide the dimensions of this object by another Dimensions object."""
-        combined_dict = self._dimensions_dict.copy()
-
-        for dim, exp in other._dimensions_dict.items():
-            if dim in combined_dict:
-                combined_dict[dim] -= exp  # Subtract exponents if dimension exists
-            else:
-                combined_dict[dim] = -exp  # Otherwise, add the negative exponent for division
-
-        return Dimensions(combined_dict)
+        """Divides two Dimensions, used for Unit division."""
+        return self / other
 
 LENGTH_DIMENSIONS = Dimensions({'L':1})
 TIME_DIMENSIONS = Dimensions({'T': 1})
@@ -188,6 +168,34 @@ ALL_DIMENSIONS = (
 
 class Unit:
 
+    # Mapping of equivalent unit symbols
+    EQUIVALENT_UNITS = {
+        'N': 'kg*m/s²',  # Newton is equivalent to kilogram meter per square second
+        'kg*m/s²': 'N',
+        'Pa': 'N/m²',  # Pascal is equivalent to Newton per square meter
+        'N/m²': 'Pa',
+        'J': 'N*m',  # Joule is equivalent to Newton meter
+        'N*m': 'J',
+        'W': 'J/s',  # Watt is equivalent to Joule per second
+        'J/s': 'W',
+        'C': 'A*s',  # Coulomb is equivalent to Ampere second
+        'A*s': 'C',
+        'V': 'W/A',  # Volt is equivalent to Watt per Ampere
+        'W/A': 'V',
+        'Ω': 'V/A',  # Ohm is equivalent to Volt per Ampere
+        'V/A': 'Ω',
+        'F': 'C/V',  # Farad is equivalent to Coulomb per Volt
+        'C/V': 'F',
+        'H': 'V*s/A',  # Henry is equivalent to Volt second per Ampere
+        'V*s/A': 'H',
+        'S': '1/Ω',  # Siemens is equivalent to the reciprocal of Ohm
+        '1/Ω': 'S',
+        'lx': 'cd/m²',  # Lux is equivalent to candela per square meter
+        'cd/m²': 'lx',
+        'T': 'Wb/m²',  # Tesla is equivalent to Weber per square meter
+        'Wb/m²': 'T'
+    } 
+    
     def __init__(self, name: str, symbol: str, dimensions: Dimensions = None) -> None:
         self._name = name
         self._symbol = symbol
@@ -205,7 +213,6 @@ class Unit:
     def dimensions(self) -> Dimensions:
         return self._dimensions
     
-    
     def is_compatible_with(self, other: "Unit") -> bool:
         """Check if this unit is compatible with another unit."""
         if not isinstance(other, Unit):
@@ -214,35 +221,10 @@ class Unit:
     
     def __repr__(self) -> str:
         """Return a more detailed representation of the unit."""
-        return f"Unit(name={self._name}, symbol={self._symbol}, dimensions={self._dimensions._dimensions_dict})"
+        return f"Unit(name={self._name}, symbol={self._symbol}, dimensions={self._dimensions})"
     
     def __str__(self):
-        # Define a symbol map for each dimension (optional)
-        _symbol_map = {
-            'M': 'kg',  # mass
-            'L': 'm',   # length
-            'T': 's',   # time
-            'A': 'A',   # electric current
-            'K': 'K',   # temperature
-            'mol': 'mol',  # amount of substance
-            'cd': 'cd'  # luminous intensity
-        }
-
-        # Map each dimension to the appropriate unit symbol with exponents
-        symbol_parts = {}
-        for dim, exp in self.dimensions._dimensions_dict.items():  # Corrected to dimensions_dict
-            # Convert dimension labels to their corresponding symbols using the symbol_map
-            symbol = _symbol_map.get(dim, dim)  # Default to dimension name if no map is found
-            if exp == 1:
-                symbol_parts[symbol] = ''
-            elif exp == -1:
-                symbol_parts[symbol] = '^(-1)'
-            else:
-                symbol_parts[symbol] = f'^{exp}'
-        
-        # Combine all dimension symbols into a string representation
-        dimension_str = "*".join([f"{key}{value}" for key, value in symbol_parts.items()])
-        return f"{dimension_str}"    # f"{self._name}: {dimension_str}"
+        return self._symbol
     
     def __mul__(self, other: "Unit") -> "Unit":
         """Multiplying two units combines their dimensions."""
@@ -250,9 +232,24 @@ class Unit:
             raise TypeError('Can only multiply by another Unit.')
 
         # Use the combine_dimensions method to combine the dimensions
-        new_dimensions = self._dimensions._combine_dimensions(other._dimensions)
-        new_name = f'{self._name}*{other._name}'
-        new_symbol = f'{self._symbol}*{other._symbol}'
+        new_dimensions = self._dimensions * other._dimensions
+        
+        if self._symbol == other._symbol:
+            # Consolidate the symbol with an exponent if they are the same
+            if '^' in self._symbol:
+                base_symbol, existing_power = self._symbol.split('^')
+                new_power = int(existing_power) + 1
+                new_symbol = f'{base_symbol}^{new_power}'
+            elif '³' in self._symbol:
+                new_symbol = f'{self._symbol}⁴'
+            elif '²' in self._symbol:
+                new_symbol = f'{self._symbol}³'
+            else:
+                new_symbol = f'{self._symbol}²'
+            new_name = f'{self._name}^{new_symbol[-1]}'
+        else:
+            new_name = f'{self._name}*{other._name}'
+            new_symbol = f'{self._symbol}*{other._symbol}'  # Concatenate symbols
         
         return Unit(new_name, new_symbol, new_dimensions)
             
@@ -262,15 +259,38 @@ class Unit:
             raise TypeError('Can only divide by another Unit.')
 
         # Use the divide_dimensions method to divide the dimensions
-        new_dimensions = self._dimensions._divide_dimensions(other._dimensions)
+        new_dimensions = self._dimensions / other._dimensions
         new_name = f'{self._name}/{other._name}'
         new_symbol = f'{self._symbol}/{other._symbol}'
         
         return Unit(new_name, new_symbol, new_dimensions)
-
+    
     def is_dimensionless(self) -> bool:
         """Check if the unit is dimensionless."""
         return self._dimensions.is_dimensionless()
+    
+    def __eq__(self, other: "Unit") -> bool:
+        """Check if two units are equal by comparing their dimensions and symbols."""
+        if not isinstance(other, Unit) or not self.is_compatible_with(other) :
+            return False
+        # Check if symbols are equivalent, considering the mapping
+        if self._symbol == other._symbol:
+            return True
+        elif self._symbol in Unit.EQUIVALENT_UNITS:
+            return Unit.EQUIVALENT_UNITS[self._symbol] == other._symbol
+        return False
+    
+    def __pow__(self, power: int) -> "Unit":
+        """Raise the unit to the given power, adjusting the dimensions accordingly."""
+        if not isinstance(power, int):
+            raise TypeError('Power must be an integer.')
+        
+        new_dimensions = self._dimensions ** power
+        new_name = f'({self._name})^{power}'
+        new_symbol = f'{self._symbol}^{power}'
+        
+        return Unit(new_name, new_symbol, new_dimensions)
+    
 
 # Unit definition
 
@@ -380,7 +400,7 @@ class EnergyUnits(Enum):
     KILOWATT_HOUR = Unit('kilowatt hour', 'kWh', ENERGY_DIMENSIONS)
     BRITISH_THERMAL_UNIT = Unit('British thermal unit', 'BTU', ENERGY_DIMENSIONS)
     ELECTRON_VOLT = Unit('electron volt', 'eV', ENERGY_DIMENSIONS)
-    FOOT_POUND = Unit('foot-pound', 'lb-ft', ENERGY_DIMENSIONS)
+    FOOT_POUND = Unit('foot-pound', 'lb*ft', ENERGY_DIMENSIONS)
 
 # Power Unit
 class PowerUnits(Enum):
@@ -395,7 +415,7 @@ class PowerUnits(Enum):
     HORSEPOWER = Unit('horsepower', 'hp', POWER_DIMENSIONS)
     BTU_PER_HOUR = Unit('BTU per hour', 'BTU/h', POWER_DIMENSIONS)
     KILOCALORIE_PER_HOUR = Unit('kilocalorie per hour', 'kcal/h', POWER_DIMENSIONS)
-    FOOT_POUND_PER_SECOND = Unit('foot-pound per second', 'lb-ft/s', POWER_DIMENSIONS)
+    FOOT_POUND_PER_SECOND = Unit('foot-pound per second', 'lb*ft/s', POWER_DIMENSIONS)
     REFRIGERATION_TON = Unit('refrigeration ton', 'RT', POWER_DIMENSIONS)
     VOLT_AMPERE = Unit('volt ampere', 'VA', POWER_DIMENSIONS)
     VOLT_AMPERE_REACTIVE = Unit('volt ampere reactive', 'VAR', POWER_DIMENSIONS)
@@ -488,7 +508,6 @@ class ConductanceUnits(Enum):
 
 # Illumination Unit (Luminous Flux/Area)
 class IlluminationUnits(Enum):
-    
     LUX = Unit('lux', 'lx',ILLUMINATION_DIMENSIONS)
     FOOT_CANDLE = Unit('foot-candle', 'fc',ILLUMINATION_DIMENSIONS)
     MILLILUX = Unit('millilux', 'mlx',ILLUMINATION_DIMENSIONS)
@@ -586,12 +605,12 @@ class AccelerationUnits(Enum):
 
 # Thermal conductivity Unit
 class ThermalConductivityUnits(Enum):
-    WATT_PER_METER_KELVIN = Unit('watt per meter kelvin', 'W/m·K', THERMAL_CONDUCTIVITY_DIMENSIONS)
-    MILLIWATT_PER_METER_KELVIN = Unit('milliwatt per meter kelvin', 'mW/m·K', THERMAL_CONDUCTIVITY_DIMENSIONS)
-    KILOWATT_PER_METER_KELVIN = Unit('kilowatt per meter kelvin', 'kW/m·K', THERMAL_CONDUCTIVITY_DIMENSIONS)
-    BTU_PER_HOUR_FOOT_FAHRENHEIT = Unit('BTU per hour foot fahrenheit', 'BTU/h·ft·°F', THERMAL_CONDUCTIVITY_DIMENSIONS)
-    CALORIE_PER_SECOND_CENTIMETER_CELSIUS = Unit('calorie per second centimeter celsius', 'cal/s·cm·°C', THERMAL_CONDUCTIVITY_DIMENSIONS)
-    WATT_PER_CENTIMETER_CELSIUS = Unit('watt per centimeter celsius', 'W/cm·°C', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    WATT_PER_METER_KELVIN = Unit('watt per meter kelvin', 'W/(m*K)', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    MILLIWATT_PER_METER_KELVIN = Unit('milliwatt per meter kelvin', 'mW/(m*K)', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    KILOWATT_PER_METER_KELVIN = Unit('kilowatt per meter kelvin', 'kW/(m*K)', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    BTU_PER_HOUR_FOOT_FAHRENHEIT = Unit('BTU per hour foot fahrenheit', 'BTU/(h*ft*°F)', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    CALORIE_PER_SECOND_CENTIMETER_CELSIUS = Unit('calorie per second centimeter celsius', 'cal/(s*cm*°C)', THERMAL_CONDUCTIVITY_DIMENSIONS)
+    WATT_PER_CENTIMETER_CELSIUS = Unit('watt per centimeter celsius', 'W/(cm*°C)', THERMAL_CONDUCTIVITY_DIMENSIONS)
 
 # Thermal Resistance Unit
 class ThermalResistanceUnits(Enum):
