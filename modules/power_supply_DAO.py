@@ -1,5 +1,7 @@
-from .power_budget import *
-from .baseDAO import BaseDAO
+from modules.power_budget import *
+from modules.baseDAO import BaseDAO
+from modules.unit import *
+from modules.utilities.json_utilities import *
 
 
 
@@ -86,3 +88,19 @@ class PowerSupplyDAO(BaseDAO):
             )
             return self.cursor.fetchone()
     
+    def get_power_supply_voltage(self, power_supply_id: int):
+        with self.connection:
+            self.cursor.execute(
+                f"""
+                SELECT nominal_voltage FROM {self.POWER_SUPPLIES_TABLE_NAME} WHERE power_supply_id = ?
+                """
+                ,(power_supply_id,)
+            )
+            retVal: str = self.cursor.fetchone()[0]
+    
+            data = json_string_to_dict(retVal)
+            value: float =data['value']
+            unit_symbol: str = data['unit']
+            unit = find_unit_by_symbol(unit_symbol)
+            unit_type = find_unit_type_by_symbol(unit_symbol)
+            return VoltageQuantity(value,unit)

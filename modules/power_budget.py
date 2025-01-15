@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from .physical_quantities import ElectricCurrentQuantity, PowerQuantity, VoltageQuantity, TimeQuantity, EnergyQuantity, ElectricChargeQuantity
 from .utilities.json_utilities import json_to_dict
+from .unit import ElectricCurrentUnits, PowerUnits, VoltageUnits, TimeUnits, EnergyUnits, ElectricChargeUnits
 import os
 
 class Component:
@@ -42,16 +43,16 @@ class Component:
         
         
     def energy_consumption(self, t: TimeQuantity) -> EnergyQuantity:
-        return EnergyQuantity( self.power.convert_to('W').value * t.convert_to('s').value )
+        return EnergyQuantity( self.power.convert_to(PowerUnits.WATT.value).value * t.convert_to(TimeUnits.SECOND.value).value )
     
     def compute_power(self):
-        self.power =  PowerQuantity(self.voltage.convert_to('V').value * self.current.convert_to('A').value )
+        self.power =  PowerQuantity(self.voltage.convert_to(VoltageUnits.VOLT.value).value * self.current.convert_to(ElectricCurrentUnits.AMPERE.value).value )
     
     def compute_current(self):
-        self.current = ElectricCurrentQuantity(self.power.convert_to('W').value / self.voltage.convert_to('V').value)
+        self.current = ElectricCurrentQuantity(self.power.convert_to(PowerUnits.WATT.value).value / self.voltage.convert_to(VoltageUnits.VOLT.value).value)
         
     def compute_voltage(self):
-        self.voltage = VoltageQuantity(self.power.convert_to('W').value / self.current.convert_to('A').value)
+        self.voltage = VoltageQuantity(self.power.convert_to(PowerUnits.WATT.value).value / self.current.convert_to(ElectricCurrentUnits.AMPERE.value).value)
     
     @property
     def name(self) -> str:

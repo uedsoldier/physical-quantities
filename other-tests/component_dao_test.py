@@ -24,17 +24,15 @@ power_supplies_dao = PowerSupplyDAO('./test_database.db')
 power_supplies_dao.create_table()
 
 possible_component_types: list[str] = ['Resistor divider','LEDs']
-possible_currents: list[float] = [0.1]
-possible_powers: list[float] = [1]
+possible_currents: list[float] = [1,2,5,10,20,50,100,250]
 
 
 random_component_type: str = random.choice(possible_component_types)
 random_current_value: float =  random.choice(possible_currents)
-random_power_value: float = random.choice(possible_powers)
-random_name: str = f'{random_component_type}'
+random_name: str = f'{random_component_type}-{generate_random_id()}'
 
-test_component = Component(random_name,current=ElectricCurrentQuantity(random_current_value,ElectricCurrentUnits.MILLIAMPERE.value),power=PowerQuantity(random_power_value,PowerUnits.MILLIWATT.value))
-
+test_voltage = power_supplies_dao.get_power_supply_voltage(1)
+test_component = Component(random_name,current=ElectricCurrentQuantity(random_current_value,ElectricCurrentUnits.MILLIAMPERE.value),voltage=test_voltage)
 
 print(test_component)
 
@@ -44,6 +42,6 @@ components_dao.assign_power_supply(1,1)
 
 print(components_dao.get_components_by_power_supply(1))
 
-# power_supplies_dao.truncate_table()
+# # power_supplies_dao.truncate_table()
 
 components_dao.close()

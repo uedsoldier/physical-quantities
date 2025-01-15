@@ -1,10 +1,9 @@
 import os
 import json
 
-from modules.unit import Unit
-from .utilities.json_utilities import json_to_dict, dict_to_json_string
-from .conversion_managers import BaseConversionManager, TemperatureConversionManager
-from .unit import *
+from modules.utilities.json_utilities import json_string_to_dict, dict_to_json_string
+from modules.conversion_managers import BaseConversionManager, TemperatureConversionManager
+from modules.unit import *
 from functools import total_ordering
 
 @total_ordering
@@ -89,15 +88,23 @@ class BaseQuantity:
     def __str__(self) -> str:
         return f'{self._value} [{self._unit}]'
     
-    def to_dict(self) -> dict[float,Unit]:
+    def to_dict(self):
         return {
             'value': self._value,
-            'unit': self._unit
+            'unit': str(self._unit)
         }
         
     def to_json_string(self) -> str:
         return dict_to_json_string(self.to_dict())
     
+    # def from_json_string(self, json_string: str) -> "BaseQuantity":
+    #     data = json_string_to_dict(json_string)
+    #     value: float =data['value']
+    #     unit_symbol: str = data['unit']
+    #     unit = find_unit_by_symbol(unit_symbol)
+    #     unit_type = find_name_by_symbol(unit_symbol)
+    #     return BaseQuantity(value,unit,unit_type)
+        
     @property
     def value(self) -> float:
         return self._value
@@ -178,7 +185,7 @@ class VoltageQuantity(BaseQuantity):
         super().__init__(value, unit, 'voltage')
 
 class ElectricCurrentQuantity(BaseQuantity):
-    def __init__(self, value: float,unit: Unit = LengthUnits.METER.value) -> None:
+    def __init__(self, value: float,unit: Unit = ElectricCurrentUnits.AMPERE.value) -> None:
         super().__init__(value, unit, 'electric_current')
 
     

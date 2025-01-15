@@ -6,6 +6,9 @@ def json_to_dict(json_file, encoding='utf-8'):
             return json.load(file)
     except Exception as e:
         raise e
+    
+def json_string_to_dict(json_string):
+    return json.loads(json_string)
 
 
 def dict_to_json(dict,json_file, ensure_ascii=False):

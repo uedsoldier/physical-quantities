@@ -90,6 +90,6 @@ power_supplies_dao.add_power_supply(test_ps)
 # power_supplies_dao.truncate_table()
 
 
-print(power_supplies_dao.get_power_supply(88))
+print(power_supplies_dao.get_power_supply(1))
 
 power_supplies_dao.close()

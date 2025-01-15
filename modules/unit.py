@@ -624,7 +624,112 @@ class ThermalResistanceUnits(Enum):
 # Mock Unit (for testing/mock)
 class MockUnits(Enum):
     MOCK_UNIT=Unit('mock unit','mock',None)
-    
+
+UNIT_ENUM_BY_QUANTITY = {
+    "length": LengthUnits,
+    "time": TimeUnits,
+    "mass": MassUnits,
+    "temperature": TemperatureUnits,
+    "electric_current": ElectricCurrentUnits,
+    "amount_substance": AmountSubstanceUnits,
+    "luminous_intensity": LuminousIntensityUnits,
+    "force": ForceUnits,
+    "pressure": PressureUnits,
+    "energy": EnergyUnits,
+    "power": PowerUnits,
+    "voltage": VoltageUnits,
+    "frequency": FrequencyUnits,
+    "electric_charge": ElectricChargeUnits,
+    "magnetic_flux": MagneticFluxUnits,
+    "magnetic_field": MagneticFieldUnits,
+    "inductance": InductanceUnits,
+    "capacitance": CapacitanceUnits,
+    "resistance": ResistanceUnits,
+    "conductance": ConductanceUnits,
+    "illumination": IlluminationUnits,
+    "angle": AngleUnits,
+    "area": AreaUnits,
+    "volume": VolumeUnits,
+    "flow_rate": FlowRateUnits,
+    "mass_flow_rate": MassFlowRateUnits,
+    "speed": SpeedUnits,
+    "acceleration": AccelerationUnits,
+    "thermal_conductivity": ThermalConductivityUnits,
+    "thermal_resistance": ThermalResistanceUnits,
+    "mock": MockUnits
+}
+
+def find_unit_by_symbol(symbol: str):
+    """
+    Search through all known unit Enums in UNIT_ENUM_BY_QUANTITY for a given symbol.
+    Returns the first Unit object found, or None if no match is found.
+    """
+    for quantity_type, enum_class in UNIT_ENUM_BY_QUANTITY.items():
+        for member in enum_class:
+            # member.value is the Unit(...) instance
+            if member.value.symbol == symbol:
+                return member.value
+    return None
+
+
+def find_unit_by_name(unit_name: str):
+    """
+    Search through all known unit Enums in UNIT_ENUM_BY_QUANTITY for a given unit name.
+    Returns the first Unit object found, or None if no match is found.
+    """
+    for quantity_type, enum_class in UNIT_ENUM_BY_QUANTITY.items():
+        for member in enum_class:
+            if member.value.name == unit_name:
+                return member.value
+    return None
+
+def find_name_by_symbol(symbol: str) -> str | None:
+    """
+    Search through UNIT_ENUM_BY_QUANTITY for a specific symbol.
+    Returns the associated unit name (string) if found, otherwise None.
+    """
+    for quantity_type, enum_class in UNIT_ENUM_BY_QUANTITY.items():
+        for member in enum_class:
+            if member.value.symbol == symbol:
+                return member.value.name
+    return None
+
+def find_name_by_unit(target_unit: Unit) -> str | None:
+    """
+    Search through UNIT_ENUM_BY_QUANTITY for a specific Unit instance.
+    Returns the associated unit name if found, otherwise None.
+    """
+    for quantity_type, enum_class in UNIT_ENUM_BY_QUANTITY.items():
+        for member in enum_class:
+            # Compare with == so that dimension+symbol equivalences work.
+            # If you want exact identity, use 'is' instead.
+            if member.value == target_unit:
+                return member.value.name
+    return None
+
+def find_unit_type_by_symbol(symbol: str) -> str | None:
+    """
+    Search through UNIT_ENUM_BY_QUANTITY for a specific symbol.
+    Returns the quantity type string (e.g. "length") if found, otherwise None.
+    """
+    for quantity_type, enum_class in UNIT_ENUM_BY_QUANTITY.items():
+        for member in enum_class:
+            if member.value.symbol == symbol:
+                return quantity_type
+    return None
+
+def find_unit_type_by_name(unit_name: str) -> str | None:
+    """
+    Search through UNIT_ENUM_BY_QUANTITY for a specific unit name.
+    Returns the quantity type string (e.g. "length") if found, otherwise None.
+    """
+    for quantity_type, enum_class in UNIT_ENUM_BY_QUANTITY.items():
+        for member in enum_class:
+            if member.value.name == unit_name:
+                return quantity_type
+    return None
+
+
 if __name__=='__main__':
     test_unit = MassUnits.KILOGRAM.value  # Now this will give you the Unit object
     print(repr(test_unit))
