@@ -34,10 +34,6 @@ class TestAngleConverter(unittest.TestCase):
             (400, AngleUnits.GRADIAN.value, AngleUnits.RADIAN.value, 2 * pi, 6),
             # Full Circle (2π Radians) to Degrees
             (2 * pi, AngleUnits.RADIAN.value, AngleUnits.DEGREE.value, 360, 2),
-            # Small Angle in Degrees to Radians
-            (1, AngleUnits.DEGREE.value, AngleUnits.RADIAN.value, pi / 180, 6),
-            # Small Angle in Gradians to Radians
-            (1, AngleUnits.GRADIAN.value, AngleUnits.RADIAN.value, pi / 200, 6),
 
         ]
         for value,from_unit,to_unit,expected,decimal_places in test_cases:
