@@ -93,6 +93,19 @@ class ComponentDAO(BaseDAO):
             ()
             )
 
+    def get_by_id(self,component_id: int):
+        with self.connection:
+            self.cursor.execute(
+                f"""
+                SELECT * FROM {self.COMPONENTS_TABLE_NAME} WHERE component_id = ?
+                """
+                ,(component_id,)
+            )
+            query = self.cursor.fetchone()
+            if query is None:
+                raise ValueError('Invalid id')
+            return query
+    
     def add_component(self, component: Component):   
         name: str = component.name
         voltage: VoltageQuantity = component.voltage.to_json_string()
@@ -107,8 +120,32 @@ class ComponentDAO(BaseDAO):
                 """,
                 (name,voltage,current,power,power_supply_id)
             )
+    
+    def get_assigned_power_supply(self, component_id: int) -> (int | None):
+        # Check if a component is assigned to a specific power supply. If true returns the power supply id.
+        with self.connection:
+            self.cursor.execute(
+                f"""
+                SELECT power_supply_id FROM {self.COMPONENTS_TABLE_NAME}
+                WHERE component_id = ?
+                """,(component_id,)
+                )
+            id = self.cursor.fetchone()[0]
+            return id        # Returns id or None
+    
+    def is_component_assigned(self,component_id: int) -> bool:
+        # Check if a component is already assigned to any power supply.
+        with self.connection:
+            self.cursor.execute(
+                f"""
+                SELECT power_supply_id FROM {self.COMPONENTS_TABLE_NAME}
+                WHERE component_id = ?
+                """,(component_id,)
+                )
+            ps_id = self.cursor.fetchone()[0]
+            return ps_id is not None        # Returns True if assigned, False otherwise
             
-    def is_component_assigned_to_power_supply(self,component_id: int, power_supply_id: int):
+    def is_component_assigned_to_power_supply(self,component_id: int, power_supply_id: int) -> bool:
         # Check if a component is already assigned to a specific power supply.
         with self.connection:
             self.cursor.execute(
@@ -134,7 +171,7 @@ class ComponentDAO(BaseDAO):
                 ,(power_supply_id,component_id)
             )
         
-    def get_components_by_power_supply(self, power_supply_id: int) -> list:
+    def get_components_list(self, power_supply_id: int) -> list:
         with self.connection:
             self.cursor.execute(
                 f"""SELECT * FROM {self.COMPONENTS_TABLE_NAME} WHERE power_supply_id = ?"""
@@ -142,10 +179,58 @@ class ComponentDAO(BaseDAO):
             )
             return self.cursor.fetchall()
     
-    def count_components_per_power_supply(self, power_supply_id: int) -> int:
+    def get_components_count(self, power_supply_id: int) -> int:
         with self.connection:
             self.cursor.execute(
                 f"""SELECT COUNT(*) FROM {self.COMPONENTS_TABLE_NAME} WHERE power_supply_id = ?"""
                 , (power_supply_id,)
             )
             return self.cursor.fetchone()[0]
+    
+    def get_voltage(self, component_id: int) -> VoltageQuantity:
+        with self.connection:
+            self.cursor.execute(
+                f"""
+                SELECT voltage FROM {self.COMPONENTS_TABLE_NAME} WHERE component_id = ?
+                """
+                ,(component_id,)
+            )
+            query: str = self.cursor.fetchone()
+            
+            if query is None:
+                raise ValueError('Invalid id')
+            query = query[0]
+            voltage = VoltageQuantity(0)
+            return voltage.from_json_string(query)
+
+    def get_current(self, component_id: int) -> ElectricCurrentQuantity:
+        with self.connection:
+            self.cursor.execute(
+                f"""
+                SELECT current FROM {self.COMPONENTS_TABLE_NAME} WHERE component_id = ?
+                """
+                ,(component_id,)
+            )
+            query: str = self.cursor.fetchone()
+            
+            if query is None:
+                raise ValueError('Invalid id')
+            query = query[0]
+            current = ElectricCurrentQuantity(0)
+            return current.from_json_string(query)
+    
+    def get_power(self, component_id: int) -> PowerQuantity:
+        with self.connection:
+            self.cursor.execute(
+                f"""
+                SELECT power FROM {self.COMPONENTS_TABLE_NAME} WHERE component_id = ?
+                """
+                ,(component_id,)
+            )
+            query: str = self.cursor.fetchone()
+            
+            if query is None:
+                raise ValueError('Invalid id')
+            query = query[0]
+            power = PowerQuantity(0)
+            return power.from_json_string(query)

@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS PowerSupplies;
+DROP TABLE IF EXISTS Components;
+
 -- Crear la tabla PowerSupplies con campo additional_information como JSON
 CREATE TABLE IF NOT EXISTS PowerSupplies (
     power_supply_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -90,6 +93,9 @@ INSERT INTO PowerSupplies (name, nominal_voltage, max_output_current, additional
 
 -- Insertar datos de prueba en Components
 INSERT INTO Components (name, voltage, current, power, power_supply_id) VALUES
+('Component-NULL1', '{"value": 5.0, "unit": "V"}', '{"value": 0.5, "unit": "A"}', '{"value": 2.5, "unit": "W"}', NULL),
+('Component-NULL2', '{"value": 3.3, "unit": "V"}', '{"value": 1.0, "unit": "A"}', '{"value": 3.3, "unit": "W"}', NULL),
+('Component-NULL3', '{"value": 9.0, "unit": "V"}', '{"value": 0.2, "unit": "A"}', '{"value": 1.8, "unit": "W"}', NULL),
 ('Component-FF12A3', '{"value": 12.0, "unit": "V"}', '{"value": 2.0, "unit": "A"}', '{"value": 24.0, "unit": "W"}', 1),
 ('Component-AB34C5', '{"value": 12.0, "unit": "V"}', '{"value": 1.5, "unit": "A"}', '{"value": 18.0, "unit": "W"}', 1),
 ('Component-9D45E6', '{"value": 12.0, "unit": "V"}', '{"value": 1.0, "unit": "A"}', '{"value": 12.0, "unit": "W"}', 1),
