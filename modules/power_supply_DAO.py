@@ -54,7 +54,7 @@ class PowerSupplyDAO(BaseDAO):
         with self.connection:
             self.cursor.execute(
             f"""
-            DELETE FROM {self.__getstate__POWER_SUPPLIES_TABLE_NAME} WHERE 1=1
+            DELETE FROM {self.POWER_SUPPLIES_TABLE_NAME} WHERE 1=1
             """,
             ()
             )
@@ -102,7 +102,10 @@ class PowerSupplyDAO(BaseDAO):
                 """
                 ,(power_supply_id,)
             )
-            return self.cursor.fetchone()
+            query = self.cursor.fetchone()
+            if query is None:
+                raise ValueError('Invalid id')
+            return query
     
     def get_power_supply_voltage(self, power_supply_id: int):
         with self.connection:
@@ -112,9 +115,12 @@ class PowerSupplyDAO(BaseDAO):
                 """
                 ,(power_supply_id,)
             )
-            retVal: str = self.cursor.fetchone()[0]
-    
-            data = json_string_to_dict(retVal)
+            query: str = self.cursor.fetchone()
+            
+            if query is None:
+                raise ValueError('Invalid id')
+            query = query[0]
+            data = json_string_to_dict(query)
             value: float =data['value']
             unit_symbol: str = data['unit']
             unit = find_unit_by_symbol(unit_symbol)
