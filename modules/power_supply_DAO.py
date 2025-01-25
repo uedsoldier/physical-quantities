@@ -126,3 +126,23 @@ class PowerSupplyDAO(BaseDAO):
             unit = find_unit_by_symbol(unit_symbol)
             unit_type = find_unit_type_by_symbol(unit_symbol)
             return VoltageQuantity(value,unit)
+    
+    def get_power_supply_output_current(self, power_supply_id: int):
+        with self.connection:
+            self.cursor.execute(
+                f"""
+                SELECT max_output_current FROM {self.POWER_SUPPLIES_TABLE_NAME} WHERE power_supply_id = ?
+                """
+                ,(power_supply_id,)
+            )
+            query: str = self.cursor.fetchone()
+            
+            if query is None:
+                raise ValueError('Invalid id')
+            query = query[0]
+            data = json_string_to_dict(query)
+            value: float =data['value']
+            unit_symbol: str = data['unit']
+            unit = find_unit_by_symbol(unit_symbol)
+            unit_type = find_unit_type_by_symbol(unit_symbol)
+            return ElectricCurrentQuantity(value,unit)
