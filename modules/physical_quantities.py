@@ -97,13 +97,21 @@ class BaseQuantity:
     def to_json_string(self) -> str:
         return dict_to_json_string(self.to_dict())
     
-    # def from_json_string(self, json_string: str) -> "BaseQuantity":
-    #     data = json_string_to_dict(json_string)
-    #     value: float =data['value']
-    #     unit_symbol: str = data['unit']
-    #     unit = find_unit_by_symbol(unit_symbol)
-    #     unit_type = find_name_by_symbol(unit_symbol)
-    #     return BaseQuantity(value,unit,unit_type)
+    @classmethod
+    def from_json_string(cls, json_string: str) -> "BaseQuantity":
+        """
+        Crea una instancia de BaseQuantity a partir de un JSON string.
+
+        :param json_string: JSON string que contiene 'value' y 'unit'.
+        :return: Instancia de BaseQuantity.
+        """
+        data = json_string_to_dict(json_string)  # Convierte JSON string a un diccionario
+        value: float = data['value']
+        unit_symbol: str = data['unit']
+        unit = find_unit_by_symbol(unit_symbol)  # Encuentra la unidad a partir del símbolo
+        unit_type = find_unit_type_by_symbol(unit_symbol)  # Encuentra el tipo de unidad
+        
+        return cls(value, unit)
         
     @property
     def value(self) -> float:

@@ -120,12 +120,8 @@ class PowerSupplyDAO(BaseDAO):
             if query is None:
                 raise ValueError('Invalid id')
             query = query[0]
-            data = json_string_to_dict(query)
-            value: float =data['value']
-            unit_symbol: str = data['unit']
-            unit = find_unit_by_symbol(unit_symbol)
-            unit_type = find_unit_type_by_symbol(unit_symbol)
-            return VoltageQuantity(value,unit)
+            voltage = VoltageQuantity(0)
+            return voltage.from_json_string(query)
     
     def get_power_supply_output_current(self, power_supply_id: int):
         with self.connection:
@@ -139,10 +135,7 @@ class PowerSupplyDAO(BaseDAO):
             
             if query is None:
                 raise ValueError('Invalid id')
+            
             query = query[0]
-            data = json_string_to_dict(query)
-            value: float =data['value']
-            unit_symbol: str = data['unit']
-            unit = find_unit_by_symbol(unit_symbol)
-            unit_type = find_unit_type_by_symbol(unit_symbol)
-            return ElectricCurrentQuantity(value,unit)
+            output_current = ElectricCurrentQuantity(0)
+            return output_current.from_json_string(query)
