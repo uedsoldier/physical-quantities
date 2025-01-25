@@ -9,8 +9,8 @@ from modules.power_supply_DAO import PowerSupplyDAO
 from modules.power_budget import LithiumBattery,LeadAcidBattery,BuckConverter,BoostConverter,BuckBoostConverter
 from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity
 def generate_random_id(length: int=6):
-    # Choose from letters and digits
-    characters = string.digits
+    # Choose from hexdigits
+    characters = string.hexdigits
     random_string = ''.join(random.choice(characters) for _ in range(length))
     return random_string
 

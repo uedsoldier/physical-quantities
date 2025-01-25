@@ -12,8 +12,8 @@ from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity
 from modules.unit import ElectricCurrentUnits, VoltageUnits, ElectricChargeUnits, PowerUnits
 
 def generate_random_id(length: int=6):
-    # Choose from letters and digits
-    characters = string.digits
+    # Choose from hexdigits
+    characters = string.hexdigits
     random_string = ''.join(random.choice(characters) for _ in range(length))
     return random_string
 
@@ -38,9 +38,13 @@ print(test_component)
 
 components_dao.add_component(test_component)
 
-components_dao.assign_power_supply(1,1)
+id: int = 1
+components_dao.assign_power_supply(1,id)
 
-print(components_dao.get_components_by_power_supply(1))
+components = components_dao.get_components_by_power_supply(id)
+components_qty = len(components)
+print(f'Components with power supply id = {id}: {components_qty}')
+print(components)
 
 # # power_supplies_dao.truncate_table()
 

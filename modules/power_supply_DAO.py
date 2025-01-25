@@ -10,11 +10,27 @@ class PowerSupplyDAO(BaseDAO):
     def __init__(self, filepath):
         super().__init__(filepath)
         self.create_table()
+        self.create_triggers()
         
-    
     # This method is required to fulfill the abstractmethod contract
     def _restrict_instantiation(self):
         pass  
+    
+    def create_triggers(self):
+        # Trigger to update power supply id in components table if a power supply is deleted
+        self.cursor.execute(
+            f"""
+            CREATE TRIGGER IF NOT EXISTS trigger_power_supplies_delete
+            AFTER DELETE ON {self.POWER_SUPPLIES_TABLE_NAME}
+            FOR EACH ROW
+            BEGIN
+                UPDATE {self.COMPONENTS_TABLE_NAME}
+                SET power_supply_id = NULL
+                WHERE power_supply_id = OLD.power_supply_id;
+            END;
+        """,()
+        )
+                
     
     def create_table(self):
         with self.connection:

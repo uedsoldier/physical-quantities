@@ -21,9 +21,10 @@ class ComponentDAO(BaseDAO):
             # Trigger to increment component count on insert
             self.cursor.execute(
                 f"""
-                CREATE TRIGGER IF NOT EXISTS increment_component_count_on_insert
+                CREATE TRIGGER IF NOT EXISTS trigger_component_insert
                 AFTER INSERT ON {self.COMPONENTS_TABLE_NAME}
                 FOR EACH ROW
+                WHEN NEW.power_supply_id IS NOT NULL
                 BEGIN
                     UPDATE {self.POWER_SUPPLIES_TABLE_NAME}
                     SET component_count = component_count + 1
@@ -35,9 +36,10 @@ class ComponentDAO(BaseDAO):
             # Trigger to decrement component count on delete
             self.cursor.execute(
                 f"""
-                CREATE TRIGGER IF NOT EXISTS decrement_component_count_on_delete
+                CREATE TRIGGER IF NOT EXISTS trigger_component_delete
                 AFTER DELETE ON {self.COMPONENTS_TABLE_NAME}
                 FOR EACH ROW
+                WHEN OLD.power_supply_id IS NOT NULL
                 BEGIN
                     UPDATE {self.POWER_SUPPLIES_TABLE_NAME}
                     SET component_count = component_count - 1
@@ -46,35 +48,24 @@ class ComponentDAO(BaseDAO):
             """,()
             )
             
-            # Trigger to decrement component count on power_supply_id update (old power supply)
+            # Trigger to handle increment/decrement component count on power_supply_id update
             self.cursor.execute(
                 f"""
-                CREATE TRIGGER IF NOT EXISTS decrement_component_count_on_update
-                AFTER UPDATE OF power_supply_id ON {self.COMPONENTS_TABLE_NAME}
+                CREATE TRIGGER IF NOT EXISTS trigger_component_update
+                AFTER UPDATE ON {self.COMPONENTS_TABLE_NAME}
                 FOR EACH ROW
                 BEGIN
                     UPDATE {self.POWER_SUPPLIES_TABLE_NAME}
                     SET component_count = component_count - 1
-                    WHERE power_supply_id = OLD.power_supply_id;
-                END;
-            """,()
-            )
-            
-            # Trigger to increment component count on power_supply_id update (new power supply)
-            self.cursor.execute(
-                f"""
-                CREATE TRIGGER IF NOT EXISTS increment_component_count_on_update
-                AFTER UPDATE OF power_supply_id ON {self.COMPONENTS_TABLE_NAME}
-                FOR EACH ROW
-                BEGIN
+                    WHERE power_supply_id = OLD.power_supply_id AND OLD.power_supply_id IS NOT NULL;
+
                     UPDATE {self.POWER_SUPPLIES_TABLE_NAME}
                     SET component_count = component_count + 1
-                    WHERE power_supply_id = NEW.power_supply_id;
+                    WHERE power_supply_id = NEW.power_supply_id AND NEW.power_supply_id IS NOT NULL;
                 END;
             """,()
             )
-            
-    
+
     def create_table(self):
         with self.connection:
             self.cursor.execute(

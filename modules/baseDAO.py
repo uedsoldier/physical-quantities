@@ -38,4 +38,7 @@ class BaseDAO(ABC):
     
     def truncate_table(self):
         raise NotImplementedError('Direct DAO instantiation is not allowed')
+
+    def create_triggers(self):
+        raise NotImplementedError('Direct DAO instantiation is not allowed')
     
