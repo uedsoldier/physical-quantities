@@ -93,7 +93,7 @@ class ComponentDAO(BaseDAO):
             ()
             )
 
-    def get_by_id(self,component_id: int):
+    def get_component_by_id(self,component_id: int):
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -121,7 +121,7 @@ class ComponentDAO(BaseDAO):
                 (name,voltage,current,power,power_supply_id)
             )
     
-    def get_assigned_power_supply(self, component_id: int) -> (int | None):
+    def get_component_assigned_power_supply(self, component_id: int) -> (int | None):
         # Check if a component is assigned to a specific power supply. If true returns the power supply id.
         with self.connection:
             self.cursor.execute(
@@ -157,7 +157,7 @@ class ComponentDAO(BaseDAO):
             count = self.cursor.fetchone()[0]
             return count > 0        # Returns True if assigned, False otherwise
     
-    def assign_power_supply(self, component_id: int,power_supply_id: int):
+    def assign_power_supply_to_component(self, component_id: int,power_supply_id: int):
         if(self.is_component_assigned_to_power_supply(component_id,power_supply_id)):
             print(f'Component {component_id} is already assigned to Power Supply {power_supply_id}.')
             return
@@ -187,7 +187,7 @@ class ComponentDAO(BaseDAO):
             )
             return self.cursor.fetchone()[0]
     
-    def get_voltage(self, component_id: int) -> VoltageQuantity:
+    def get_component_voltage(self, component_id: int) -> VoltageQuantity:
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -203,7 +203,7 @@ class ComponentDAO(BaseDAO):
             voltage = VoltageQuantity(0)
             return voltage.from_json_string(query)
 
-    def get_current(self, component_id: int) -> ElectricCurrentQuantity:
+    def get_component_current(self, component_id: int) -> ElectricCurrentQuantity:
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -219,7 +219,7 @@ class ComponentDAO(BaseDAO):
             current = ElectricCurrentQuantity(0)
             return current.from_json_string(query)
     
-    def get_power(self, component_id: int) -> PowerQuantity:
+    def get_component_power(self, component_id: int) -> PowerQuantity:
         with self.connection:
             self.cursor.execute(
                 f"""

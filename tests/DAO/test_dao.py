@@ -8,7 +8,7 @@ from modules.component_DAO import ComponentDAO
 from modules.power_supply_DAO import PowerSupplyDAO
 from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity
 
-class PowerSuppliesDAOTester(unittest.TestCase):
+class PowerSuppliesComponentsDAOTester(unittest.TestCase):
     def setUp(self) -> None:
         self.components_dao = ComponentDAO('./tests/DAO/mock_database.db')
         self.components_dao.create_table()
@@ -31,7 +31,7 @@ class PowerSuppliesDAOTester(unittest.TestCase):
 
         for power_supply_id, expected_voltage in test_cases:
             with self.subTest(power_supply_id=power_supply_id):
-                actual_voltage = self.power_supplies_dao.get_voltage(power_supply_id)
+                actual_voltage = self.power_supplies_dao.get_power_supply_voltage(power_supply_id)
                 self.assertEqual(expected_voltage, actual_voltage)
 
     def test_invalid_ids(self):
@@ -39,7 +39,7 @@ class PowerSuppliesDAOTester(unittest.TestCase):
         for invalid_id in invalid_ids:
             with self.subTest(invalid_id=invalid_id):
                 with self.assertRaises(ValueError):
-                    self.power_supplies_dao.get_voltage(invalid_id)
+                    self.power_supplies_dao.get_power_supply_voltage(invalid_id)
 
     def test_currents(self):
         test_cases = [
@@ -56,7 +56,7 @@ class PowerSuppliesDAOTester(unittest.TestCase):
 
         for power_supply_id, expected_max_output_current in test_cases:
             with self.subTest(power_supply_id=power_supply_id):
-                actual_max_output_current = self.power_supplies_dao.get_output_current(power_supply_id)
+                actual_max_output_current = self.power_supplies_dao.get_power_supply_output_current(power_supply_id)
                 self.assertEqual(expected_max_output_current, actual_max_output_current)
     
     def test_component_counts(self):
@@ -88,7 +88,7 @@ class PowerSuppliesDAOTester(unittest.TestCase):
         
         for component_id, power_supply_id in test_cases:
             with self.subTest(component_id=component_id):
-                actual_power_supply_id = self.components_dao.get_assigned_power_supply(component_id)
+                actual_power_supply_id = self.components_dao.get_component_assigned_power_supply(component_id)
                 self.assertEqual(power_supply_id, actual_power_supply_id)
     
     def test_components_are_assigned(self):
