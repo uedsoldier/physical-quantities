@@ -1,6 +1,8 @@
 import sys
 import os
 import unittest
+import subprocess
+from pathlib import Path
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
@@ -8,12 +10,35 @@ from modules.component_DAO import ComponentDAO
 from modules.power_supply_DAO import PowerSupplyDAO
 from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity
 
+MOCK_DATABASE_FILENAME = 'mock_database.db'
+
 class PowerSuppliesComponentsDAOTester(unittest.TestCase):
     def setUp(self) -> None:
-        self.components_dao = ComponentDAO('./tests/DAO/mock_database.db')
+        BASE_PATH = Path.cwd()
+        DAO_PATH: Path = BASE_PATH/'tests'/'DAO/'
+        print(f'BASE path: {BASE_PATH}')
+        print(f'DAO path: {DAO_PATH}')
+        
+        os.chdir(DAO_PATH)
+        
+        WINDOWS_SQL_SCRIPT_PATH = 'dao_init.bat'
+        LINUX_SQL_SCRIPT_PATH = 'dao_init.sh'
+        
+        sql_script = WINDOWS_SQL_SCRIPT_PATH if sys.platform.startswith('win') else LINUX_SQL_SCRIPT_PATH
+        print(f'SQL script: {sql_script}')
+        if(os.path.exists(sql_script)):
+            print('DAO init script will be executed')
+            subprocess.run([sql_script],shell=True, check=True)
+        else:
+            print('Not found')
+            raise FileNotFoundError(f'DAO init script <<{sql_script}>> does not exist.')
+
+        self.components_dao = ComponentDAO('./mock_database.db')
         self.components_dao.create_table()
-        self.power_supplies_dao = PowerSupplyDAO('./tests/DAO/mock_database.db')
+        self.power_supplies_dao = PowerSupplyDAO('./mock_database.db')
         self.power_supplies_dao.create_table()
+        
+        os.chdir(BASE_PATH)
         return super().setUp()
 
     def test_voltages(self):
