@@ -9,6 +9,11 @@ if not exist %DB_NAME% (
     echo .exit | sqlite3 %DB_NAME%
 )
 
+if not exist %SQL_SCRIPT% (
+    echo Error: %SQL_SCRIPT% script not found.
+    exit /b 1
+)
+
 sqlite3 %DB_NAME% < %SQL_SCRIPT%
 
 echo SQLite database created

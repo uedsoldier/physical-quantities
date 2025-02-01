@@ -8,6 +8,11 @@ if [ ! -f "$DB_NAME" ]; then
     sqlite3 "$DB_NAME" ".exit"
 fi
 
+if [ ! -f "$SQL_SCRIPT" ]; then
+    echo "Error: $SQL_SCRIPT script not found."
+    exit 1
+fi
+
 sqlite3 "$DB_NAME" < "$SQL_SCRIPT"
 
 echo "SQLite database created"
