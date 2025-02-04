@@ -6,10 +6,7 @@ from abc import ABC, abstractmethod
 
 
 class BaseDAO(ABC):
-    
-    COMPONENTS_TABLE_NAME: str = 'Components'
-    POWER_SUPPLIES_TABLE_NAME: str = 'PowerSupplies'
-    
+        
     def __init__(self, filepath: str):
         full_database_filepath: str = os.path.abspath(filepath)
         if not os.path.exists(full_database_filepath):

@@ -1,0 +1,15 @@
+
+POWER_SUPPLIES_TABLE_NAME = 'PowerSupplies'
+COLUMN_POWER_SUPPLY_ID = 'power_supply_id'
+COLUMN_POWER_SUPPLY_NAME = 'power_supply_name'
+COLUMN_NOMINAL_VOLTAGE = 'nominal_voltage'
+COLUMN_MAX_OUTPUT_CURRENT = 'max_output_current'
+COLUMN_ADDITIONAL_INFO = 'additional_information'
+COLUMN_COMPONENT_COUNT = 'component_count'
+
+COMPONENTS_TABLE_NAME = 'Components'
+COLUMN_COMPONENT_ID = 'component_id'
+COLUMN_COMPONENT_NAME = 'component_name'
+COLUMN_VOLTAGE = 'voltage'
+COLUMN_CURRENT = 'current'
+COLUMN_POWER = 'power'

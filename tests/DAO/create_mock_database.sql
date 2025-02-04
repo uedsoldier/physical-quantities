@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS Components;
 -- Crear la tabla PowerSupplies con campo additional_information como JSON
 CREATE TABLE IF NOT EXISTS PowerSupplies (
     power_supply_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    power_supply_name TEXT NOT NULL,
     nominal_voltage TEXT NOT NULL, -- JSON como {"value": 12.0, "unit": "V"}
     max_output_current TEXT NOT NULL, -- JSON como {"value": 10.0, "unit": "A"}
     additional_information TEXT NOT NULL, -- JSON con información adicional
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS PowerSupplies (
 -- Crear la tabla Components
 CREATE TABLE IF NOT EXISTS Components (
     component_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    component_name TEXT NOT NULL,
     voltage TEXT, -- JSON como {"value": 32.0, "unit": "V"}
     current TEXT, -- JSON como {"value": 5.0, "unit": "A"}
     power TEXT,   -- JSON como {"value": 160.0, "unit": "W"}
@@ -71,7 +71,7 @@ BEGIN
 END;
 
 -- Insertar datos de prueba en PowerSupplies
-INSERT INTO PowerSupplies (name, nominal_voltage, max_output_current, additional_information, component_count) VALUES
+INSERT INTO PowerSupplies (power_supply_name, nominal_voltage, max_output_current, additional_information, component_count) VALUES
 ('DCDC_Converter-Buck-653470', '{"value": 12.0, "unit": "V"}', '{"value": 10.0, "unit": "A"}',
  '{"dcdc_type":"Buck","min_input_voltage":{"value":12.0,"unit":"V"},"max_input_voltage":{"value":24.0,"unit":"V"},"efficiency":0.9}', 0),
 ('DCDC_Converter-Buck-7A3B20', '{"value": 5.0, "unit": "V"}', '{"value": 3.0, "unit": "A"}',
@@ -92,7 +92,7 @@ INSERT INTO PowerSupplies (name, nominal_voltage, max_output_current, additional
  '{"capacity":{"value":1000.0,"unit":"mAh"},"chemistry":"Lithium","subchemistry":"Li-ion","cell_voltage":{"value":3.7,"unit":"V"},"cell_count":1}', 0);
 
 -- Insertar datos de prueba en Components
-INSERT INTO Components (name, voltage, current, power, power_supply_id) VALUES
+INSERT INTO Components (component_name, voltage, current, power, power_supply_id) VALUES
 ('Component-NULL1', '{"value": 5.0, "unit": "V"}', '{"value": 0.5, "unit": "A"}', '{"value": 2.5, "unit": "W"}', NULL),
 ('Component-NULL2', '{"value": 3.3, "unit": "V"}', '{"value": 1.0, "unit": "A"}', '{"value": 3.3, "unit": "W"}', NULL),
 ('Component-NULL3', '{"value": 9.0, "unit": "V"}', '{"value": 0.2, "unit": "A"}', '{"value": 1.8, "unit": "W"}', NULL),
