@@ -88,9 +88,7 @@ class PowerSupplyDAO(BaseDAO):
             print("Unknown power supply instance")
             return "N/A"
 
-    def add_power_supply(
-        self, power_supply: BasePowerSupply
-    ):  # TODO: add more power supply types
+    def add_power_supply(self, power_supply: BasePowerSupply):
         name: str = power_supply.name
         nominal_voltage: str = power_supply.nominal_voltage.to_json_string()
         max_output_current: str = power_supply.max_output_current.to_json_string()
@@ -101,7 +99,7 @@ class PowerSupplyDAO(BaseDAO):
         with self.connection:
             self.cursor.execute(
                 f"""
-                INSERT INTO {POWER_SUPPLIES_TABLE_NAME} ("{COLUMN_POWER_SUPPLY_NAME}","{COLUMN_NOMINAL_VOLTAGE}","{COLUMN_MAX_OUTPUT_CURRENT}","{additional_information}")
+                INSERT INTO {POWER_SUPPLIES_TABLE_NAME} ("{COLUMN_POWER_SUPPLY_NAME}","{COLUMN_NOMINAL_VOLTAGE}","{COLUMN_MAX_OUTPUT_CURRENT}","{COLUMN_ADDITIONAL_INFO}")
                 VALUES (?,?,?,?);
                 """,
                 (name, nominal_voltage, max_output_current, additional_information),
@@ -152,3 +150,16 @@ class PowerSupplyDAO(BaseDAO):
             query = query[0]
             output_current = ElectricCurrentQuantity(0)
             return output_current.from_json_string(query)
+
+    def get_power_supply_ids_by_name(self, power_supply_name: str) -> List[int]:
+        with self.connection:
+            self.cursor.execute(
+                f"""
+                SELECT {COLUMN_POWER_SUPPLY_ID} FROM {POWER_SUPPLIES_TABLE_NAME} WHERE {COLUMN_POWER_SUPPLY_NAME} = ?
+                """,
+                (power_supply_name,),
+            )
+            query: List[int] = []
+            raw_query = self.cursor.fetchall()
+            query = [i[0] for i in raw_query ]
+            return query
