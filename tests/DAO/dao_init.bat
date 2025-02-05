@@ -4,10 +4,13 @@ setlocal
 set DB_NAME=mock_database.db
 set SQL_SCRIPT=create_mock_database.sql
 
-if not exist %DB_NAME% (
-    echo Creating mock database...
-    echo .exit | sqlite3 %DB_NAME%
+if exist %DB_NAME% (
+    echo Deleting existing mock database...
+    del %DB_NAME%
 )
+
+echo Creating mock database...
+echo .exit | sqlite3 %DB_NAME%
 
 if not exist %SQL_SCRIPT% (
     echo Error: %SQL_SCRIPT% script not found.
