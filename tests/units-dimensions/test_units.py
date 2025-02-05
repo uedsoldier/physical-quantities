@@ -9,7 +9,8 @@ from modules.unit import *
 
 class TestUnits(unittest.TestCase):
 
-    def setUp(self) -> None:
+    @classmethod
+    def setUpClass(cls) -> None:
         pass
     
     def test_compatible_units1(self):

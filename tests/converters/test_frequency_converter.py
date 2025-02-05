@@ -9,8 +9,9 @@ from math import pi
 from modules.unit import FrequencyUnits, MockUnits
 
 class TestFrequencyConverter(unittest.TestCase):
-    def setUp(self) -> None:
-        self.converter = BaseConversionManager('frequency')
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.converter = BaseConversionManager('frequency')
     
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)

@@ -8,8 +8,9 @@ from modules.physical_quantities import BaseConversionManager
 from modules.unit import LuminousIntensityUnits, MockUnits
 
 class TestLuminousIntensityConverter(unittest.TestCase):
-    def setUp(self) -> None:
-        self.converter = BaseConversionManager('luminous_intensity')
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.converter = BaseConversionManager('luminous_intensity')
     
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)

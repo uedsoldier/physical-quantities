@@ -9,8 +9,9 @@ from modules.unit import AreaUnits, MockUnits
 
 
 class TestAreaConverter(unittest.TestCase):
-    def setUp(self) -> None:
-        self.converter = BaseConversionManager("area")
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.converter = BaseConversionManager("area")
 
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)

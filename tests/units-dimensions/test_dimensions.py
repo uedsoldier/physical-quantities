@@ -9,7 +9,8 @@ from modules.unit import *
 
 class TestDimensions(unittest.TestCase):
 
-    def setUp(self) -> None:
+    @classmethod
+    def setUpClass(cls) -> None:
         pass
     
     def test_div_dimension1(self):

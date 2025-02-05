@@ -8,8 +8,9 @@ from modules.physical_quantities import BaseConversionManager
 from modules.unit import ForceUnits, MockUnits
 
 class TestForceConverter(unittest.TestCase):
-    def setUp(self) -> None:
-        self.converter = BaseConversionManager('force')
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.converter = BaseConversionManager('force')
     
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)

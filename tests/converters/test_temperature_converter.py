@@ -8,8 +8,9 @@ from modules.physical_quantities import TemperatureConversionManager
 from modules.unit import TemperatureUnits, MockUnits
 
 class TestTemperatureConverter(unittest.TestCase):
-    def setUp(self) -> None:
-        self.converter = TemperatureConversionManager()
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.converter = TemperatureConversionManager()
     
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)

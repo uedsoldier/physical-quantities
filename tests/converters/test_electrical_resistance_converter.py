@@ -9,8 +9,9 @@ from modules.unit import ResistanceUnits, MockUnits
 
 
 class TestElectricalResistanceConverter(unittest.TestCase):
-    def setUp(self) -> None:
-        self.converter = BaseConversionManager("electrical_resistance")
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.converter = BaseConversionManager("electrical_resistance")
 
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)

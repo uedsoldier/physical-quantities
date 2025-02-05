@@ -10,8 +10,9 @@ from math import pi
 from modules.unit import AngleUnits, MockUnits
 
 class TestAngleConverter(unittest.TestCase):
-    def setUp(self) -> None:
-        self.converter = BaseConversionManager('angle')
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.converter = BaseConversionManager('angle')
     
     def test_conversion(self):
         # Test cases: (input value, input unit, output unit,expected value, decimal places)
