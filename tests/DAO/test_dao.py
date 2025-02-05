@@ -10,12 +10,13 @@ from modules.component_DAO import ComponentDAO
 from modules.power_supply_DAO import PowerSupplyDAO
 from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity, PowerQuantity
 from modules.unit import ElectricChargeUnits
-from modules.power_budget import LeadAcidBattery
+from modules.power_supply import LeadAcidBattery
 
 MOCK_DATABASE_FILENAME = 'mock_database.db'
 
 class PowerSuppliesComponentsDAOTester(unittest.TestCase):
-    def setUp(self) -> None:
+    @classmethod
+    def setUpClass(cls) -> None:
         BASE_PATH = Path.cwd()
         DAO_PATH: Path = BASE_PATH/'tests'/'DAO/'
         print(f'BASE path: {BASE_PATH}')
@@ -35,13 +36,13 @@ class PowerSuppliesComponentsDAOTester(unittest.TestCase):
             print('Not found')
             raise FileNotFoundError(f'DAO init script <<{sql_script}>> does not exist.')
 
-        self.components_dao = ComponentDAO('./mock_database.db')
-        self.components_dao.create_table()
-        self.power_supplies_dao = PowerSupplyDAO('./mock_database.db')
-        self.power_supplies_dao.create_table()
+        cls.components_dao = ComponentDAO('./mock_database.db')
+        cls.components_dao.create_table()
+        cls.power_supplies_dao = PowerSupplyDAO('./mock_database.db')
+        cls.power_supplies_dao.create_table()
         
         os.chdir(BASE_PATH)
-        return super().setUp()
+        
 
     def test_voltages(self):
         test_cases = [
@@ -141,10 +142,18 @@ class PowerSuppliesComponentsDAOTester(unittest.TestCase):
                 actual_assigned = self.components_dao.is_component_assigned(component_id)
                 self.assertEqual(is_assigned, actual_assigned)
     
-    def test_add_lead_battery(self):
+    def test_add_power_supply1(self):
+        test_batt1 = LeadAcidBattery('testBattery',ElectricCurrentQuantity(2),ElectricChargeQuantity(1000,ElectricChargeUnits.MILLIAMPERE_HOUR.value),6)
+        test_batt2 = LeadAcidBattery('testBattery',ElectricCurrentQuantity(1),ElectricChargeQuantity(500,ElectricChargeUnits.MILLIAMPERE_HOUR.value),3)
+        self.power_supplies_dao.add_power_supply(test_batt1)
+        self.power_supplies_dao.add_power_supply(test_batt2)
+        test_current = ElectricCurrentQuantity(2)
+        test_capacity = ElectricChargeQuantity(1000,ElectricChargeUnits.MILLIAMPERE_HOUR.value)
         
-        test_batt = LeadAcidBattery('Added battery',ElectricCurrentQuantity(2),ElectricChargeQuantity(1000,ElectricChargeUnits.MILLIAMPERE_HOUR.value))
-        self.power_supplies_dao.add_power_supply(test_batt)
+        ids = self.power_supplies_dao.get_power_supply_ids_by_name('testBattery')
+        print(ids,len(ids))
+        # self.assertEqual(test_current)
+        # self.assertEqual(test_capacity)
     
 if __name__ == '__main__':
     unittest.main()
