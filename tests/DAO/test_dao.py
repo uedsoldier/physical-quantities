@@ -8,7 +8,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 
 from modules.component_DAO import ComponentDAO
 from modules.power_supply_DAO import PowerSupplyDAO
-from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity
+from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity, PowerQuantity
+from modules.unit import ElectricChargeUnits
+from modules.power_budget import LeadAcidBattery
 
 MOCK_DATABASE_FILENAME = 'mock_database.db'
 
@@ -138,6 +140,11 @@ class PowerSuppliesComponentsDAOTester(unittest.TestCase):
             with self.subTest(component_id=component_id):
                 actual_assigned = self.components_dao.is_component_assigned(component_id)
                 self.assertEqual(is_assigned, actual_assigned)
-            
+    
+    def test_add_lead_battery(self):
+        
+        test_batt = LeadAcidBattery('Added battery',ElectricCurrentQuantity(2),ElectricChargeQuantity(1000,ElectricChargeUnits.MILLIAMPERE_HOUR.value))
+        self.power_supplies_dao.add_power_supply(test_batt)
+    
 if __name__ == '__main__':
     unittest.main()
