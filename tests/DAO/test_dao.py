@@ -10,7 +10,7 @@ from modules.component_DAO import ComponentDAO
 from modules.power_supply_DAO import PowerSupplyDAO
 from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity, PowerQuantity
 from modules.unit import ElectricChargeUnits
-from modules.power_supply import LeadAcidBattery
+from modules.power_budget import LeadAcidBattery
 
 MOCK_DATABASE_FILENAME = 'mock_database.db'
 
