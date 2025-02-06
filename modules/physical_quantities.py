@@ -8,6 +8,14 @@ from functools import total_ordering
 
 @total_ordering
 class BaseQuantity:
+    
+    def __abs__(self) -> "BaseQuantity":
+        return type(self)(abs(self._value), self._unit)
+    
+    def __round__(self, ndigits=None) -> "BaseQuantity":
+        new_value = round(self._value, ndigits)
+        return type(self)(new_value, self._unit)
+    
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(value={self._value}, unit={repr(self._unit)})'
 
