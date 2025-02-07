@@ -378,7 +378,7 @@ class BuckBoostConverter(DCDCConverter):
 
 class LithiumBattery(Battery):
     LITHIUM_CELL_VOLTAGES = (  3.7 ,   3.6  ,   3.2   ,   3.7   ,  3.6   ,  0)
-    LITHIUM_SUBCHEMISTRIES =   ('LiPo','Li-ion','LiFePO4','LiMn2O4','LiCoO2','Other')
+    LITHIUM_CHEMISTRIES =   ('LiPo','Li-ion','LiFePO4','LiMn2O4','LiCoO2','Other')
     
     # This method is required to fulfill the abstractmethod contract
     def _restrict_instantiation(self):
@@ -386,13 +386,13 @@ class LithiumBattery(Battery):
     
     def __init__(self, name: str, max_output_current: ElectricCurrentQuantity, capacity: ElectricChargeQuantity, cell_voltage: VoltageQuantity = None ,cell_count: int = 1, subchemistry: str = 'Other') -> None:
         if(subchemistry is None):
-            subchemistry = self.LITHIUM_SUBCHEMISTRIES[0]
-        elif (subchemistry not in self.LITHIUM_SUBCHEMISTRIES):
-            raise ValueError(f'Invalid chemistry, must be in {self.LITHIUM_SUBCHEMISTRIES} range')
+            subchemistry = self.LITHIUM_CHEMISTRIES[0]
+        elif (subchemistry not in self.LITHIUM_CHEMISTRIES):
+            raise ValueError(f'Invalid chemistry, must be in {self.LITHIUM_CHEMISTRIES} range')
         if(cell_voltage is None):
             if(subchemistry == 'Other'):
                 raise ValueError('Cell voltage must be provided if using custom chemistry')
-        cell_voltage = cell_voltage if subchemistry == 'Other' else VoltageQuantity(self.LITHIUM_CELL_VOLTAGES[self.LITHIUM_SUBCHEMISTRIES.index(subchemistry)])
+        cell_voltage = cell_voltage if subchemistry == 'Other' else VoltageQuantity(self.LITHIUM_CELL_VOLTAGES[self.LITHIUM_CHEMISTRIES.index(subchemistry)])
         super().__init__(name,chemistry='Lithium',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, subchemistry=subchemistry,cell_count=cell_count)
 
 class LeadAcidBattery(Battery):

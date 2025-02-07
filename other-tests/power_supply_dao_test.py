@@ -41,7 +41,7 @@ match(random_type):
         
         match(random_battery_type):
             case 'Lithium':
-                possible_subchemistries: list[str] = LithiumBattery.LITHIUM_SUBCHEMISTRIES
+                possible_subchemistries: list[str] = LithiumBattery.LITHIUM_CHEMISTRIES
                 possible_subchemistries = [sc for sc in possible_subchemistries if sc != 'Other']
                 random_subchemistry: str = random.choice(possible_subchemistries)
                 random_name += f'-{random_subchemistry}-{generate_random_id()}'
