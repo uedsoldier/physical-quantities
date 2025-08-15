@@ -63,7 +63,7 @@ class PowerSuppliesComponentsDAOTester(unittest.TestCase):
                 self.assertEqual(expected_voltage, actual_voltage)
 
     def test_invalid_ids(self):
-        invalid_ids = [999, 1000]  # IDs que no existen en la base de datos
+        invalid_ids = [999, 1000, -1, 999]  # IDs que no existen en la base de datos
         for invalid_id in invalid_ids:
             with self.subTest(invalid_id=invalid_id):
                 with self.assertRaises(ValueError):
