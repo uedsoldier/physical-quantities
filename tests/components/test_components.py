@@ -4,9 +4,9 @@ import unittest
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
-from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity
-from modules.unit import VoltageUnits, ElectricCurrentUnits, PowerUnits
-from modules.power_budget import Component
+from core.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity
+from core.unit import VoltageUnits, ElectricCurrentUnits, PowerUnits
+from core.power_budget import Component
 
 TEST_NAME='test_component'
 

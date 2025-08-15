@@ -6,11 +6,11 @@ from pathlib import Path
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
-from modules.component_DAO import ComponentDAO
-from modules.power_supply_DAO import PowerSupplyDAO
-from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity, PowerQuantity
-from modules.unit import ElectricChargeUnits
-from modules.power_budget import LeadAcidBattery
+from core.component_DAO import ComponentDAO
+from core.power_supply_DAO import PowerSupplyDAO
+from core.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity, PowerQuantity
+from core.unit import ElectricChargeUnits
+from core.power_budget import LeadAcidBattery
 
 MOCK_DATABASE_FILENAME = 'mock_database.db'
 

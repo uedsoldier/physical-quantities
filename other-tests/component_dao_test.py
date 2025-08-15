@@ -5,11 +5,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 import random
 import string
 
-from modules.component_DAO import ComponentDAO
-from modules.power_supply_DAO import PowerSupplyDAO
-from modules.power_budget import Component
-from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity, PowerQuantity
-from modules.unit import ElectricCurrentUnits, VoltageUnits, ElectricChargeUnits, PowerUnits
+from core.component_DAO import ComponentDAO
+from core.power_supply_DAO import PowerSupplyDAO
+from core.power_budget import Component
+from core.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity, PowerQuantity
+from core.unit import ElectricCurrentUnits, VoltageUnits, ElectricChargeUnits, PowerUnits
 
 def generate_random_id(length: int=6):
     # Choose from hexdigits

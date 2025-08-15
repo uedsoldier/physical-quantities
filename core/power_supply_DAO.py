@@ -1,8 +1,8 @@
-from modules.power_budget import *
-from modules.baseDAO import BaseDAO
-from modules.unit import *
-from modules.utilities.json_utilities import *
-from modules.dao_db_schema import (
+from core.power_budget import *
+from core.baseDAO import BaseDAO
+from core.unit import *
+from core.utilities.json_utilities import *
+from core.dao_db_schema import (
     POWER_SUPPLIES_TABLE_NAME,
     COLUMN_POWER_SUPPLY_ID,
     COLUMN_POWER_SUPPLY_NAME,

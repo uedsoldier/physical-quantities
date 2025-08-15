@@ -1,6 +1,6 @@
 from .power_budget import *
 from .baseDAO import BaseDAO
-from modules.dao_db_schema import (
+from core.dao_db_schema import (
     COMPONENTS_TABLE_NAME,
     POWER_SUPPLIES_TABLE_NAME,
     COLUMN_COMPONENT_ID,

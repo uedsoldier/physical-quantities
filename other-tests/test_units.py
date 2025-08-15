@@ -3,7 +3,7 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-from modules.unit import Unit, Dimensions, MassUnits, LengthUnits, TimeUnits, ForceUnits, EnergyUnits
+from core.unit import Unit, Dimensions, MassUnits, LengthUnits, TimeUnits, ForceUnits, EnergyUnits
 
 meter = Unit("meter", "m", Dimensions({"L": 1}))
 second = Unit("second", "s", Dimensions({"T": 1}))

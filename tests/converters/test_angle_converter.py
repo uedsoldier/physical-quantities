@@ -5,9 +5,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 
 import unittest
 
-from modules.physical_quantities import BaseConversionManager
+from core.physical_quantities import BaseConversionManager
 from math import pi
-from modules.unit import AngleUnits, MockUnits
+from core.unit import AngleUnits, MockUnits
 
 class TestAngleConverter(unittest.TestCase):
     @classmethod

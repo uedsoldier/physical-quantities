@@ -2,8 +2,8 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-from modules.electrical_quantitites import AC_Voltage
-from modules.physical_quantities import VoltageQuantity, FrequencyQuantity, AngleQuantity, BaseConversionManager
+from core.electrical_quantitites import AC_Voltage
+from core.physical_quantities import VoltageQuantity, FrequencyQuantity, AngleQuantity, BaseConversionManager
 from math import pi 
 
 voltage = VoltageQuantity(0.5,'kV')

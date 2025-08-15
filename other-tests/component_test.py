@@ -3,8 +3,8 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
-from modules.power_budget import Component, DCPowerSupply, PowerBudget
-from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity, EnergyQuantity, TimeQuantity
+from core.power_budget import Component, DCPowerSupply, PowerBudget
+from core.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity, EnergyQuantity, TimeQuantity
 
 voltage = VoltageQuantity(5.0)
 current = ElectricCurrentQuantity(5,'mA')

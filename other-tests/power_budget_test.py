@@ -2,8 +2,8 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-from modules.power_budget import *
-from modules.physical_quantities import *
+from core.power_budget import *
+from core.physical_quantities import *
 from termcolor import colored
 
 V = VoltageQuantity(5)

@@ -4,8 +4,8 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 import unittest
-from modules.physical_quantities import BaseConversionManager
-from modules.unit import VolumeUnits, MockUnits
+from core.physical_quantities import BaseConversionManager
+from core.unit import VolumeUnits, MockUnits
 
 class TestVolumeConverter(unittest.TestCase):
     @classmethod

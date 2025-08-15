@@ -5,9 +5,9 @@ from typing import List, Tuple
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
-from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity, ElectricChargeQuantity
-from modules.unit import VoltageUnits, ElectricCurrentUnits, PowerUnits, ElectricChargeUnits
-from modules.power_budget import LeadAcidBattery, LithiumBattery
+from core.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity, ElectricChargeQuantity
+from core.unit import VoltageUnits, ElectricCurrentUnits, PowerUnits, ElectricChargeUnits
+from core.power_budget import LeadAcidBattery, LithiumBattery
 
 class LeadAcidBatteriesTester(unittest.TestCase):
     @classmethod

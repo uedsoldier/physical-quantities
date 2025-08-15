@@ -3,9 +3,9 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
-from modules.physical_quantities import MassQuantity
-from modules.physical_quantities import TimeQuantity
-from modules.unit import *
+from core.physical_quantities import MassQuantity
+from core.physical_quantities import TimeQuantity
+from core.unit import *
 
 m1 = MassQuantity(15,MassUnits.KILOGRAM.value)
 m2 = MassQuantity(2,MassUnits.KILOGRAM.value)

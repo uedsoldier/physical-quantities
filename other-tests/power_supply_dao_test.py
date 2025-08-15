@@ -5,9 +5,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 import random
 import string
 
-from modules.power_supply_DAO import PowerSupplyDAO
-from modules.power_budget import LithiumBattery,LeadAcidBattery,BuckConverter,BoostConverter,BuckBoostConverter
-from modules.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity
+from core.power_supply_DAO import PowerSupplyDAO
+from core.power_budget import LithiumBattery,LeadAcidBattery,BuckConverter,BoostConverter,BuckBoostConverter
+from core.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity
 def generate_random_id(length: int=6):
     # Choose from hexdigits
     characters = string.hexdigits

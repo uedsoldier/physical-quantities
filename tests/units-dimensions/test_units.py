@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 
 import unittest
 
-from modules.unit import *
+from core.unit import *
 
 class TestUnits(unittest.TestCase):
 
