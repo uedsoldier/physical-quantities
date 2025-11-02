@@ -1,11 +1,18 @@
 import json
 
-def json_to_dict(json_file, encoding='utf-8'):
-    try:
-        with open(json_file,'r', encoding=encoding) as file:
-            return json.load(file)
-    except Exception as e:
-        raise e
+def json_to_dict(json_file, encoding='utf-8') -> dict:
+    """Converts a json object from a path to a python dict
+
+    Args:
+        json_file (str): Path to the json file
+        encoding (str, optional): Encoding of the file. Defaults to 'utf-8'.
+
+    Returns:
+        dict: Dictionary with json content from file
+    """
+    with open(json_file,'r', encoding=encoding) as file:
+        return json.load(file)
+
     
 def json_string_to_dict(json_string):
     return json.loads(json_string)
