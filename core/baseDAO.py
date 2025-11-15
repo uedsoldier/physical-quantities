@@ -30,12 +30,15 @@ class BaseDAO(ABC):
         self.cursor.close()
         self.connection.close()
     
+    @abstractmethod
     def create_table(self):
-        raise NotImplementedError('Direct DAO instantiation is not allowed')
+        pass
     
+    @abstractmethod
     def truncate_table(self):
-        raise NotImplementedError('Direct DAO instantiation is not allowed')
+        pass
 
+    @abstractmethod
     def create_triggers(self):
-        raise NotImplementedError('Direct DAO instantiation is not allowed')
+        pass
     
