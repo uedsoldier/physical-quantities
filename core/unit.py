@@ -9,7 +9,7 @@ Numeric = Union[int, float, Fraction]
 class Dimensions:
 
     def __init__(self, dimensions_dict: Optional[Mapping[str, Numeric]] = None) -> None:
-        self._dimensions_dict: Dict[str, Fraction] = {}
+        self.__dimensions_dict: Dict[str, Fraction] = {}
         if dimensions_dict:
             for dim, exponent in dimensions_dict.items():
                 # 1. Validación: Debe ser un número
@@ -22,17 +22,17 @@ class Dimensions:
 
                 # 3. Normalización: Guardamos solo si no es cero
                 if frac_exponent != 0:
-                    self._dimensions_dict[dim] = frac_exponent
+                    self.__dimensions_dict[dim] = frac_exponent
 
     @property
     def is_dimensionless(self) -> bool:
         """Check if the dimensions are dimensionless (empty dictionary)."""
-        return not bool(self._dimensions_dict)
+        return not bool(self.__dimensions_dict)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Dimensions):
             return False
-        return self._dimensions_dict == other._dimensions_dict
+        return self.__dimensions_dict == other.__dimensions_dict
 
     def __pow__(self, exponent: Numeric) -> "Dimensions":
         """Raise each dimension's exponent to the power of a constant exponent."""
@@ -47,7 +47,7 @@ class Dimensions:
 
         # Apply exponentiation to each dimension's exponent
         new_dimensions = {
-            key: value * frac_exponent for key, value in self._dimensions_dict.items()
+            key: value * frac_exponent for key, value in self.__dimensions_dict.items()
         }
 
         return Dimensions(new_dimensions)
@@ -74,12 +74,12 @@ class Dimensions:
         # Función lambda para ordenar: Primero por prioridad física, luego alfabéticamente
         # get(dim, 99) significa: si no está en la lista, dale prioridad 99 (al final)
         sorted_keys = sorted(
-            self._dimensions_dict.keys(),
+            self.__dimensions_dict.keys(),
             key=lambda dim: (priority_order.get(dim, 99), dim),
         )
 
         for dim in sorted_keys:
-            val = self._dimensions_dict[dim]
+            val = self.__dimensions_dict[dim]
 
             if val == 1:
                 parts.append(dim)
@@ -95,10 +95,10 @@ class Dimensions:
             raise TypeError("Can only multiply with another Dimensions instance.")
 
         new_dimensions = (
-            self._dimensions_dict.copy()
+            self.__dimensions_dict.copy()
         )  # Start with the current dimensions
 
-        for key, value in other._dimensions_dict.items():
+        for key, value in other.__dimensions_dict.items():
             # Add the exponents of matching dimension symbols
             new_dimensions[key] = new_dimensions.get(key, 0) + value
 
@@ -110,21 +110,21 @@ class Dimensions:
             raise TypeError("Can only divide with another Dimensions instance.")
 
         new_dimensions = (
-            self._dimensions_dict.copy()
+            self.__dimensions_dict.copy()
         )  # Start with the current dimensions
 
-        for key, value in other._dimensions_dict.items():
+        for key, value in other.__dimensions_dict.items():
             # Subtract the exponents of matching dimension symbols
             new_dimensions[key] = new_dimensions.get(key, 0) - value
         return Dimensions(new_dimensions)
 
     def __repr__(self):
-        return f"{self._dimensions_dict}"
+        return f"{self.dimensions_dict}"
 
     @property
     def dimensions_dict(self) -> Dict[str, Fraction]:
         return (
-            self._dimensions_dict.copy()
+            self.__dimensions_dict.copy()
         )  # Retornar copia para proteger inmutabilidad
 
 
