@@ -91,7 +91,7 @@ class BaseQuantity:
             raise TypeError('BaseQuantity cannot be instantiated directly.')
         self._value = value
         self._unit = unit
-        self._conversion_manager = BaseConversionManager(quantity_type)
+        self.__conversion_manager = BaseConversionManager(quantity_type)
         
     def __str__(self) -> str:
         return f'{self._value} [{self._unit}]'
@@ -146,7 +146,7 @@ class BaseQuantity:
             raise ValueError(f'Cannot convert between incompatible units: {self.unit} and {target_unit}')
 
         # Perform the conversion using the conversion manager
-        converted_value = self._conversion_manager.convert(self.value, self.unit, target_unit)
+        converted_value = self.__conversion_manager.convert(self.value, self.unit, target_unit)
 
         # Return a new instance of the same class with the converted value and unit
         return type(self)(converted_value, target_unit)
