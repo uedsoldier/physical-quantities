@@ -15,11 +15,13 @@ class TestMassConverter(unittest.TestCase):
         ]
         for value,from_unit,to_unit,expected,decimal_places in test_cases:
             with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
-                try:
-                    result = self.converter.convert(value,from_unit,to_unit)
-                    self.assertAlmostEqual(float(result), expected, places=decimal_places)
-                except AssertionError as e:
-                    self.fail(f"Conversion failed for {value} {from_unit} to {to_unit}. Expected {expected}, got {result}. Error: {e}")
+                result = self.converter.convert(value,from_unit,to_unit)
+                self.assertAlmostEqual(
+                    float(result), 
+                    expected, 
+                    places=decimal_places,
+                    msg=f"Failed converting {value} {from_unit} to {to_unit}"
+                )
                 
     def test_invalid_units(self):
         with self.assertRaises(ValueError):

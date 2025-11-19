@@ -14,15 +14,19 @@ class TestTemperatureConverter(unittest.TestCase):
             (212.0,TemperatureUnits.FAHRENHEIT.value,TemperatureUnits.CELSIUS.value,100,6),
             (0,TemperatureUnits.CELSIUS.value,TemperatureUnits.FAHRENHEIT.value,32,6),
             (0,TemperatureUnits.KELVIN.value,TemperatureUnits.CELSIUS.value,-273.15,6),
+            (25, TemperatureUnits.CELSIUS.value, TemperatureUnits.CELSIUS.value, 25, 6),
+            (32, TemperatureUnits.FAHRENHEIT.value, TemperatureUnits.KELVIN.value, 273.15, 2),
 
         ]
         for value,from_unit,to_unit,expected,decimal_places in test_cases:
             with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
-                try:
-                    result = self.converter.convert(value,from_unit,to_unit)
-                    self.assertAlmostEqual(float(result), expected, places=decimal_places)
-                except AssertionError as e:
-                    self.fail(f"Conversion failed for {value} {from_unit} to {to_unit}. Expected {expected}, got {result}. Error: {e}")
+                result = self.converter.convert(value,from_unit,to_unit)
+                self.assertAlmostEqual(
+                    float(result), 
+                    expected, 
+                    places=decimal_places,
+                    msg=f"Failed converting {value} {from_unit} to {to_unit}"
+                )
                 
     def test_invalid_units(self):
         with self.assertRaises(ValueError):
