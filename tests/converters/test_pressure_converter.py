@@ -1,15 +1,16 @@
 import unittest
 from core.physical_quantities import BaseConversionManager
-from core.unit import PressureUnits, MockUnits
+from core.unit import PressureUnits
+from .base_converter_test import BaseConversionTest
 
-class TestPressureConverter(unittest.TestCase):
+class TestPressureConverter(BaseConversionTest):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.converter = BaseConversionManager('pressure')
+        cls.conversion_manager = BaseConversionManager('pressure')
     
-    def test_conversion(self):
-        # Test cases: (input value, input unit, output unit,expected value, decimal places)
-        test_cases = [
+    standard_unit = PressureUnits.PASCAL.value
+    
+    test_cases = [
         # Pascal to Kilopascal
         (1.0, PressureUnits.PASCAL.value, PressureUnits.KILOPASCAL.value, 1e-3, 6),
         # Kilopascal to Pascal
@@ -55,23 +56,6 @@ class TestPressureConverter(unittest.TestCase):
         # Pascal to Kilogram per Square Centimeter (kgf/cm²)
         (98066.5, PressureUnits.PASCAL.value, PressureUnits.KILOGRAM_FORCE_PER_CENTIMETER_SQUARED.value, 1.0, 6)
     ]
-
-        for value,from_unit,to_unit,expected,decimal_places in test_cases:
-            with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
-                result = self.converter.convert(value,from_unit,to_unit)
-                self.assertAlmostEqual(
-                    float(result), 
-                    expected, 
-                    places=decimal_places,
-                    msg=f"Failed converting {value} {from_unit} to {to_unit}"
-                )
-                
-    def test_invalid_units(self):
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, MockUnits.MOCK_UNIT.value, PressureUnits.PASCAL.value)
-        
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, PressureUnits.PASCAL.value, MockUnits.MOCK_UNIT.value)
 
 if __name__ == '__main__':
     unittest.main()

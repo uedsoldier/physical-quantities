@@ -1,35 +1,20 @@
 import unittest
 from core.physical_quantities import BaseConversionManager
-from core.unit import VoltageUnits, MockUnits
+from core.unit import VoltageUnits
+from .base_converter_test import BaseConversionTest
 
-class TestVoltageConverter(unittest.TestCase):
+class TestVoltageConverter(BaseConversionTest):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.converter = BaseConversionManager('voltage')
+        cls.conversion_manager = BaseConversionManager('voltage')
     
-    def test_conversion(self):
-        # Test cases: (input value, input unit, output unit,expected value, decimal places)
-        test_cases = [
-            (1,VoltageUnits.VOLT.value,VoltageUnits.MICROVOLT.value,1e6,6),
-            (10000,VoltageUnits.VOLT.value,VoltageUnits.KILOVOLT.value,10,9)
+    standard_unit =VoltageUnits.VOLT.value
+    
+    test_cases = [
+        (1,VoltageUnits.VOLT.value,VoltageUnits.MICROVOLT.value,1e6,6),
+        (10000,VoltageUnits.VOLT.value,VoltageUnits.KILOVOLT.value,10,9)
 
-        ]
-        for value,from_unit,to_unit,expected,decimal_places in test_cases:
-            with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
-                result = self.converter.convert(value,from_unit,to_unit)
-                self.assertAlmostEqual(
-                    float(result), 
-                    expected, 
-                    places=decimal_places,
-                    msg=f"Failed converting {value} {from_unit} to {to_unit}"
-                )
-                
-    def test_invalid_units(self):
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, MockUnits.MOCK_UNIT.value, VoltageUnits.VOLT.value)
-        
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, VoltageUnits.VOLT.value, MockUnits.MOCK_UNIT.value)
+    ]
 
 if __name__ == '__main__':
     unittest.main()

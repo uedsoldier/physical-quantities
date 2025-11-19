@@ -1,15 +1,16 @@
 import unittest
 from core.physical_quantities import BaseConversionManager
-from core.unit import LuminousIntensityUnits, MockUnits
+from core.unit import LuminousIntensityUnits
+from .base_converter_test import BaseConversionTest
 
-class TestLuminousIntensityConverter(unittest.TestCase):
+class TestLuminousIntensityConverter(BaseConversionTest):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.converter = BaseConversionManager('luminous_intensity')
+        cls.conversion_manager = BaseConversionManager('luminous_intensity')
     
-    def test_conversion(self):
-        # Test cases: (input value, input unit, output unit,expected value, decimal places)
-        test_cases = [
+    standard_unit = LuminousIntensityUnits.CANDELA.value
+    
+    test_cases = [
         # Candela to Millcandela
         (1.0, LuminousIntensityUnits.CANDELA.value, LuminousIntensityUnits.MILLICANDELA.value, 1000, 6),
         # Millcandela to Candela
@@ -31,23 +32,6 @@ class TestLuminousIntensityConverter(unittest.TestCase):
         # Megacandela to Gigacandela
         (1000, LuminousIntensityUnits.MEGACANDELA.value, LuminousIntensityUnits.GIGACANDELA.value, 1, 6)
     ]
-
-        for value,from_unit,to_unit,expected,decimal_places in test_cases:
-            with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
-                result = self.converter.convert(value,from_unit,to_unit)
-                self.assertAlmostEqual(
-                    float(result), 
-                    expected, 
-                    places=decimal_places,
-                    msg=f"Failed converting {value} {from_unit} to {to_unit}"
-                )
-                
-    def test_invalid_units(self):
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, MockUnits.MOCK_UNIT.value, LuminousIntensityUnits.CANDELA.value)
-        
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, LuminousIntensityUnits.CANDELA.value, MockUnits.MOCK_UNIT.value)
 
 if __name__ == '__main__':
     unittest.main()

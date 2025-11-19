@@ -2,16 +2,17 @@ import unittest
 
 from core.physical_quantities import BaseConversionManager
 from math import pi
-from core.unit import AngleUnits, MockUnits
+from core.unit import AngleUnits
+from .base_converter_test import BaseConversionTest
 
-class TestAngleConverter(unittest.TestCase):
+class TestAngleConverter(BaseConversionTest):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.converter = BaseConversionManager('angle')
+        cls.conversion_manager = BaseConversionManager('angle')
     
-    def test_conversion(self):
-        # Test cases: (input value, input unit, output unit,expected value, decimal places)
-        test_cases = [
+    standard_unit = AngleUnits.DEGREE.value
+
+    test_cases = [
             # Degrees to Radians
             (90, AngleUnits.DEGREE.value, AngleUnits.RADIAN.value, pi / 2, 6),
             # Radians to Degrees
@@ -32,22 +33,6 @@ class TestAngleConverter(unittest.TestCase):
             (2 * pi, AngleUnits.RADIAN.value, AngleUnits.DEGREE.value, 360, 2),
 
         ]
-        for value,from_unit,to_unit,expected,decimal_places in test_cases:
-            with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
-                result = self.converter.convert(value,from_unit,to_unit)
-                self.assertAlmostEqual(
-                    float(result), 
-                    expected, 
-                    places=decimal_places,
-                    msg=f"Failed converting {value} {from_unit} to {to_unit}"
-                )
-                
-    def test_invalid_units(self):
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, MockUnits.MOCK_UNIT.value, AngleUnits.DEGREE.value)
-        
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, AngleUnits.DEGREE.value, MockUnits.MOCK_UNIT.value)
 
 if __name__ == '__main__':
     unittest.main()

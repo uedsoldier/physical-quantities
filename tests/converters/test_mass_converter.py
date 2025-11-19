@@ -1,34 +1,19 @@
 import unittest
 from core.physical_quantities import BaseConversionManager
-from core.unit import MassUnits, MockUnits
+from core.unit import MassUnits
+from .base_converter_test import BaseConversionTest
 
-class TestMassConverter(unittest.TestCase):
+class TestMassConverter(BaseConversionTest):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.converter = BaseConversionManager('mass')
+        cls.conversion_manager = BaseConversionManager('mass')
     
-    def test_conversion(self):
-        # Test cases: (input value, input unit, output unit,expected value, decimal places)
-        test_cases = [
-            (1.0,MassUnits.KILOGRAM.value,MassUnits.GRAM.value,1000,6),
-            (454,MassUnits.GRAM.value,MassUnits.POUND.value,1,2)
-        ]
-        for value,from_unit,to_unit,expected,decimal_places in test_cases:
-            with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
-                result = self.converter.convert(value,from_unit,to_unit)
-                self.assertAlmostEqual(
-                    float(result), 
-                    expected, 
-                    places=decimal_places,
-                    msg=f"Failed converting {value} {from_unit} to {to_unit}"
-                )
-                
-    def test_invalid_units(self):
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, MockUnits.MOCK_UNIT.value, MassUnits.KILOGRAM.value)
-        
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, MassUnits.KILOGRAM.value, MockUnits.MOCK_UNIT.value)
+    standard_unit = MassUnits.KILOGRAM.value
+    
+    test_cases = [
+        (1.0,MassUnits.KILOGRAM.value,MassUnits.GRAM.value,1000,6),
+        (454,MassUnits.GRAM.value,MassUnits.POUND.value,1,2)
+    ]
 
 if __name__ == '__main__':
     unittest.main()

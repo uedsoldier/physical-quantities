@@ -1,39 +1,24 @@
 import unittest
 from core.physical_quantities import TemperatureConversionManager
-from core.unit import TemperatureUnits, MockUnits
+from core.unit import TemperatureUnits
+from .base_converter_test import BaseConversionTest
 
-class TestTemperatureConverter(unittest.TestCase):
+class TestTemperatureConverter(BaseConversionTest):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.converter = TemperatureConversionManager()
-    
-    def test_conversion(self):
-        # Test cases: (input value, input unit, output unit,expected value, decimal places)
-        test_cases = [
-            (373.15,TemperatureUnits.KELVIN.value,TemperatureUnits.CELSIUS.value,100,6),
-            (212.0,TemperatureUnits.FAHRENHEIT.value,TemperatureUnits.CELSIUS.value,100,6),
-            (0,TemperatureUnits.CELSIUS.value,TemperatureUnits.FAHRENHEIT.value,32,6),
-            (0,TemperatureUnits.KELVIN.value,TemperatureUnits.CELSIUS.value,-273.15,6),
-            (25, TemperatureUnits.CELSIUS.value, TemperatureUnits.CELSIUS.value, 25, 6),
-            (32, TemperatureUnits.FAHRENHEIT.value, TemperatureUnits.KELVIN.value, 273.15, 2),
+        cls.conversion_manager = TemperatureConversionManager()
 
-        ]
-        for value,from_unit,to_unit,expected,decimal_places in test_cases:
-            with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
-                result = self.converter.convert(value,from_unit,to_unit)
-                self.assertAlmostEqual(
-                    float(result), 
-                    expected, 
-                    places=decimal_places,
-                    msg=f"Failed converting {value} {from_unit} to {to_unit}"
-                )
-                
-    def test_invalid_units(self):
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, MockUnits.MOCK_UNIT.value, TemperatureUnits.KELVIN.value)
-        
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, TemperatureUnits.KELVIN.value, MockUnits.MOCK_UNIT.value)
+    # Definimos una unidad válida para que la base sepa contra qué probar el error
+    standard_unit = TemperatureUnits.KELVIN.value
+
+    test_cases = [
+        (373.15,TemperatureUnits.KELVIN.value,TemperatureUnits.CELSIUS.value,100,6),
+        (212.0,TemperatureUnits.FAHRENHEIT.value,TemperatureUnits.CELSIUS.value,100,6),
+        (0,TemperatureUnits.CELSIUS.value,TemperatureUnits.FAHRENHEIT.value,32,6),
+        (0,TemperatureUnits.KELVIN.value,TemperatureUnits.CELSIUS.value,-273.15,6),
+        (25, TemperatureUnits.CELSIUS.value, TemperatureUnits.CELSIUS.value, 25, 6),
+        (32, TemperatureUnits.FAHRENHEIT.value, TemperatureUnits.KELVIN.value, 273.15, 2),
+    ]
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,16 +1,17 @@
 import unittest
 from core.physical_quantities import BaseConversionManager
 from math import pi
-from core.unit import FrequencyUnits, MockUnits
+from core.unit import FrequencyUnits
+from .base_converter_test import BaseConversionTest
 
-class TestFrequencyConverter(unittest.TestCase):
+class TestFrequencyConverter(BaseConversionTest):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.converter = BaseConversionManager('frequency')
+        cls.conversion_manager = BaseConversionManager('frequency')
     
-    def test_conversion(self):
-        # Test cases: (input value, input unit, output unit,expected value, decimal places)
-        test_cases = [
+    standard_unit = FrequencyUnits.HERTZ.value
+
+    test_cases = [
         # Hertz to Radians per Second
         (1, FrequencyUnits.HERTZ.value, FrequencyUnits.RAD_PER_SECOND.value, 2 * pi, 6),
         # Revolutions per Minute (rpm) to Radians per Second
@@ -33,23 +34,6 @@ class TestFrequencyConverter(unittest.TestCase):
         # Degrees per Second to Radians per Second
         (180, FrequencyUnits.DEG_PER_SECOND.value, FrequencyUnits.RAD_PER_SECOND.value, pi, 6),
         ]
-
-        for value,from_unit,to_unit,expected,decimal_places in test_cases:
-            with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
-                result = self.converter.convert(value,from_unit,to_unit)
-                self.assertAlmostEqual(
-                    float(result), 
-                    expected, 
-                    places=decimal_places,
-                    msg=f"Failed converting {value} {from_unit} to {to_unit}"
-                )
-                
-    def test_invalid_units(self):
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, MockUnits.MOCK_UNIT.value, FrequencyUnits.HERTZ.value)
-        
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, FrequencyUnits.HERTZ.value, MockUnits.MOCK_UNIT.value)
 
 if __name__ == '__main__':
     unittest.main()

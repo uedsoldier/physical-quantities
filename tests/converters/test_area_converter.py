@@ -1,16 +1,16 @@
 import unittest
 from core.physical_quantities import BaseConversionManager
-from core.unit import AreaUnits, MockUnits
+from core.unit import AreaUnits
+from .base_converter_test import BaseConversionTest
 
 
-class TestAreaConverter(unittest.TestCase):
+class TestAreaConverter(BaseConversionTest):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.converter = BaseConversionManager("area")
+        cls.conversion_manager = BaseConversionManager("area")
 
-    def test_conversion(self):
-        # Test cases: (input value, input unit, output unit,expected value, decimal places)
-        test_cases = [
+    standard_unit = AreaUnits.SQUARE_METER.value
+    test_cases = [
             # Square Centimeters to Square Meters
             (250, AreaUnits.SQUARE_CENTIMETER.value, AreaUnits.SQUARE_METER.value, 0.025, 6),
             # Square Feet to Square Meters
@@ -45,24 +45,6 @@ class TestAreaConverter(unittest.TestCase):
             # Square Kilometers to Square Miles
             (2.58999, AreaUnits.SQUARE_KILOMETER.value, AreaUnits.SQUARE_MILE.value, 1, 5),
         ]
-        for value, from_unit, to_unit, expected, decimal_places in test_cases:
-            with self.subTest(value=value, from_unit=from_unit, to_unit=to_unit):
-                try:
-                    result = self.converter.convert(value, from_unit, to_unit)
-                    self.assertAlmostEqual(
-                        float(result), expected, places=decimal_places
-                    )
-                except AssertionError as e:
-                    self.fail(
-                        f"Conversion failed for {value} {from_unit} to {to_unit}. Expected {expected}, got {result}. Error: {e}"
-                    )
-
-    def test_invalid_units(self):
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, MockUnits.MOCK_UNIT.value, AreaUnits.SQUARE_METER.value)
-
-        with self.assertRaises(ValueError):
-            self.converter.convert(1, AreaUnits.SQUARE_METER.value, MockUnits.MOCK_UNIT.value)
 
 
 if __name__ == "__main__":
