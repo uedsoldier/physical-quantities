@@ -10,8 +10,8 @@ class TestFractionalDimensions(unittest.TestCase):
         d = Dimensions({'L': 0.5})
         
         # Verificamos que internamente sea una Fracción, no un float
-        self.assertIsInstance(d._dimensions_dict['L'], Fraction)
-        self.assertEqual(d._dimensions_dict['L'], Fraction(1, 2))
+        self.assertIsInstance(d.dimensions_dict['L'], Fraction)
+        self.assertEqual(d.dimensions_dict['L'], Fraction(1, 2))
         
         # Verificamos la representación en string
         self.assertEqual(str(d), 'L^1/2')
@@ -50,7 +50,7 @@ class TestFractionalDimensions(unittest.TestCase):
         d_result = d_third * d_third * d_third
         
         self.assertEqual(d_result, Dimensions({'T': 1}))
-        self.assertTrue(d_result._dimensions_dict['T'].denominator == 1)
+        self.assertTrue(d_result.dimensions_dict['T'].denominator == 1)
 
     def test_fracture_mechanics_scenario(self):
         """
