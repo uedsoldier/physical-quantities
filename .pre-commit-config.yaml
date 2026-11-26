@@ -1,0 +1,51 @@
+# Instala también el hook de commit-msg (Conventional Commits)
+default_install_hook_types: [pre-commit, commit-msg]
+
+repos:
+  # Hooks básicos (higiene)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # Ruff (lint + format). Cada subproyecto usa el pyproject.toml más cercano.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.6
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  # Los commits deben ser Conventional Commits
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.5.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [feat, fix, docs, refactor, test, chore, style, perf, ci, build, revert]
+
+  # mypy: hooks locales para usar el entorno de uv (necesitan las dependencias instaladas).
+  # Cada subproyecto usa su propia config [tool.mypy].
+  - repo: local
+    hooks:
+      - id: mypy-library
+        name: mypy (physical_quantities)
+        entry: uv run mypy
+        language: system
+        types: [python]
+        files: ^(src/|pyproject\.toml$)
+        pass_filenames: false
+      - id: mypy-power-budget
+        name: mypy (power_budget)
+        entry: uv run --directory apps/power_budget mypy
+        language: system
+        types: [python]
+        files: ^(apps/power_budget/src/|src/physical_quantities/)
+        pass_filenames: false
