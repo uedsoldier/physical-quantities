@@ -34,6 +34,9 @@ class Dimensions:
             return False
         return self.__dimensions_dict == other.__dimensions_dict
 
+    def __hash__(self) -> int:
+        return hash(frozenset(self.__dimensions_dict.items()))
+
     def __pow__(self, exponent: Numeric) -> "Dimensions":
         """Raise each dimension's exponent to the power of a constant exponent."""
 
@@ -149,7 +152,7 @@ INDUCTANCE_DIMENSIONS = Dimensions({"M": 1, "L": 2, "T": -2, "I": -2})
 CAPACITANCE_DIMENSIONS = Dimensions({"L": -2, "M": -1, "T": 4, "I": 2})
 RESISTANCE_DIMENSIONS = Dimensions({"M": 1, "L": 2, "T": -3, "I": -2})
 CONDUCTANCE_DIMENSIONS = Dimensions({"M": -1, "L": -2, "T": 3, "I": 2})
-ILLUMINATION_DIMENSIONS = Dimensions({"L": 2, "M": -1, "T": -3})
+ILLUMINATION_DIMENSIONS = Dimensions({"J": 1, "L": -2})
 ANGLE_DIMENSIONS = Dimensions({"": 1})
 AREA_DIMENSIONS = Dimensions({"L": 2})
 VOLUME_DIMENSIONS = Dimensions({"L": 3})
@@ -158,7 +161,7 @@ MASS_FLOW_RATE_DIMENSIONS = Dimensions({"M": 1, "T": -1})
 SPEED_DIMENSIONS = Dimensions({"L": 1, "T": -1})
 ACCELERATION_DIMENSIONS = Dimensions({"L": 1, "T": -2})
 THERMAL_CONDUCTIVITY_DIMENSIONS = Dimensions({"M": 1, "L": 1, "T": -3, "Θ": -1})
-THERMAL_RESISTANCE_DIMENSIONS = Dimensions({"M": -1, "L": -1, "T": 3, "Θ": 1})
+THERMAL_RESISTANCE_DIMENSIONS = Dimensions({"M": -1, "L": -2, "T": 3, "Θ": 1})
 
 # TODO More dimensions...
 
@@ -231,7 +234,7 @@ class Unit:
     def __init__(self, name: str, symbol: str, dimensions: Dimensions) -> None:
         self._name = name
         self._symbol = symbol
-        self._dimensions = dimensions or {}
+        self._dimensions = dimensions if dimensions is not None else Dimensions()
 
     @property
     def name(self) -> str:
@@ -311,6 +314,11 @@ class Unit:
         elif self._symbol in Unit.EQUIVALENT_UNITS:
             return Unit.EQUIVALENT_UNITS[self._symbol] == other._symbol
         return False
+
+    def __hash__(self) -> int:
+        # Equal units always share dimensions, so hashing them is consistent with __eq__
+        # (equivalent symbols such as "N" and "kg*m/s²" compare equal).
+        return hash(self._dimensions)
 
     def __pow__(self, power: Numeric) -> "Unit":
         """Raise the unit to the given power, adjusting the dimensions accordingly."""
@@ -572,7 +580,7 @@ class IlluminationUnits(Enum):
     MILLILUX = Unit("millilux", "mlx", ILLUMINATION_DIMENSIONS)
     MICROLUX = Unit("microlux", "μlx", ILLUMINATION_DIMENSIONS)
     KILOLUX = Unit("kilolux", "klx", ILLUMINATION_DIMENSIONS)
-    MEGALUX = Unit("megalux", "mlx", ILLUMINATION_DIMENSIONS)
+    MEGALUX = Unit("megalux", "Mlx", ILLUMINATION_DIMENSIONS)
 
 
 # Angle Unit
@@ -697,9 +705,8 @@ class AccelerationUnits(Enum):
     MILLIMETER_PER_SECOND_SQUARED = Unit(
         "millimeter per second squared", "mm/s²", ACCELERATION_DIMENSIONS
     )
-    G_FORCE = Unit(
-        "g-force", "g", ACCELERATION_DIMENSIONS
-    )  # Assuming 1 g = 9.80665 m/s² for context
+    # Standard gravity (1 gₙ = 9.80665 m/s²). Symbol differs from gram ("g") to keep symbols unique.
+    G_FORCE = Unit("g-force", "gₙ", ACCELERATION_DIMENSIONS)
 
 
 # Thermal conductivity Unit

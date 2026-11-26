@@ -56,11 +56,27 @@ class TestDimensions(unittest.TestCase):
         test_dim = CAPACITANCE_DIMENSIONS * FORCE_DIMENSIONS * LENGTH_DIMENSIONS * TIME_DIMENSIONS / (FORCE_DIMENSIONS * LENGTH_DIMENSIONS * TIME_DIMENSIONS * CAPACITANCE_DIMENSIONS)
         self.assertEqual(test_dim.is_dimensionless,True)
     
-    def test_repr1(self):
-        print(f'\nInductance dimensions: {repr(INDUCTANCE_DIMENSIONS)}')
-        print(f'Magnetic field dimensions: {repr(MAGNETIC_FIELD_DIMENSIONS)}')
-        print(f'Thermal conductivity dimensions: {repr(THERMAL_CONDUCTIVITY_DIMENSIONS)}')
-        pass
+    def test_str_follows_physical_priority_order(self):
+        self.assertEqual('M*L^2*T^-2*I^-2', str(INDUCTANCE_DIMENSIONS))
+        self.assertEqual('M*L^-1*T^-2*I^-1', str(MAGNETIC_FIELD_DIMENSIONS))
+        self.assertEqual('M*L*T^-3*Θ^-1', str(THERMAL_CONDUCTIVITY_DIMENSIONS))
+
+    def test_thermal_resistance_is_inverse_of_thermal_conductivity_times_length(self):
+        # R_th [K/W] = 1 / (k [W/(m·K)] · L [m]) per unit length² -> M^-1 L^-2 T^3 Θ
+        self.assertEqual('M^-1*L^-2*T^3*Θ', str(THERMAL_RESISTANCE_DIMENSIONS))
+        self.assertEqual(
+            THERMAL_RESISTANCE_DIMENSIONS, TEMPERATURE_DIMENSIONS / POWER_DIMENSIONS
+        )
+
+    def test_illumination_is_luminous_intensity_per_area(self):
+        self.assertEqual(
+            ILLUMINATION_DIMENSIONS, LUMINOUS_INTENSITY_DIMENSIONS / AREA_DIMENSIONS
+        )
+
+    def test_hash_is_consistent_with_eq(self):
+        self.assertEqual(hash(Dimensions({'L': 1, 'T': -1})), hash(Dimensions({'T': -1, 'L': 1})))
+        self.assertEqual(hash(Dimensions({'L': 1})), hash(Dimensions({'L': 1, 'M': 0})))
+        self.assertIn(SPEED_DIMENSIONS, {SPEED_DIMENSIONS})
 
     def test_in_all_dimensions1(self):
         test_dim = LENGTH_DIMENSIONS/TIME_DIMENSIONS

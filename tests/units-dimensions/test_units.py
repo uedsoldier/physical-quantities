@@ -24,21 +24,53 @@ class TestUnits(unittest.TestCase):
             test_unit1.is_compatible_with(test_unit2)
     
     def test_repr1(self):
-        print(f'\n{repr(MassFlowRateUnits.TON_PER_SECOND.value)}')
-        print(f'{repr(LengthUnits.YARD.value)}')
-        print(f'{repr(MagneticFluxUnits.WEBER.value)}')
-        print(f'{repr(ForceUnits.NEWTON.value)}')
-        print(f'{repr(MassUnits.KILOGRAM.value * LengthUnits.METER.value / TimeUnits.SECOND.value)}')
-        pass
+        self.assertEqual(
+            'Unit(name=ton per second, symbol=ton/s, dimensions=M*T^-1)',
+            repr(MassFlowRateUnits.TON_PER_SECOND.value),
+        )
+        self.assertEqual('Unit(name=yard, symbol=yd, dimensions=L)', repr(LengthUnits.YARD.value))
+        self.assertEqual(
+            'Unit(name=weber, symbol=Wb, dimensions=M*L^2*T^-2*I^-1)',
+            repr(MagneticFluxUnits.WEBER.value),
+        )
+        self.assertEqual(
+            'Unit(name=newton, symbol=N, dimensions=M*L*T^-2)', repr(ForceUnits.NEWTON.value)
+        )
+        momentum_unit = MassUnits.KILOGRAM.value * LengthUnits.METER.value / TimeUnits.SECOND.value
+        self.assertEqual(
+            'Unit(name=kilogram*meter/second, symbol=kg*m/s, dimensions=M*L*T^-1)',
+            repr(momentum_unit),
+        )
 
     def test_str1(self):
-        print(f'\n{MassFlowRateUnits.KILOGRAM_PER_MINUTE.value}')
-        print(f'{LengthUnits.MICROMETER.value}')
-        print(f'{ MagneticFluxUnits.MEGAWEBER.value}')
-        print(f'{ForceUnits.POUND_FORCE.value}')
-        print(f'{ResistanceUnits.OHM.value * LengthUnits.METER.value}')
-        pass
-    
+        self.assertEqual('kg/min', str(MassFlowRateUnits.KILOGRAM_PER_MINUTE.value))
+        self.assertEqual('μm', str(LengthUnits.MICROMETER.value))
+        self.assertEqual('MWb', str(MagneticFluxUnits.MEGAWEBER.value))
+        self.assertEqual('lbf', str(ForceUnits.POUND_FORCE.value))
+        self.assertEqual('Ω*m', str(ResistanceUnits.OHM.value * LengthUnits.METER.value))
+
+    def test_hash_is_consistent_with_eq(self):
+        newton = ForceUnits.NEWTON.value
+        equivalent_newton = Unit('kg*m/s²', 'kg*m/s²', FORCE_DIMENSIONS)
+        self.assertEqual(newton, equivalent_newton)
+        self.assertEqual(hash(newton), hash(equivalent_newton))
+
+    def test_units_are_usable_as_dict_keys_and_in_sets(self):
+        units = {LengthUnits.METER.value: 'm', TimeUnits.SECOND.value: 's'}
+        self.assertEqual('m', units[LengthUnits.METER.value])
+        self.assertIn(LengthUnits.METER.value, {LengthUnits.METER.value})
+
+    def test_unit_without_dimensions_is_dimensionless(self):
+        unit = Unit('dimensionless', '-', None)
+        self.assertIsInstance(unit.dimensions, Dimensions)
+        self.assertTrue(unit.is_dimensionless())
+
+    def test_symbols_resolve_to_the_right_unit(self):
+        self.assertIs(MassUnits.GRAM.value, find_unit_by_symbol('g'))
+        self.assertIs(AccelerationUnits.G_FORCE.value, find_unit_by_symbol('gₙ'))
+        self.assertIs(IlluminationUnits.MILLILUX.value, find_unit_by_symbol('mlx'))
+        self.assertIs(IlluminationUnits.MEGALUX.value, find_unit_by_symbol('Mlx'))
+
     def test_mul_units1(self):
         test_unit1 = LengthUnits.METER.value
         test_unit2 = LengthUnits.METER.value
