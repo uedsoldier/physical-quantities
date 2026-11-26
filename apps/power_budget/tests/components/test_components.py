@@ -3,7 +3,7 @@ import unittest
 
 from physical_quantities.quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity
 from physical_quantities.units import VoltageUnits, ElectricCurrentUnits, PowerUnits
-from core.power_budget import Component
+from power_budget import Component
 
 TEST_NAME='test_component'
 

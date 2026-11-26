@@ -5,9 +5,9 @@ import unittest
 from contextlib import closing
 from pathlib import Path
 
-from core.component_DAO import ComponentDAO
-from core.power_budget import BuckConverter, Component, LeadAcidBattery
-from core.power_supply_DAO import PowerSupplyDAO
+from power_budget.component_dao import ComponentDAO
+from power_budget import BuckConverter, Component, LeadAcidBattery
+from power_budget.power_supply_dao import PowerSupplyDAO
 from physical_quantities.quantities import (
     ElectricChargeQuantity,
     ElectricCurrentQuantity,

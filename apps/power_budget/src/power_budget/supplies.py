@@ -1,110 +1,13 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import List
-from physical_quantities.quantities import ElectricCurrentQuantity, PowerQuantity, VoltageQuantity, TimeQuantity, EnergyQuantity, ElectricChargeQuantity
-from physical_quantities._json import json_to_dict
-from physical_quantities.units import ElectricCurrentUnits, PowerUnits, VoltageUnits, TimeUnits, EnergyUnits, ElectricChargeUnits
-import os
+from typing import TYPE_CHECKING, List
+from physical_quantities.quantities import ElectricCurrentQuantity, PowerQuantity, VoltageQuantity, ElectricChargeQuantity
+from physical_quantities.units import ElectricCurrentUnits, PowerUnits, VoltageUnits
+
+if TYPE_CHECKING:
+    from .components import Component
 
 
-class Component:
-    
-    @classmethod
-    def from_voltage_current(cls, name: str, voltage: VoltageQuantity, current: ElectricCurrentQuantity):
-        return cls(name, voltage=voltage, current=current)
-
-    @classmethod
-    def from_voltage_power(cls, name: str, voltage: VoltageQuantity, power: PowerQuantity):
-        return cls(name, voltage=voltage, power=power)
-
-    @classmethod
-    def from_current_power(cls, name: str, current: ElectricCurrentQuantity, power: PowerQuantity):
-        return cls(name, current=current, power=power)
-    
-    """_summary_
-    """
-    def __init__(self, name: str, voltage:VoltageQuantity = None, current:ElectricCurrentQuantity = None, power:PowerQuantity = None, power_supply: BasePowerSupply = None) -> None:
-        self._name: str = name
-        self._voltage: VoltageQuantity = voltage
-        self._current: ElectricCurrentQuantity = current
-        self._power: PowerQuantity = power
-        self._power_supply: BasePowerSupply = power_supply
-        
-        if (voltage is not None and current is not None):
-            self.compute_power()
-        elif(voltage is not None and power is not None):
-            self.compute_current()
-        elif(current is not None and power is not None):
-            self.compute_voltage()
-        else:
-            raise ValueError('At least two parameters (voltage, current, power) must be provided.')
-        
-        
-    def energy_consumption(self, t: TimeQuantity) -> EnergyQuantity:
-        return EnergyQuantity( self.power.convert_to(PowerUnits.WATT.value).value * t.convert_to(TimeUnits.SECOND.value).value )
-    
-    def compute_power(self):
-        self.power =  PowerQuantity(self.voltage.convert_to(VoltageUnits.VOLT.value).value * self.current.convert_to(ElectricCurrentUnits.AMPERE.value).value )
-    
-    def compute_current(self):
-        self.current = ElectricCurrentQuantity(self.power.convert_to(PowerUnits.WATT.value).value / self.voltage.convert_to(VoltageUnits.VOLT.value).value)
-        
-    def compute_voltage(self):
-        self.voltage = VoltageQuantity(self.power.convert_to(PowerUnits.WATT.value).value / self.current.convert_to(ElectricCurrentUnits.AMPERE.value).value)
-    
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @name.setter
-    def name(self, value: str) -> None:
-        if not isinstance(value, str):
-            raise ValueError("Name must be a string")
-        self._name = value
-
-    @property
-    def voltage(self) -> VoltageQuantity:
-        return self._voltage
-
-    @voltage.setter
-    def voltage(self, value: VoltageQuantity) -> None:
-        if not isinstance(value, VoltageQuantity) and value is not None:
-            raise ValueError("Voltage must be of type Voltage")
-        self._voltage = value
-
-    @property
-    def current(self) -> ElectricCurrentQuantity:
-        return self._current
-
-    @current.setter
-    def current(self, value: ElectricCurrentQuantity) -> None:
-        if not isinstance(value, ElectricCurrentQuantity) and value is not None:
-            raise ValueError("Current must be of type Current")
-        self._current = value
-
-    @property
-    def power(self) -> PowerQuantity:
-        return self._power
-
-    @power.setter
-    def power(self, value: PowerQuantity) -> None:
-        if not isinstance(value, PowerQuantity) and value is not None:
-            raise ValueError("Power must be of type Power")
-        self._power = value
-    
-    @property
-    def power_supply(self) -> BasePowerSupply | None:
-        return self._power_supply
-
-    @power_supply.setter
-    def power_supply(self, new_power_supply: BasePowerSupply) -> None:
-        if not isinstance(new_power_supply, BasePowerSupply):
-            raise ValueError("new_power_supply must be a BasePowerSupply")
-        self._power_supply = new_power_supply
-    
-    def __str__(self) -> str:
-        return f'Component name: {self.name} V={self.voltage} I={self.current} P={self.power}'
-    
 class BasePowerSupply(ABC):
     
     def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity) -> None:
@@ -412,50 +315,3 @@ class LinearRegulator(VoltageRegulator):
             vin_max: float = max_input_voltage.convert_to(VoltageUnits.VOLT.value).value
             efficiency = min(vout / vin_max, self.MAX_EFFICIENCY)
         super().__init__(name, nominal_voltage, max_output_current, min_input_voltage, max_input_voltage, efficiency)
-
-
-class PowerBudget:
-    
-    def __str__(self) -> str:
-        return(f'{self.name}: {self.components}, {self.dc_power_supplies}')
-    
-    def __init__(self, name: str) -> None:
-        self._name: str = name
-        self._components: List[List[Component,int]] = []
-        self._dc_power_supplies: List[BasePowerSupply] = []
-        
-    @property
-    def name(self):
-        return self._name
-    
-    @name.setter
-    def name(self, new_name:str):
-        self._name = new_name
-        
-    @property
-    def dc_power_supplies(self):
-        return self._dc_power_supplies
-    
-    @property
-    def components(self):
-        return self._components     
-    
-    def add_component(self, component: Component, quantity:int = 1):
-        self._components.append((component,quantity))
-    
-    def add_power_supply(self, power_supply: BasePowerSupply):
-        self._dc_power_supplies.append(power_supply)
-    
-    def remove_component(self, index: int):
-        if index < 0 or index >= len(self._components):
-            raise IndexError(f'Index {index} does not exist')
-        self._components.pop(index)
-    
-    def remove_power_supply(self, index: int):
-        if index < 0 or index >= len(self._dc_power_supplies):
-            raise IndexError(f'Index {index} does not exist')
-        self._dc_power_supplies.pop(index)
-        
-
-
-

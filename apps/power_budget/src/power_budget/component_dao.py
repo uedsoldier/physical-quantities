@@ -1,8 +1,9 @@
 import logging
 
-from .power_budget import *
-from .baseDAO import BaseDAO
-from core.dao_db_schema import (
+from .components import Component
+from .supplies import *
+from .base_dao import BaseDAO
+from .dao_db_schema import (
     COMPONENTS_TABLE_NAME,
     POWER_SUPPLIES_TABLE_NAME,
     COLUMN_COMPONENT_ID,

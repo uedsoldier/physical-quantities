@@ -5,7 +5,7 @@ from physical_quantities.quantities import (
     ElectricCurrentQuantity,
     VoltageQuantity,
 )
-from core.power_budget import (
+from power_budget import (
     BuckConverter,
     Component,
     LeadAcidBattery,
