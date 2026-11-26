@@ -1,8 +1,5 @@
-import sys
-import os
 import unittest
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 from core.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity
 from core.unit import VoltageUnits, ElectricCurrentUnits, PowerUnits

@@ -9,9 +9,6 @@ import os
 
 class Component:
     
-    def __str__(self) -> str:
-        return(f'{self.name}: {self.voltage}, {self.current}, {self.power}')
-    
     @classmethod
     def from_voltage_current(cls, name: str, voltage: VoltageQuantity, current: ElectricCurrentQuantity):
         return cls(name, voltage=voltage, current=current)
@@ -96,8 +93,8 @@ class Component:
         self._power = value
     
     @property
-    def power_supply(self) -> BasePowerSupply:
-        return self.power_supply
+    def power_supply(self) -> BasePowerSupply | None:
+        return self._power_supply
 
     @power_supply.setter
     def power_supply(self, new_power_supply: BasePowerSupply) -> None:
@@ -115,8 +112,8 @@ class BasePowerSupply(ABC):
         self._nominal_voltage = nominal_voltage
         self._max_output_current = max_output_current
         self._components: List[List[Component,int]] = []
-        self._total_current: ElectricCurrentQuantity = ElectricCurrentQuantity(0.0,'mA')
-        self._total_power: PowerQuantity = PowerQuantity(0.0,'mW')
+        self._total_current: ElectricCurrentQuantity = ElectricCurrentQuantity(0.0, ElectricCurrentUnits.MILLIAMPERE.value)
+        self._total_power: PowerQuantity = PowerQuantity(0.0, PowerUnits.MILLIWATT.value)
         self._total_components: int = 0
     
     @property
@@ -179,23 +176,17 @@ class BasePowerSupply(ABC):
             raise IndexError("Component index out of range.")
         
     def compute_power_budget(self):
-        normalized_current: float = 0
-        normalized_power: float = 0
-        normalized_voltage = VoltageQuantity.convert_to(self.nominal_voltage,'V').value
-        for component_type in self.components:
-            component: Component = component_type[0]
-            component_qty: int = component_type[1]
-            component_current_value: float = ElectricCurrentQuantity.convert_to(component.current,'mA').value
-            normalized_current += component_current_value * component_qty
-        
-        normalized_power = normalized_current * normalized_voltage
-        self._total_current.unit = 'mA'
-        self._total_current.value = normalized_current
-        self._total_power.unit = 'mW'
-        self._total_power.value = normalized_power 
-        
-        
-        
+        """Recompute total current (mA) and power (mW) from the attached components."""
+        nominal_voltage_volts: float = self.nominal_voltage.convert_to(VoltageUnits.VOLT.value).value
+        total_current_ma: float = 0.0
+        for component, component_qty in self.components:
+            current_ma: float = component.current.convert_to(ElectricCurrentUnits.MILLIAMPERE.value).value
+            total_current_ma += current_ma * component_qty
+
+        # mA * V = mW
+        self._total_current = ElectricCurrentQuantity(total_current_ma, ElectricCurrentUnits.MILLIAMPERE.value)
+        self._total_power = PowerQuantity(total_current_ma * nominal_voltage_volts, PowerUnits.MILLIWATT.value)
+
     @property
     def total_current(self) -> ElectricCurrentQuantity:
         return self._total_current
@@ -409,9 +400,18 @@ class LeadAcidBattery(Battery):
         super().__init__(name,chemistry='Lead-Acid',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, cell_count=cell_count, subchemistry=self.LEAD_ACID_SUBCHEMISTRY)
 
 class LinearRegulator(VoltageRegulator):
-    
-    def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity):
-        super().__init__(name, nominal_voltage, max_output_current)
+
+    # This method is required to fulfill the abstractmethod contract
+    def _restrict_instantiation(self):
+        pass
+
+    def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity, efficiency: float | None = None):
+        if efficiency is None:
+            # A linear regulator dissipates (Vin - Vout) * I, so its worst-case efficiency is Vout / Vin_max.
+            vout: float = nominal_voltage.convert_to(VoltageUnits.VOLT.value).value
+            vin_max: float = max_input_voltage.convert_to(VoltageUnits.VOLT.value).value
+            efficiency = min(vout / vin_max, self.MAX_EFFICIENCY)
+        super().__init__(name, nominal_voltage, max_output_current, min_input_voltage, max_input_voltage, efficiency)
 
 
 class PowerBudget:
