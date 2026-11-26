@@ -68,7 +68,8 @@ class BaseQuantity:
         if not isinstance(other, BaseQuantity):
             return NotImplemented
         if type(self) is not type(other):
-            raise TypeError(f'Cannot compare different quantity types: {type(self)} and {type(other)}')
+            # Python resolves this to False for == and to TypeError for ordering operators.
+            return NotImplemented
         try:
             other_value_in_self_unit = other.convert_to(self.unit).value
         except ValueError:
@@ -91,8 +92,13 @@ class BaseQuantity:
             raise TypeError('BaseQuantity cannot be instantiated directly.')
         self._value = value
         self._unit = unit
-        self.__conversion_manager = BaseConversionManager(quantity_type)
-        
+        self._conversion_manager = self._create_conversion_manager(quantity_type)
+
+    @staticmethod
+    def _create_conversion_manager(quantity_type: str) -> BaseConversionManager:
+        """Factory hook: subclasses with non-linear conversions override it."""
+        return BaseConversionManager(quantity_type)
+
     def __str__(self) -> str:
         return f'{self._value} [{self._unit}]'
     
@@ -117,8 +123,9 @@ class BaseQuantity:
         value: float = data['value']
         unit_symbol: str = data['unit']
         unit = find_unit_by_symbol(unit_symbol)  # Encuentra la unidad a partir del símbolo
-        unit_type = find_unit_type_by_symbol(unit_symbol)  # Encuentra el tipo de unidad
-        
+        if unit is None:
+            raise ValueError(f'Unknown unit symbol: {unit_symbol!r}')
+
         return cls(value, unit)
         
     @property
@@ -146,7 +153,7 @@ class BaseQuantity:
             raise ValueError(f'Cannot convert between incompatible units: {self.unit} and {target_unit}')
 
         # Perform the conversion using the conversion manager
-        converted_value = self.__conversion_manager.convert(self.value, self.unit, target_unit)
+        converted_value = self._conversion_manager.convert(self.value, self.unit, target_unit)
 
         # Return a new instance of the same class with the converted value and unit
         return type(self)(converted_value, target_unit)
@@ -161,15 +168,13 @@ class MassQuantity(BaseQuantity):
         super().__init__(value, unit,'mass')
     
 class TemperatureQuantity(BaseQuantity):
-    def __init__(self, value: float,unit: Unit = LengthUnits.METER.value) -> None:
+    def __init__(self, value: float,unit: Unit = TemperatureUnits.KELVIN.value) -> None:
         super().__init__(value, unit,'temperature')
-        self._conversion_manager = TemperatureConversionManager()
-    
-    def convert_to(self, target_unit: Unit):
-        if(self.unit == target_unit):
-            return TemperatureQuantity(self.value,self.unit)
-        converted_value = self.conversion_manager.convert(self.value, self.unit, target_unit)
-        return TemperatureQuantity(value=converted_value, unit=target_unit)
+
+    @staticmethod
+    def _create_conversion_manager(quantity_type: str) -> BaseConversionManager:
+        # Temperature scales are affine (offset + factor), not purely multiplicative.
+        return TemperatureConversionManager()
     
 class TimeQuantity(BaseQuantity):
     def __init__(self, value: float,unit: Unit = TimeUnits.SECOND.value) -> None:
