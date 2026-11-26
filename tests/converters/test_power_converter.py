@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import PowerUnits
@@ -13,7 +14,7 @@ class TestPowerConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = PowerUnits.WATT.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         (1, PowerUnits.KILOWATT.value, PowerUnits.WATT.value, 1000, 6),
         (1500, PowerUnits.MILLIWATT.value, PowerUnits.WATT.value, 1.5, 6),
         (1, PowerUnits.MEGAWATT.value, PowerUnits.KILOWATT.value, 1000, 6),

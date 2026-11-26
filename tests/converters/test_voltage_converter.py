@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import VoltageUnits
@@ -13,7 +14,7 @@ class TestVoltageConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = VoltageUnits.VOLT.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         (1, VoltageUnits.VOLT.value, VoltageUnits.MICROVOLT.value, 1e6, 6),
         (10000, VoltageUnits.VOLT.value, VoltageUnits.KILOVOLT.value, 10, 9),
     ]

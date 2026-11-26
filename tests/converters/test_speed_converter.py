@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import SpeedUnits
@@ -13,7 +14,7 @@ class TestSpeedConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = SpeedUnits.METER_PER_SECOND.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         (
             1000,
             SpeedUnits.METER_PER_SECOND.value,

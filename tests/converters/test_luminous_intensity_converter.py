@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import LuminousIntensityUnits
@@ -13,7 +14,7 @@ class TestLuminousIntensityConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = LuminousIntensityUnits.CANDELA.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         # Candela to Millcandela
         (
             1.0,

@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import MassUnits
@@ -13,7 +14,7 @@ class TestMassConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = MassUnits.KILOGRAM.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         (1.0, MassUnits.KILOGRAM.value, MassUnits.GRAM.value, 1000, 6),
         (454, MassUnits.GRAM.value, MassUnits.POUND.value, 1, 2),
     ]

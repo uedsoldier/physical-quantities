@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import MassFlowRateUnits
@@ -13,7 +14,7 @@ class TestMassFlowRateConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = MassFlowRateUnits.KILOGRAM_PER_SECOND.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         # Kilograms per second to grams per second
         (
             1.0,

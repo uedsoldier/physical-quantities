@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import ThermalResistanceUnits
@@ -13,7 +14,7 @@ class TestThermalConductivityConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = ThermalResistanceUnits.KELVIN_PER_WATT.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         # SI unit conversions
         (
             1.0,

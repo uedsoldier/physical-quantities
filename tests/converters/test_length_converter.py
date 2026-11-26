@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import LengthUnits
@@ -13,7 +14,7 @@ class TestLengthConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = LengthUnits.METER.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         (1.0, LengthUnits.METER.value, LengthUnits.MILLIMETER.value, 1000, 6),
         (25.4, LengthUnits.MILLIMETER.value, LengthUnits.INCH.value, 1, 6),
         (10, LengthUnits.KILOMETER.value, LengthUnits.METER.value, 10000, 6),

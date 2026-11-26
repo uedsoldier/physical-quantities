@@ -1,6 +1,6 @@
 import unittest
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from physical_quantities.units import Dimensions, Unit
 
@@ -29,7 +29,7 @@ class BaseConversionTest(_TestCaseBase):
     # Subclasses must override these attributes
     conversion_manager = None
     # Format: (value, from_unit, to_unit, expected_value, decimal_places)
-    test_cases: list[tuple[float, Any, Any, float, int]] = []
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = []
 
     standard_unit = None
 

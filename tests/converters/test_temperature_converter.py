@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.quantities import TemperatureConversionManager
 from physical_quantities.units import TemperatureUnits
@@ -14,7 +15,7 @@ class TestTemperatureConverter(BaseConversionTest, unittest.TestCase):
     # Definimos una unidad válida para que la base sepa contra qué probar el error
     standard_unit = TemperatureUnits.KELVIN.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         (373.15, TemperatureUnits.KELVIN.value, TemperatureUnits.CELSIUS.value, 100, 6),
         (212.0, TemperatureUnits.FAHRENHEIT.value, TemperatureUnits.CELSIUS.value, 100, 6),
         (0, TemperatureUnits.CELSIUS.value, TemperatureUnits.FAHRENHEIT.value, 32, 6),

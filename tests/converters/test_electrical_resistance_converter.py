@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import ResistanceUnits
@@ -13,7 +14,7 @@ class TestElectricalResistanceConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = ResistanceUnits.OHM.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         # Ohms to Milliohms
         (1.0, ResistanceUnits.OHM.value, ResistanceUnits.MILLIOHM.value, 1e3, 6),
         # 1 Ω = 1000 mΩ

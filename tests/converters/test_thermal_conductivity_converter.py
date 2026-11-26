@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import ThermalConductivityUnits
@@ -13,7 +14,7 @@ class TestThermalConductivityConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = ThermalConductivityUnits.WATT_PER_METER_KELVIN.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         (
             1.0,
             ThermalConductivityUnits.WATT_PER_METER_KELVIN.value,

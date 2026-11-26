@@ -90,7 +90,7 @@ class Component:
     @name.setter
     def name(self, value: str) -> None:
         if not isinstance(value, str):
-            raise ValueError("Name must be a string")
+            raise ValueError("Name must be a string")  # noqa: TRY004 (ValueError kept, like the other setters)
         self._name = value
 
     @property
@@ -130,7 +130,7 @@ class Component:
     @power_supply.setter
     def power_supply(self, new_power_supply: BasePowerSupply) -> None:
         if not isinstance(new_power_supply, BasePowerSupply):
-            raise ValueError("new_power_supply must be a BasePowerSupply")
+            raise ValueError("new_power_supply must be a BasePowerSupply")  # noqa: TRY004
         self._power_supply = new_power_supply
 
     def __str__(self) -> str:

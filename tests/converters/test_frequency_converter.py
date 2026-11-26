@@ -1,5 +1,6 @@
 import unittest
 from math import pi
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import FrequencyUnits
@@ -14,7 +15,7 @@ class TestFrequencyConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = FrequencyUnits.HERTZ.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         # Hertz to Radians per Second
         (1, FrequencyUnits.HERTZ.value, FrequencyUnits.RAD_PER_SECOND.value, 2 * pi, 6),
         # Revolutions per Minute (rpm) to Radians per Second

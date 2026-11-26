@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import AreaUnits
@@ -12,7 +13,7 @@ class TestAreaConverter(BaseConversionTest, unittest.TestCase):
         cls.conversion_manager = BaseConversionManager("area")
 
     standard_unit = AreaUnits.SQUARE_METER.value
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         # Square Centimeters to Square Meters
         (250, AreaUnits.SQUARE_CENTIMETER.value, AreaUnits.SQUARE_METER.value, 0.025, 6),
         # Square Feet to Square Meters

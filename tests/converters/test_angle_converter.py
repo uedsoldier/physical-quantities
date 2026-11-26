@@ -1,5 +1,6 @@
 import unittest
 from math import pi
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import AngleUnits
@@ -14,7 +15,7 @@ class TestAngleConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = AngleUnits.DEGREE.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         # Degrees to Radians
         (90, AngleUnits.DEGREE.value, AngleUnits.RADIAN.value, pi / 2, 6),
         # Radians to Degrees

@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import VolumeUnits
@@ -13,7 +14,7 @@ class TestVolumeConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = VolumeUnits.CUBIC_METER.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         (1000, VolumeUnits.CUBIC_CENTIMETER.value, VolumeUnits.CUBIC_METER.value, 0.001, 3),
         (2, VolumeUnits.LITER.value, VolumeUnits.CUBIC_METER.value, 0.002, 3),
         (500, VolumeUnits.MILLILITER.value, VolumeUnits.CUBIC_METER.value, 0.0005, 4),

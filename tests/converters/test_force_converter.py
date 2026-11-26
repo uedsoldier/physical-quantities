@@ -1,4 +1,5 @@
 import unittest
+from typing import Any, ClassVar
 
 from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import ForceUnits
@@ -13,7 +14,7 @@ class TestForceConverter(BaseConversionTest, unittest.TestCase):
 
     standard_unit = ForceUnits.NEWTON.value
 
-    test_cases = [
+    test_cases: ClassVar[list[tuple[float, Any, Any, float, int]]] = [
         # Kilonewtons to Newtons
         (0.5, ForceUnits.KILONEWTON.value, ForceUnits.NEWTON.value, 500, 6),
         # Kilogram-force to Newtons
