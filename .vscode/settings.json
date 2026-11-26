@@ -1,4 +1,5 @@
 {
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
     "python.testing.unittestArgs": [
         "-v",
         "-s",
@@ -7,5 +8,10 @@
         "test_*.py"
     ],
     "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": true
+    "python.testing.unittestEnabled": true,
+    "github.copilot.chat.commitMessageGeneration.instructions": [
+        {
+            "text": "Use Conventional Commits: type(scope): imperative-mood description, lowercase, no trailing period, max 100 characters. Concise and clear. Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert. For breaking changes, add ! after the scope."
+        }
+    ]
 }
