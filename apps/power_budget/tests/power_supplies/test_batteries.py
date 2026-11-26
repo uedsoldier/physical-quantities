@@ -1,10 +1,14 @@
 import unittest
-from typing import List, Tuple
 
-
-from physical_quantities.quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity
+from physical_quantities.quantities import (
+    ElectricChargeQuantity,
+    ElectricCurrentQuantity,
+    VoltageQuantity,
+)
 from physical_quantities.units import ElectricChargeUnits
+
 from power_budget import LeadAcidBattery, LithiumBattery
+
 
 class LeadAcidBatteriesTester(unittest.TestCase):
     @classmethod
@@ -15,7 +19,7 @@ class LeadAcidBatteriesTester(unittest.TestCase):
         return super().setUp()
     
     def test_voltages(self):
-        TEST_LEAD_ACID_BATTERIES: List[Tuple[ElectricCurrentQuantity,ElectricChargeUnits,int,VoltageQuantity]] = [
+        TEST_LEAD_ACID_BATTERIES: list[tuple[ElectricCurrentQuantity,ElectricChargeUnits,int,VoltageQuantity]] = [
             (ElectricCurrentQuantity(2), ElectricChargeQuantity(5000,ElectricChargeUnits.MILLIAMPERE_HOUR.value), 6, VoltageQuantity(12.0)),
             (ElectricCurrentQuantity(1), ElectricChargeQuantity(2000,ElectricChargeUnits.MILLIAMPERE_HOUR.value), 3, VoltageQuantity(6.0))
         ]
@@ -34,7 +38,7 @@ class LithiumBatteriesTester(unittest.TestCase):
         return super().setUp()
     
     def test_voltages(self):
-        TEST_LITHIUM_BATTERIES: List[Tuple[ElectricCurrentQuantity,ElectricChargeUnits,int,str,VoltageQuantity]] = [
+        TEST_LITHIUM_BATTERIES: list[tuple[ElectricCurrentQuantity,ElectricChargeUnits,int,str,VoltageQuantity]] = [
             (ElectricCurrentQuantity(2), ElectricChargeQuantity(5000,ElectricChargeUnits.MILLIAMPERE_HOUR.value), 1, 'LiPo',VoltageQuantity(3.7)),
             (ElectricCurrentQuantity(1), ElectricChargeQuantity(2000,ElectricChargeUnits.MILLIAMPERE_HOUR.value), 2, 'Li-ion',VoltageQuantity(7.2))
         ]

@@ -1,19 +1,19 @@
-from typing import List
 
-from .supplies import BasePowerSupply, Battery, DCDCConverter
-from .base_dao import BaseDAO
-from physical_quantities.quantities import ElectricCurrentQuantity, VoltageQuantity
 from physical_quantities._json import dict_to_json_string
+from physical_quantities.quantities import ElectricCurrentQuantity, VoltageQuantity
+
+from .base_dao import BaseDAO
 from .dao_db_schema import (
-    POWER_SUPPLIES_TABLE_NAME,
-    COLUMN_POWER_SUPPLY_ID,
-    COLUMN_POWER_SUPPLY_NAME,
-    COLUMN_NOMINAL_VOLTAGE,
-    COLUMN_MAX_OUTPUT_CURRENT,
     COLUMN_ADDITIONAL_INFO,
     COLUMN_COMPONENT_COUNT,
+    COLUMN_MAX_OUTPUT_CURRENT,
+    COLUMN_NOMINAL_VOLTAGE,
+    COLUMN_POWER_SUPPLY_ID,
+    COLUMN_POWER_SUPPLY_NAME,
     COMPONENTS_TABLE_NAME,
+    POWER_SUPPLIES_TABLE_NAME,
 )
+from .supplies import BasePowerSupply, Battery, DCDCConverter
 
 
 class PowerSupplyDAO(BaseDAO):
@@ -155,7 +155,7 @@ class PowerSupplyDAO(BaseDAO):
             output_current = ElectricCurrentQuantity(0)
             return output_current.from_json_string(query)
 
-    def get_power_supply_ids_by_name(self, power_supply_name: str) -> List[int]:
+    def get_power_supply_ids_by_name(self, power_supply_name: str) -> list[int]:
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -163,7 +163,7 @@ class PowerSupplyDAO(BaseDAO):
                 """,
                 (power_supply_name,),
             )
-            query: List[int] = []
+            query: list[int] = []
             raw_query = self.cursor.fetchall()
             query = [i[0] for i in raw_query ]
             return query

@@ -1,18 +1,19 @@
 import logging
 
-from .components import Component
 from physical_quantities.quantities import ElectricCurrentQuantity, PowerQuantity, VoltageQuantity
+
 from .base_dao import BaseDAO
+from .components import Component
 from .dao_db_schema import (
-    COMPONENTS_TABLE_NAME,
-    POWER_SUPPLIES_TABLE_NAME,
+    COLUMN_COMPONENT_COUNT,
     COLUMN_COMPONENT_ID,
     COLUMN_COMPONENT_NAME,
-    COLUMN_VOLTAGE,
     COLUMN_CURRENT,
     COLUMN_POWER,
     COLUMN_POWER_SUPPLY_ID,
-    COLUMN_COMPONENT_COUNT
+    COLUMN_VOLTAGE,
+    COMPONENTS_TABLE_NAME,
+    POWER_SUPPLIES_TABLE_NAME,
 )
 
 logger = logging.getLogger(__name__)

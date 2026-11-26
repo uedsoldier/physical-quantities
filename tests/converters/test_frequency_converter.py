@@ -1,8 +1,11 @@
 import unittest
-from physical_quantities.conversion import BaseConversionManager
 from math import pi
+
+from physical_quantities.conversion import BaseConversionManager
 from physical_quantities.units import FrequencyUnits
+
 from .base_converter_test import BaseConversionTest
+
 
 class TestFrequencyConverter(BaseConversionTest, unittest.TestCase):
     @classmethod

@@ -1,8 +1,8 @@
 import unittest
 
-
-from physical_quantities.quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity
+from physical_quantities.quantities import ElectricCurrentQuantity, PowerQuantity, VoltageQuantity
 from physical_quantities.units import ElectricCurrentUnits, PowerUnits
+
 from power_budget import Component
 
 TEST_NAME='test_component'

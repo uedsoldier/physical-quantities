@@ -55,9 +55,8 @@ class TestAcVoltage(unittest.TestCase):
 
     def test_non_positive_frequency_raises(self):
         for frequency in (0, -50):
-            with self.subTest(frequency=frequency):
-                with self.assertRaises(ValueError):
-                    AC_Voltage(VoltageQuantity(120), FrequencyQuantity(frequency))
+            with self.subTest(frequency=frequency), self.assertRaises(ValueError):
+                AC_Voltage(VoltageQuantity(120), FrequencyQuantity(frequency))
 
     def test_str(self):
         text = str(AC_Voltage(VoltageQuantity(120), FrequencyQuantity(60)))

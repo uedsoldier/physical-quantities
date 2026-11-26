@@ -5,9 +5,6 @@ import unittest
 from contextlib import closing
 from pathlib import Path
 
-from power_budget.component_dao import ComponentDAO
-from power_budget import BuckConverter, Component, LeadAcidBattery
-from power_budget.power_supply_dao import PowerSupplyDAO
 from physical_quantities.quantities import (
     ElectricChargeQuantity,
     ElectricCurrentQuantity,
@@ -15,6 +12,10 @@ from physical_quantities.quantities import (
     VoltageQuantity,
 )
 from physical_quantities.units import ElectricChargeUnits
+
+from power_budget import BuckConverter, Component, LeadAcidBattery
+from power_budget.component_dao import ComponentDAO
+from power_budget.power_supply_dao import PowerSupplyDAO
 
 SQL_SCRIPT = Path(__file__).with_name("create_mock_database.sql")
 

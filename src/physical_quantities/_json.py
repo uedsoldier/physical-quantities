@@ -1,5 +1,6 @@
 import json
 
+
 def json_to_dict(json_file, encoding='utf-8') -> dict:
     """Converts a json object from a path to a python dict
 

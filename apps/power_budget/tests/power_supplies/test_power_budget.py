@@ -5,6 +5,8 @@ from physical_quantities.quantities import (
     ElectricCurrentQuantity,
     VoltageQuantity,
 )
+from physical_quantities.units import ElectricChargeUnits, ElectricCurrentUnits, PowerUnits
+
 from power_budget import (
     BuckConverter,
     Component,
@@ -12,7 +14,6 @@ from power_budget import (
     LinearRegulator,
     PowerBudget,
 )
-from physical_quantities.units import ElectricChargeUnits, ElectricCurrentUnits, PowerUnits
 
 
 def make_battery() -> LeadAcidBattery:

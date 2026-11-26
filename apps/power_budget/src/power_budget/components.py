@@ -1,6 +1,14 @@
 from __future__ import annotations
-from physical_quantities.quantities import ElectricCurrentQuantity, PowerQuantity, VoltageQuantity, TimeQuantity, EnergyQuantity
-from physical_quantities.units import ElectricCurrentUnits, PowerUnits, VoltageUnits, TimeUnits
+
+from physical_quantities.quantities import (
+    ElectricCurrentQuantity,
+    EnergyQuantity,
+    PowerQuantity,
+    TimeQuantity,
+    VoltageQuantity,
+)
+from physical_quantities.units import ElectricCurrentUnits, PowerUnits, TimeUnits, VoltageUnits
+
 from .supplies import BasePowerSupply
 
 

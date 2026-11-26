@@ -1,14 +1,5 @@
 {
-        "K": {
-            "to_base": "lambda x: x",
-            "from_base": "lambda x: x"
-        },
-        "°F": {
-            "to_base": "lambda x: (x-32)*5/9 + 273.15",
-            "from_base": "lambda x: (x-273.15)*9/5 + 32"
-        },
-        "°C": {
-            "to_base": "lambda x: x + 273.15",
-            "from_base": "lambda x: x - 273.15"
-        }
+    "K":  {"pre_offset": 0,   "num": 1, "den": 1, "post_offset": 0},
+    "°F": {"pre_offset": -32, "num": 5, "den": 9, "post_offset": 273.15},
+    "°C": {"pre_offset": 0,   "num": 1, "den": 1, "post_offset": 273.15}
 }

@@ -1,9 +1,11 @@
 import unittest
+from math import pi
 
 from physical_quantities.conversion import BaseConversionManager
-from math import pi
 from physical_quantities.units import AngleUnits
+
 from .base_converter_test import BaseConversionTest
+
 
 class TestAngleConverter(BaseConversionTest, unittest.TestCase):
     @classmethod

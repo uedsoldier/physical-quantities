@@ -1,5 +1,7 @@
 import unittest
+
 from physical_quantities.units import *
+
 
 class TestUnits(unittest.TestCase):
 
@@ -191,7 +193,6 @@ class TestUnits(unittest.TestCase):
         #             self.assertAlmostEqual(float(result), expected, places=decimal_places)
         #         except AssertionError as e:
         #             self.fail(f"Conversion failed for {value} {from_unit} to {to_unit}. Expected {expected}, got {result}. Error: {e}")
-        pass
     
     
     # def test_invalid_units(self):

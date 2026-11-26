@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+
 from .components import Component
 from .supplies import BasePowerSupply
 
@@ -11,8 +11,8 @@ class PowerBudget:
     
     def __init__(self, name: str) -> None:
         self._name: str = name
-        self._components: List[List[Component,int]] = []
-        self._dc_power_supplies: List[BasePowerSupply] = []
+        self._components: list[list[Component,int]] = []
+        self._dc_power_supplies: list[BasePowerSupply] = []
         
     @property
     def name(self):

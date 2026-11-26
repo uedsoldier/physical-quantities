@@ -1,15 +1,16 @@
-from typing import Dict, Optional, Union, Mapping
+import numbers
+from collections.abc import Mapping
 from enum import Enum
 from fractions import Fraction
-import numbers
+from typing import ClassVar
 
-Numeric = Union[int, float, Fraction]
+Numeric = int | float | Fraction
 
 
 class Dimensions:
 
-    def __init__(self, dimensions_dict: Optional[Mapping[str, Numeric]] = None) -> None:
-        self.__dimensions_dict: Dict[str, Fraction] = {}
+    def __init__(self, dimensions_dict: Mapping[str, Numeric] | None = None) -> None:
+        self.__dimensions_dict: dict[str, Fraction] = {}
         if dimensions_dict:
             for dim, exponent in dimensions_dict.items():
                 # 1. Validación: Debe ser un número
@@ -37,7 +38,7 @@ class Dimensions:
     def __hash__(self) -> int:
         return hash(frozenset(self.__dimensions_dict.items()))
 
-    def __pow__(self, exponent: Numeric) -> "Dimensions":
+    def __pow__(self, exponent: Numeric) -> Dimensions:
         """Raise each dimension's exponent to the power of a constant exponent."""
 
         # Ensure the exponent is a numeric value (either int or float)
@@ -92,7 +93,7 @@ class Dimensions:
                 parts.append(f"{dim}^{val}")
         return "*".join(parts)
 
-    def __mul__(self, other: "Dimensions") -> "Dimensions":
+    def __mul__(self, other: Dimensions) -> Dimensions:
         """Multiply two Dimensions objects, combining their exponents."""
         if not isinstance(other, Dimensions):
             raise TypeError("Can only multiply with another Dimensions instance.")
@@ -107,7 +108,7 @@ class Dimensions:
 
         return Dimensions(new_dimensions)
 
-    def __truediv__(self, other: "Dimensions") -> "Dimensions":
+    def __truediv__(self, other: Dimensions) -> Dimensions:
         """Divide two Dimensions objects, subtracting the exponents."""
         if not isinstance(other, Dimensions):
             raise TypeError("Can only divide with another Dimensions instance.")
@@ -125,7 +126,7 @@ class Dimensions:
         return f"{self.dimensions_dict}"
 
     @property
-    def dimensions_dict(self) -> Dict[str, Fraction]:
+    def dimensions_dict(self) -> dict[str, Fraction]:
         return (
             self.__dimensions_dict.copy()
         )  # Retornar copia para proteger inmutabilidad
@@ -204,7 +205,7 @@ ALL_DIMENSIONS = (
 class Unit:
 
     # Mapping of equivalent unit symbols
-    EQUIVALENT_UNITS = {
+    EQUIVALENT_UNITS: ClassVar[dict[str, str]] = {
         "N": "kg*m/s²",  # Newton is equivalent to kilogram meter per square second
         "kg*m/s²": "N",
         "Pa": "N/m²",  # Pascal is equivalent to Newton per square meter
@@ -248,7 +249,7 @@ class Unit:
     def dimensions(self) -> Dimensions:
         return self._dimensions
 
-    def is_compatible_with(self, other: "Unit") -> bool:
+    def is_compatible_with(self, other: Unit) -> bool:
         """Check if this unit is compatible with another unit."""
         if not isinstance(other, Unit):
             raise TypeError("Can only check compatibility with another Unit.")
@@ -261,7 +262,7 @@ class Unit:
     def __str__(self):
         return self._symbol
 
-    def __mul__(self, other: "Unit") -> "Unit":
+    def __mul__(self, other: Unit) -> Unit:
         """Multiplying two units combines their dimensions."""
         if not isinstance(other, Unit):
             raise TypeError("Can only multiply by another Unit.")
@@ -288,7 +289,7 @@ class Unit:
 
         return Unit(new_name, new_symbol, new_dimensions)
 
-    def __truediv__(self, other: "Unit") -> "Unit":
+    def __truediv__(self, other: Unit) -> Unit:
         """Dividing two units combines their dimensions with subtracted exponents."""
         if not isinstance(other, Unit):
             raise TypeError("Can only divide by another Unit.")
@@ -304,7 +305,7 @@ class Unit:
         """Check if the unit is dimensionless."""
         return self._dimensions.is_dimensionless
 
-    def __eq__(self, other: "Unit") -> bool:
+    def __eq__(self, other: object) -> bool:
         """Check if two units are equal by comparing their dimensions and symbols."""
         if not isinstance(other, Unit) or not self.is_compatible_with(other):
             return False
@@ -320,7 +321,7 @@ class Unit:
         # (equivalent symbols such as "N" and "kg*m/s²" compare equal).
         return hash(self._dimensions)
 
-    def __pow__(self, power: Numeric) -> "Unit":
+    def __pow__(self, power: Numeric) -> Unit:
         """Raise the unit to the given power, adjusting the dimensions accordingly."""
         if not isinstance(power, numbers.Number):
             raise TypeError("Power must be a number.")
@@ -792,10 +793,10 @@ UNIT_ENUM_BY_QUANTITY = {
 # Llenamos estos diccionarios una sola vez para que las búsquedas 
 # sean instantáneas (O(1)) en lugar de recorrer bucles (O(N)).
 
-_SYMBOL_TO_UNIT: Dict[str, Unit] = {}
-_NAME_TO_UNIT: Dict[str, Unit] = {}
-_SYMBOL_TO_TYPE: Dict[str, str] = {}
-_NAME_TO_TYPE: Dict[str, str] = {}
+_SYMBOL_TO_UNIT: dict[str, Unit] = {}
+_NAME_TO_UNIT: dict[str, Unit] = {}
+_SYMBOL_TO_TYPE: dict[str, str] = {}
+_NAME_TO_TYPE: dict[str, str] = {}
 
 for quantity_type, enum_class in UNIT_ENUM_BY_QUANTITY.items():
     for member in enum_class:

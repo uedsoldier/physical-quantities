@@ -54,10 +54,12 @@ class TestConversionTablesConsistency(unittest.TestCase):
             with self.subTest(quantity_type=quantity_type):
                 self.assertIn(1, load_table(quantity_type).values())
 
-    def test_temperature_table_has_both_directions(self):
+    def test_temperature_table_entries_are_affine_parameters(self):
         for symbol, entry in load_table("temperature").items():
             with self.subTest(symbol=symbol):
-                self.assertEqual({"to_base", "from_base"}, set(entry))
+                self.assertEqual({"pre_offset", "num", "den", "post_offset"}, set(entry))
+                self.assertNotEqual(0, entry["num"])
+                self.assertNotEqual(0, entry["den"])
 
 
 class TestUnitSymbols(unittest.TestCase):

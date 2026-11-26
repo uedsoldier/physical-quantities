@@ -1,7 +1,14 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, List
-from physical_quantities.quantities import ElectricCurrentQuantity, PowerQuantity, VoltageQuantity, ElectricChargeQuantity
+from typing import TYPE_CHECKING
+
+from physical_quantities.quantities import (
+    ElectricChargeQuantity,
+    ElectricCurrentQuantity,
+    PowerQuantity,
+    VoltageQuantity,
+)
 from physical_quantities.units import ElectricCurrentUnits, PowerUnits, VoltageUnits
 
 if TYPE_CHECKING:
@@ -14,7 +21,7 @@ class BasePowerSupply(ABC):
         self._name = name
         self._nominal_voltage = nominal_voltage
         self._max_output_current = max_output_current
-        self._components: List[List[Component,int]] = []
+        self._components: list[list[Component,int]] = []
         self._total_current: ElectricCurrentQuantity = ElectricCurrentQuantity(0.0, ElectricCurrentUnits.MILLIAMPERE.value)
         self._total_power: PowerQuantity = PowerQuantity(0.0, PowerUnits.MILLIWATT.value)
         self._total_components: int = 0
@@ -35,7 +42,7 @@ class BasePowerSupply(ABC):
         return cnt
     
     @property
-    def components(self) -> List[List[Component,int]]:
+    def components(self) -> list[list[Component,int]]:
         return self._components
     
     @property

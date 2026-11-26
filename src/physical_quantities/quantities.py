@@ -1,27 +1,48 @@
 
-from ._json import json_string_to_dict, dict_to_json_string
+from functools import total_ordering
+from typing import Self
+
+from ._json import dict_to_json_string, json_string_to_dict
 from .conversion import BaseConversionManager, TemperatureConversionManager
 from .units import (
-    AngleUnits, ElectricChargeUnits, ElectricCurrentUnits, EnergyUnits, ForceUnits,
-    FrequencyUnits, LengthUnits, MassFlowRateUnits, MassUnits, PowerUnits, ResistanceUnits,
-    TemperatureUnits, TimeUnits, Unit, VoltageUnits, VolumeUnits, find_unit_by_symbol,
+    AngleUnits,
+    ElectricChargeUnits,
+    ElectricCurrentUnits,
+    EnergyUnits,
+    ForceUnits,
+    FrequencyUnits,
+    LengthUnits,
+    MassFlowRateUnits,
+    MassUnits,
+    PowerUnits,
+    ResistanceUnits,
+    TemperatureUnits,
+    TimeUnits,
+    Unit,
+    VoltageUnits,
+    VolumeUnits,
+    find_unit_by_symbol,
 )
-from functools import total_ordering
+
 
 @total_ordering
 class BaseQuantity:
     
-    def __abs__(self) -> "BaseQuantity":
-        return type(self)(abs(self._value), self._unit)
+    def _new(self, value: float, unit: Unit) -> Self:
+        """Build an instance of the concrete subclass (subclasses take ``(value, unit)``)."""
+        return type(self)(value, unit)  # type: ignore[call-arg]
+
+    def __abs__(self) -> Self:
+        return self._new(abs(self._value), self._unit)
     
-    def __round__(self, ndigits=None) -> "BaseQuantity":
+    def __round__(self, ndigits=None) -> Self:
         new_value = round(self._value, ndigits)
-        return type(self)(new_value, self._unit)
+        return self._new(new_value, self._unit)
     
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(value={self._value}, unit={repr(self._unit)})'
+        return f'{self.__class__.__name__}(value={self._value}, unit={self._unit!r})'
 
-    def _assert_compatible(self, other: "BaseQuantity") -> None:
+    def _assert_compatible(self, other: BaseQuantity) -> None:
         """Check if two quantities are compatible for addition or subtraction."""
         if not isinstance(other, BaseQuantity):
             raise TypeError('Can only operate on another BaseQuantity.')
@@ -30,21 +51,21 @@ class BaseQuantity:
         if not self.unit.is_compatible_with(other.unit):
             raise ValueError(f'Cannot operate on incompatible units: {self.unit} and {other.unit}')
     
-    def __add__(self, other: "BaseQuantity") -> "BaseQuantity":
+    def __add__(self, other: BaseQuantity) -> Self:
         self._assert_compatible(other)
         # Convert the other value to the same unit as self
         other_converted = other.convert_to(self.unit)
         new_value = self.value + other_converted.value
-        return type(self)(new_value, self.unit)
+        return self._new(new_value, self.unit)
     
-    def __sub__(self, other: "BaseQuantity") -> "BaseQuantity":
+    def __sub__(self, other: BaseQuantity) -> Self:
         self._assert_compatible(other)
         # Convert the other value to the same unit as self
         other_converted = other.convert_to(self.unit)
         new_value = self.value - other_converted.value
-        return type(self)(new_value, self.unit)
+        return self._new(new_value, self.unit)
     
-    def __truediv__(self, other: "BaseQuantity"):
+    def __truediv__(self, other: BaseQuantity):
         if not isinstance(other, BaseQuantity):
             return NotImplemented
         
@@ -53,9 +74,9 @@ class BaseQuantity:
         new_value = self.value / other.value
         
         # Return a new instance of the appropriate type
-        return type(self)(new_value, new_unit)
+        return self._new(new_value, new_unit)
     
-    def __mul__(self, other: "BaseQuantity"):
+    def __mul__(self, other: BaseQuantity):
         if not isinstance(other, BaseQuantity):
             return NotImplemented
         
@@ -64,9 +85,9 @@ class BaseQuantity:
         new_value = self.value * other.value
         
         # Return a new instance of the appropriate type
-        return type(self)(new_value, new_unit)
+        return self._new(new_value, new_unit)
     
-    def _compare(self,other: "BaseQuantity",method):
+    def _compare(self,other: BaseQuantity,method):
         if not isinstance(other, BaseQuantity):
             return NotImplemented
         if type(self) is not type(other):
@@ -114,7 +135,7 @@ class BaseQuantity:
         return dict_to_json_string(self.to_dict())
     
     @classmethod
-    def from_json_string(cls, json_string: str) -> "BaseQuantity":
+    def from_json_string(cls, json_string: str) -> BaseQuantity:
         """
         Crea una instancia de BaseQuantity a partir de un JSON string.
 
@@ -128,7 +149,7 @@ class BaseQuantity:
         if unit is None:
             raise ValueError(f'Unknown unit symbol: {unit_symbol!r}')
 
-        return cls(value, unit)
+        return cls(value, unit)  # type: ignore[call-arg]
         
     @property
     def value(self) -> float:
@@ -146,10 +167,10 @@ class BaseQuantity:
     def unit(self, new_unit: Unit) -> None:
         self._unit = new_unit
     
-    def convert_to(self, target_unit: Unit) -> "BaseQuantity":
+    def convert_to(self, target_unit: Unit) -> Self:
         # Check if the units are the same
         if self.unit == target_unit:
-            return type(self)(self.value, self.unit)  # Create a new instance of the same class
+            return self._new(self.value, self.unit)  # Create a new instance of the same class
         # Check if the units are compatible
         if not self.unit.is_compatible_with(target_unit):
             raise ValueError(f'Cannot convert between incompatible units: {self.unit} and {target_unit}')
@@ -158,7 +179,7 @@ class BaseQuantity:
         converted_value = self._conversion_manager.convert(self.value, self.unit, target_unit)
 
         # Return a new instance of the same class with the converted value and unit
-        return type(self)(converted_value, target_unit)
+        return self._new(converted_value, target_unit)
 
 class LengthQuantity(BaseQuantity):
     def __init__(self, value: float, unit: Unit = LengthUnits.METER.value) -> None:
