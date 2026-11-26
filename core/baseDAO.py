@@ -1,7 +1,10 @@
 # from __future__ import annotations
+import logging
 import sqlite3
 import os
 from abc import ABC, abstractmethod
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -14,9 +17,9 @@ class BaseDAO(ABC):
         try:
             self.open(full_database_filepath)
             
-            print(f'Connected to sqlite database at: {full_database_filepath}')
+            logger.info('Connected to sqlite database at: %s', full_database_filepath)
         except FileNotFoundError as e:
-            print(e)
+            logger.error('Could not open database: %s', e)
     
     @abstractmethod
     def _restrict_instantiation(self):

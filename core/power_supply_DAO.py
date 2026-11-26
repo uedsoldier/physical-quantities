@@ -70,23 +70,25 @@ class PowerSupplyDAO(BaseDAO):
     def get_power_supply_additional_information(
         self, ps: BasePowerSupply
     ) -> str:  # TODO: add more power supply type
+        """Serialize type-specific power supply data as a JSON string."""
         if isinstance(ps, Battery):
-            chemistry: str = ps.chemistry
-            subchemistry: str = ps.subchemistry
-            cell_voltage: str = ps.cell_voltage.to_json_string()
-            cell_count: int = ps.cell_count
-            capacity: str = ps.capacity.to_json_string()
-
-            return f'{{"capacity":{capacity},"chemistry":{chemistry},"subchemistry":{subchemistry},"cell_voltage":{cell_voltage},"cell_count":{cell_count}}}'
-        if isinstance(ps, DCDCConverter):
-            dcdc_type: str = ps.dcdc_type
-            min_input_voltage: str = ps.min_input_voltage.to_json_string()
-            max_input_voltage: str = ps.max_input_voltage.to_json_string()
-            efficiency: str = ps.efficiency
-            return f'{{"dcdc_type":{dcdc_type},"min_input_voltage":{min_input_voltage},"max_input_voltage":{max_input_voltage},"efficiency":{efficiency}}}'
+            info = {
+                "capacity": ps.capacity.to_dict(),
+                "chemistry": ps.chemistry,
+                "subchemistry": ps.subchemistry,
+                "cell_voltage": ps.cell_voltage.to_dict(),
+                "cell_count": ps.cell_count,
+            }
+        elif isinstance(ps, DCDCConverter):
+            info = {
+                "dcdc_type": ps.dcdc_type,
+                "min_input_voltage": ps.min_input_voltage.to_dict(),
+                "max_input_voltage": ps.max_input_voltage.to_dict(),
+                "efficiency": ps.efficiency,
+            }
         else:
-            print("Unknown power supply instance")
-            return "N/A"
+            info = {}  # Unknown power supply type: nothing extra to persist
+        return dict_to_json_string(info)
 
     def add_power_supply(self, power_supply: BasePowerSupply):
         name: str = power_supply.name

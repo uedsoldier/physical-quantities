@@ -1,48 +1,39 @@
-import sys
-import os
+import json
+import sqlite3
+import tempfile
 import unittest
-import subprocess
+from contextlib import closing
 from pathlib import Path
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-
 from core.component_DAO import ComponentDAO
+from core.power_budget import BuckConverter, Component, LeadAcidBattery
 from core.power_supply_DAO import PowerSupplyDAO
-from core.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, ElectricChargeQuantity, PowerQuantity
+from core.physical_quantities import (
+    ElectricChargeQuantity,
+    ElectricCurrentQuantity,
+    PowerQuantity,
+    VoltageQuantity,
+)
 from core.unit import ElectricChargeUnits
-from core.power_budget import LeadAcidBattery
 
-MOCK_DATABASE_FILENAME = 'mock_database.db'
+SQL_SCRIPT = Path(__file__).with_name("create_mock_database.sql")
+
 
 class PowerSuppliesComponentsDAOTester(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        BASE_PATH = Path.cwd()
-        DAO_PATH: Path = BASE_PATH/'tests'/'DAO/'
-        print(f'BASE path: {BASE_PATH}')
-        print(f'DAO path: {DAO_PATH}')
-        
-        os.chdir(DAO_PATH)
-        
-        WINDOWS_SQL_SCRIPT_PATH = 'dao_init.bat'
-        LINUX_SQL_SCRIPT_PATH = 'dao_init.sh'
-        
-        sql_script = WINDOWS_SQL_SCRIPT_PATH if sys.platform.startswith('win') else LINUX_SQL_SCRIPT_PATH
-        print(f'SQL script: {sql_script}')
-        if(os.path.exists(sql_script)):
-            print('DAO init script will be executed')
-            subprocess.run([sql_script],shell=True, check=True)
-        else:
-            print('Not found')
-            raise FileNotFoundError(f'DAO init script <<{sql_script}>> does not exist.')
+    """DAO tests against a fresh temporary SQLite database created for every test."""
 
-        cls.components_dao = ComponentDAO('./mock_database.db')
-        cls.components_dao.create_table()
-        cls.power_supplies_dao = PowerSupplyDAO('./mock_database.db')
-        cls.power_supplies_dao.create_table()
-        
-        os.chdir(BASE_PATH)
-        
+    def setUp(self) -> None:
+        self._tmp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp_dir.cleanup)
+        self.db_path = str(Path(self._tmp_dir.name) / "mock_database.db")
+
+        with closing(sqlite3.connect(self.db_path)) as connection:
+            connection.executescript(SQL_SCRIPT.read_text(encoding="utf-8"))
+
+        self.components_dao = ComponentDAO(self.db_path)
+        self.addCleanup(self.components_dao.close)
+        self.power_supplies_dao = PowerSupplyDAO(self.db_path)
+        self.addCleanup(self.power_supplies_dao.close)
 
     def test_voltages(self):
         test_cases = [
@@ -63,11 +54,31 @@ class PowerSuppliesComponentsDAOTester(unittest.TestCase):
                 self.assertEqual(expected_voltage, actual_voltage)
 
     def test_invalid_ids(self):
-        invalid_ids = [999, 1000, -1, 999]  # IDs que no existen en la base de datos
+        invalid_ids = [999, 1000, -1, 999]  # IDs that do not exist in the database
         for invalid_id in invalid_ids:
             with self.subTest(invalid_id=invalid_id):
                 with self.assertRaises(ValueError):
                     self.power_supplies_dao.get_power_supply_voltage(invalid_id)
+                with self.assertRaises(ValueError):
+                    self.power_supplies_dao.get_power_supply_output_current(invalid_id)
+                with self.assertRaises(ValueError):
+                    self.power_supplies_dao.get_power_supply_by_id(invalid_id)
+
+    def test_invalid_component_ids(self):
+        for invalid_id in [999, 1000, -1]:
+            with self.subTest(invalid_id=invalid_id):
+                with self.assertRaises(ValueError):
+                    self.components_dao.get_component_by_id(invalid_id)
+                with self.assertRaises(ValueError):
+                    self.components_dao.get_component_voltage(invalid_id)
+                with self.assertRaises(ValueError):
+                    self.components_dao.get_component_current(invalid_id)
+                with self.assertRaises(ValueError):
+                    self.components_dao.get_component_power(invalid_id)
+                with self.assertRaises(ValueError):
+                    self.components_dao.get_component_assigned_power_supply(invalid_id)
+                with self.assertRaises(ValueError):
+                    self.components_dao.is_component_assigned(invalid_id)
 
     def test_currents(self):
         test_cases = [
@@ -84,76 +95,137 @@ class PowerSuppliesComponentsDAOTester(unittest.TestCase):
 
         for power_supply_id, expected_max_output_current in test_cases:
             with self.subTest(power_supply_id=power_supply_id):
-                actual_max_output_current = self.power_supplies_dao.get_power_supply_output_current(power_supply_id)
-                self.assertEqual(expected_max_output_current, actual_max_output_current)
-    
+                actual = self.power_supplies_dao.get_power_supply_output_current(power_supply_id)
+                self.assertEqual(expected_max_output_current, actual)
+
     def test_component_counts(self):
-        test_cases = [
-            (1,4),(2,3),(3,0),(4,0),(5,3),(6,0),(7,0),(8,1)
-        ]
+        test_cases = [(1, 4), (2, 3), (3, 0), (4, 0), (5, 3), (6, 0), (7, 0), (8, 1)]
         for power_supply_id, component_count in test_cases:
             with self.subTest(power_supply_id=power_supply_id):
-                actual_component_count = self.components_dao.get_components_count(power_supply_id)
-                self.assertEqual(component_count, actual_component_count)
+                actual = self.components_dao.get_components_count(power_supply_id)
+                self.assertEqual(component_count, actual)
 
     def test_components_assigned_to_id(self):
         test_cases = [
             (1, None),  # Component-NULL1
             (2, None),  # Component-NULL2
             (3, None),  # Component-NULL3
-            (4, 1),     # Component-FF12A3
-            (5, 1),     # Component-AB34C5
-            (6, 1),     # Component-9D45E6
-            (7, 1),     # Component-A1B2C3
-            (8, 2),     # Component-D4E5F6
-            (9, 2),     # Component-E7F8G9
-            (10, 2),    # Component-H1I2J3
-            (11, 5),    # Component-F4G5H6
-            (12, 5),    # Component-G7H8I9
-            (13, 5),    # Component-K1L2M3
-            (14, 8),    # Component-N4O5P6
+            (4, 1),  # Component-FF12A3
+            (5, 1),  # Component-AB34C5
+            (6, 1),  # Component-9D45E6
+            (7, 1),  # Component-A1B2C3
+            (8, 2),  # Component-D4E5F6
+            (9, 2),  # Component-E7F8G9
+            (10, 2),  # Component-H1I2J3
+            (11, 5),  # Component-F4G5H6
+            (12, 5),  # Component-G7H8I9
+            (13, 5),  # Component-K1L2M3
+            (14, 8),  # Component-N4O5P6
         ]
-        
+
         for component_id, power_supply_id in test_cases:
             with self.subTest(component_id=component_id):
-                actual_power_supply_id = self.components_dao.get_component_assigned_power_supply(component_id)
-                self.assertEqual(power_supply_id, actual_power_supply_id)
-    
+                actual = self.components_dao.get_component_assigned_power_supply(component_id)
+                self.assertEqual(power_supply_id, actual)
+
     def test_components_are_assigned(self):
-        test_cases = [
-            (1, False),  # Component-NULL1
-            (2, False),  # Component-NULL2
-            (3, False),  # Component-NULL3
-            (4, True),     # Component-FF12A3
-            (5, True),     # Component-AB34C5
-            (6, True),     # Component-9D45E6
-            (7, True),     # Component-A1B2C3
-            (8, True),     # Component-D4E5F6
-            (9, True),     # Component-E7F8G9
-            (10, True),    # Component-H1I2J3
-            (11, True),    # Component-F4G5H6
-            (12, True),    # Component-G7H8I9
-            (13, True),    # Component-K1L2M3
-            (14, True),    # Component-N4O5P6
-        ]
-        
-        for component_id, is_assigned in test_cases:
+        unassigned_ids = {1, 2, 3}
+        for component_id in range(1, 15):
             with self.subTest(component_id=component_id):
-                actual_assigned = self.components_dao.is_component_assigned(component_id)
-                self.assertEqual(is_assigned, actual_assigned)
-    
-    def test_add_power_supply1(self):
-        test_batt1 = LeadAcidBattery('testBattery',ElectricCurrentQuantity(2),ElectricChargeQuantity(1000,ElectricChargeUnits.MILLIAMPERE_HOUR.value),6)
-        test_batt2 = LeadAcidBattery('testBattery',ElectricCurrentQuantity(1),ElectricChargeQuantity(500,ElectricChargeUnits.MILLIAMPERE_HOUR.value),3)
-        self.power_supplies_dao.add_power_supply(test_batt1)
-        self.power_supplies_dao.add_power_supply(test_batt2)
-        test_current = ElectricCurrentQuantity(2)
-        test_capacity = ElectricChargeQuantity(1000,ElectricChargeUnits.MILLIAMPERE_HOUR.value)
-        
-        ids = self.power_supplies_dao.get_power_supply_ids_by_name('testBattery')
-        print(ids,len(ids))
-        # self.assertEqual(test_current)
-        # self.assertEqual(test_capacity)
-    
-if __name__ == '__main__':
+                actual = self.components_dao.is_component_assigned(component_id)
+                self.assertEqual(component_id not in unassigned_ids, actual)
+
+    def test_add_component(self):
+        component = Component(
+            "Component-NEW",
+            voltage=VoltageQuantity(5.0),
+            current=ElectricCurrentQuantity(0.1),
+        )
+        self.components_dao.add_component(component)
+
+        new_id = 15  # The mock database already holds 14 components
+        self.assertEqual("Component-NEW", self.components_dao.get_component_by_id(new_id)[1])
+        self.assertEqual(VoltageQuantity(5.0), self.components_dao.get_component_voltage(new_id))
+        self.assertEqual(
+            ElectricCurrentQuantity(0.1), self.components_dao.get_component_current(new_id)
+        )
+        self.assertEqual(PowerQuantity(0.5), self.components_dao.get_component_power(new_id))
+        self.assertFalse(self.components_dao.is_component_assigned(new_id))
+
+    def test_assign_power_supply_updates_component_count(self):
+        self.assertEqual(0, self.components_dao.get_components_count(3))
+        self.components_dao.assign_power_supply_to_component(1, 3)
+
+        self.assertEqual(3, self.components_dao.get_component_assigned_power_supply(1))
+        self.assertEqual(1, self.components_dao.get_components_count(3))
+
+    def test_add_power_supply_battery(self):
+        batt1 = LeadAcidBattery(
+            "testBattery",
+            ElectricCurrentQuantity(2),
+            ElectricChargeQuantity(1000, ElectricChargeUnits.MILLIAMPERE_HOUR.value),
+            6,
+        )
+        batt2 = LeadAcidBattery(
+            "testBattery",
+            ElectricCurrentQuantity(1),
+            ElectricChargeQuantity(500, ElectricChargeUnits.MILLIAMPERE_HOUR.value),
+            3,
+        )
+        self.power_supplies_dao.add_power_supply(batt1)
+        self.power_supplies_dao.add_power_supply(batt2)
+
+        ids = self.power_supplies_dao.get_power_supply_ids_by_name("testBattery")
+        self.assertEqual(2, len(ids))
+        self.assertEqual(VoltageQuantity(12.0), self.power_supplies_dao.get_power_supply_voltage(ids[0]))
+        self.assertEqual(VoltageQuantity(6.0), self.power_supplies_dao.get_power_supply_voltage(ids[1]))
+        self.assertEqual(
+            ElectricCurrentQuantity(2), self.power_supplies_dao.get_power_supply_output_current(ids[0])
+        )
+
+    def test_additional_information_is_valid_json(self):
+        battery = LeadAcidBattery(
+            "battery",
+            ElectricCurrentQuantity(2),
+            ElectricChargeQuantity(1000, ElectricChargeUnits.MILLIAMPERE_HOUR.value),
+            6,
+        )
+        info = json.loads(self.power_supplies_dao.get_power_supply_additional_information(battery))
+        self.assertEqual("Lead-Acid", info["chemistry"])
+        self.assertEqual(6, info["cell_count"])
+        self.assertEqual({"value": 2.0, "unit": "V"}, info["cell_voltage"])
+        self.assertEqual({"value": 1000, "unit": "mAh"}, info["capacity"])
+
+        buck = BuckConverter(
+            "buck",
+            VoltageQuantity(3.3),
+            ElectricCurrentQuantity(1),
+            VoltageQuantity(5),
+            VoltageQuantity(12),
+            0.9,
+        )
+        info = json.loads(self.power_supplies_dao.get_power_supply_additional_information(buck))
+        self.assertEqual("Buck", info["dcdc_type"])
+        self.assertEqual(0.9, info["efficiency"])
+        self.assertEqual({"value": 12, "unit": "V"}, info["max_input_voltage"])
+
+    def test_added_power_supply_is_stored_with_valid_json(self):
+        battery = LeadAcidBattery(
+            "json_battery",
+            ElectricCurrentQuantity(2),
+            ElectricChargeQuantity(1000, ElectricChargeUnits.MILLIAMPERE_HOUR.value),
+            6,
+        )
+        self.power_supplies_dao.add_power_supply(battery)
+        (power_supply_id,) = self.power_supplies_dao.get_power_supply_ids_by_name("json_battery")
+
+        self.power_supplies_dao.cursor.execute(
+            "SELECT additional_information FROM PowerSupplies WHERE power_supply_id = ?",
+            (power_supply_id,),
+        )
+        (stored,) = self.power_supplies_dao.cursor.fetchone()
+        self.assertEqual("Lead-Acid", json.loads(stored)["chemistry"])
+
+
+if __name__ == "__main__":
     unittest.main()

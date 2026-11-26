@@ -1,3 +1,5 @@
+import logging
+
 from .power_budget import *
 from .baseDAO import BaseDAO
 from core.dao_db_schema import (
@@ -11,6 +13,8 @@ from core.dao_db_schema import (
     COLUMN_POWER_SUPPLY_ID,
     COLUMN_COMPONENT_COUNT
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ComponentDAO(BaseDAO):
@@ -128,7 +132,7 @@ class ComponentDAO(BaseDAO):
         with self.connection:
             self.cursor.execute(
                 f"""
-                INSERT INTO {COMPONENTS_TABLE_NAME} ("name","{COLUMN_VOLTAGE}","{COLUMN_CURRENT}","{COLUMN_POWER}","{COLUMN_POWER_SUPPLY_ID}")
+                INSERT INTO {COMPONENTS_TABLE_NAME} ("{COLUMN_COMPONENT_NAME}","{COLUMN_VOLTAGE}","{COLUMN_CURRENT}","{COLUMN_POWER}","{COLUMN_POWER_SUPPLY_ID}")
                 VALUES (?,?,?,?,?);
                 """,
                 (name, voltage, current, power, power_supply_id),
@@ -139,13 +143,15 @@ class ComponentDAO(BaseDAO):
         with self.connection:
             self.cursor.execute(
                 f"""
-                SELECT {COLUMN_POWER}_supply_id FROM {COMPONENTS_TABLE_NAME}
+                SELECT {COLUMN_POWER_SUPPLY_ID} FROM {COMPONENTS_TABLE_NAME}
                 WHERE {COLUMN_COMPONENT_ID} = ?
                 """,
                 (component_id,),
             )
-            id = self.cursor.fetchone()[0]
-            return id  # Returns id or None
+            row = self.cursor.fetchone()
+            if row is None:
+                raise ValueError("Invalid id")
+            return row[0]  # Returns id or None
 
     def is_component_assigned(self, component_id: int) -> bool:
         # Check if a component is already assigned to any power supply.
@@ -157,8 +163,10 @@ class ComponentDAO(BaseDAO):
                 """,
                 (component_id,),
             )
-            ps_id = self.cursor.fetchone()[0]
-            return ps_id is not None  # Returns True if assigned, False otherwise
+            row = self.cursor.fetchone()
+            if row is None:
+                raise ValueError("Invalid id")
+            return row[0] is not None  # Returns True if assigned, False otherwise
 
     def is_component_assigned_to_power_supply(
         self, component_id: int, power_supply_id: int
@@ -177,8 +185,10 @@ class ComponentDAO(BaseDAO):
 
     def assign_power_supply_to_component(self, component_id: int, power_supply_id: int):
         if self.is_component_assigned_to_power_supply(component_id, power_supply_id):
-            print(
-                f"Component {component_id} is already assigned to Power Supply {power_supply_id}."
+            logger.info(
+                "Component %s is already assigned to Power Supply %s.",
+                component_id,
+                power_supply_id,
             )
             return
         with self.connection:
@@ -243,7 +253,7 @@ class ComponentDAO(BaseDAO):
         with self.connection:
             self.cursor.execute(
                 f"""
-                SELECT power FROM {COMPONENTS_TABLE_NAME} WHERE {COLUMN_COMPONENT_ID} = ?
+                SELECT {COLUMN_POWER} FROM {COMPONENTS_TABLE_NAME} WHERE {COLUMN_COMPONENT_ID} = ?
                 """,
                 (component_id,),
             )
