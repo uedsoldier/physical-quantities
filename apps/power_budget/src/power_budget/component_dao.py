@@ -1,7 +1,7 @@
 import logging
 
 from .components import Component
-from .supplies import *
+from physical_quantities.quantities import ElectricCurrentQuantity, PowerQuantity, VoltageQuantity
 from .base_dao import BaseDAO
 from .dao_db_schema import (
     COMPONENTS_TABLE_NAME,

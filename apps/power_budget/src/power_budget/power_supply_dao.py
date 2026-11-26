@@ -1,7 +1,9 @@
-from .supplies import *
+from typing import List
+
+from .supplies import BasePowerSupply, Battery, DCDCConverter
 from .base_dao import BaseDAO
-from physical_quantities.units import *
-from physical_quantities._json import *
+from physical_quantities.quantities import ElectricCurrentQuantity, VoltageQuantity
+from physical_quantities._json import dict_to_json_string
 from .dao_db_schema import (
     POWER_SUPPLIES_TABLE_NAME,
     COLUMN_POWER_SUPPLY_ID,

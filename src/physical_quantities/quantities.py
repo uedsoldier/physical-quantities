@@ -1,7 +1,11 @@
 
 from ._json import json_string_to_dict, dict_to_json_string
 from .conversion import BaseConversionManager, TemperatureConversionManager
-from .units import *
+from .units import (
+    AngleUnits, ElectricChargeUnits, ElectricCurrentUnits, EnergyUnits, ForceUnits,
+    FrequencyUnits, LengthUnits, MassFlowRateUnits, MassUnits, PowerUnits, ResistanceUnits,
+    TemperatureUnits, TimeUnits, Unit, VoltageUnits, VolumeUnits, find_unit_by_symbol,
+)
 from functools import total_ordering
 
 @total_ordering
