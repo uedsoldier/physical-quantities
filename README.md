@@ -8,6 +8,9 @@ Requiere [uv](https://docs.astral.sh/uv/). La versión de Python (3.14) está fi
 uv sync                                                   # crea .venv e instala dependencias de desarrollo
 uv run python -m unittest discover -s tests -p "test_*.py" # ejecuta los tests
 uv run ruff check .                                       # lint
+uv run ruff format .                                      # formato
+uv run pre-commit install                                 # instala hooks (pre-commit y commit-msg)
+uv run pre-commit run --all-files                         # corre todos los hooks
 uv run mypy                                               # chequeo de tipos
 ```
 

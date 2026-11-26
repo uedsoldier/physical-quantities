@@ -8,8 +8,9 @@ dependencies = []
 
 [dependency-groups]
 dev = [
-    "ruff",
-    "mypy",
+    "ruff>=0.15",
+    "mypy>=1.13",
+    "pre-commit>=4.2",
 ]
 
 [build-system]
@@ -17,9 +18,18 @@ requires = ["uv_build>=0.8,<0.12"]
 build-backend = "uv_build"
 
 [tool.ruff]
-target-version = "py314"
 line-length = 100
-extend-exclude = ["other-tests"]
+target-version = "py314"
+
+[tool.ruff.lint]
+# pycodestyle (E/W), pyflakes (F), imports (I), naming (N), pyupgrade (UP), bugbear (B).
+select = ["E", "W", "F", "I", "N", "UP", "B"]
+# Line length is enforced by `ruff format`; long strings/comments are left alone.
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests may use star imports and bare comparisons inside assertRaises.
+"tests/**" = ["F403", "F405", "B015", "N806"]
 
 [tool.mypy]
 disallow_untyped_defs = true
