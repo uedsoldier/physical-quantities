@@ -3,7 +3,7 @@ from core.physical_quantities import BaseConversionManager
 from core.unit import ThermalResistanceUnits
 from .base_converter_test import BaseConversionTest
 
-class TestThermalConductivityConverter(BaseConversionTest):
+class TestThermalConductivityConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('thermal_resistance')

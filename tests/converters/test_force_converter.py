@@ -3,7 +3,7 @@ from core.physical_quantities import BaseConversionManager
 from core.unit import ForceUnits
 from .base_converter_test import BaseConversionTest
 
-class TestForceConverter(BaseConversionTest):
+class TestForceConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('force')
@@ -16,7 +16,7 @@ class TestForceConverter(BaseConversionTest):
         # Kilogram-force to Newtons
         (1, ForceUnits.KILOGRAM_FORCE.value, ForceUnits.NEWTON.value, 9.80665, 6),
         # Pound-force to Newtons
-        (1, ForceUnits.POUND_FORCE.value, ForceUnits.NEWTON.value, 4.44822, 6),
+        (1, ForceUnits.POUND_FORCE.value, ForceUnits.NEWTON.value, 4.4482216152605, 6),
         # Ounce-force to Newtons
         (1, ForceUnits.OUNCE_FORCE.value, ForceUnits.NEWTON.value, 0.2780139, 6),
         # Additional test cases:
@@ -25,7 +25,7 @@ class TestForceConverter(BaseConversionTest):
         # Newtons to Kilogram-force
         (9.80665, ForceUnits.NEWTON.value, ForceUnits.KILOGRAM_FORCE.value, 1, 6),
         # Newtons to Pound-force
-        (4.44822, ForceUnits.NEWTON.value, ForceUnits.POUND_FORCE.value, 1, 6),
+        (4.4482216152605, ForceUnits.NEWTON.value, ForceUnits.POUND_FORCE.value, 1, 6),
         # Newtons to Ounce-force
         (0.2780139, ForceUnits.NEWTON.value, ForceUnits.OUNCE_FORCE.value, 1, 6),
         # Kilonewtons to Kilogram-force

@@ -3,7 +3,7 @@ from core.physical_quantities import BaseConversionManager
 from core.unit import VoltageUnits
 from .base_converter_test import BaseConversionTest
 
-class TestVoltageConverter(BaseConversionTest):
+class TestVoltageConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('voltage')

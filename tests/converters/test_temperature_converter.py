@@ -3,7 +3,7 @@ from core.physical_quantities import TemperatureConversionManager
 from core.unit import TemperatureUnits
 from .base_converter_test import BaseConversionTest
 
-class TestTemperatureConverter(BaseConversionTest):
+class TestTemperatureConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = TemperatureConversionManager()

@@ -3,7 +3,7 @@ from core.physical_quantities import BaseConversionManager
 from core.unit import SpeedUnits
 from .base_converter_test import BaseConversionTest
 
-class TestSpeedConverter(BaseConversionTest):
+class TestSpeedConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('speed')
@@ -20,6 +20,11 @@ class TestSpeedConverter(BaseConversionTest):
         (1200, SpeedUnits.MILLIMETER_PER_SECOND.value, SpeedUnits.METER_PER_SECOND.value, 1.2, 1),  # 1200 mm/s to m/s
         (3, SpeedUnits.MICROMETER_PER_SECOND.value, SpeedUnits.METER_PER_SECOND.value, 0.000003, 6),  # 3 μm/s to m/s
         (15, SpeedUnits.METER_PER_SECOND.value, SpeedUnits.MILE_PER_HOUR.value, 33.554044381, 6),  # 15 m/s to mph
+        # Exact definitions: 1 km/h = 1/3.6 m/s, 1 kn = 1852/3600 m/s, 1 mph = 1.609344 km/h
+        (36, SpeedUnits.KILOMETER_PER_HOUR.value, SpeedUnits.METER_PER_SECOND.value, 10, 6),
+        (1, SpeedUnits.KNOT.value, SpeedUnits.METER_PER_SECOND.value, 1852 / 3600, 9),
+        (1, SpeedUnits.KNOT.value, SpeedUnits.KILOMETER_PER_HOUR.value, 1.852, 9),
+        (1, SpeedUnits.MILE_PER_HOUR.value, SpeedUnits.KILOMETER_PER_HOUR.value, 1.609344, 9),
     ]
 
 if __name__ == "__main__":

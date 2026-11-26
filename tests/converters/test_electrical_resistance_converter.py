@@ -4,10 +4,10 @@ from core.unit import ResistanceUnits
 from .base_converter_test import BaseConversionTest
 
 
-class TestElectricalResistanceConverter(BaseConversionTest):
+class TestElectricalResistanceConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.conversion_manager = BaseConversionManager("electrical_resistance")
+        cls.conversion_manager = BaseConversionManager("resistance")
 
     standard_unit = ResistanceUnits.OHM.value
     

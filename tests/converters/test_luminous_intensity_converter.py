@@ -3,7 +3,7 @@ from core.physical_quantities import BaseConversionManager
 from core.unit import LuminousIntensityUnits
 from .base_converter_test import BaseConversionTest
 
-class TestLuminousIntensityConverter(BaseConversionTest):
+class TestLuminousIntensityConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('luminous_intensity')

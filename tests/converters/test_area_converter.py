@@ -4,7 +4,7 @@ from core.unit import AreaUnits
 from .base_converter_test import BaseConversionTest
 
 
-class TestAreaConverter(BaseConversionTest):
+class TestAreaConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager("area")

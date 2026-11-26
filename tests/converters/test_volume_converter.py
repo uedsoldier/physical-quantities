@@ -3,7 +3,7 @@ from core.physical_quantities import BaseConversionManager
 from core.unit import VolumeUnits
 from .base_converter_test import BaseConversionTest
 
-class TestVolumeConverter(BaseConversionTest):
+class TestVolumeConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('volume')
@@ -16,7 +16,7 @@ class TestVolumeConverter(BaseConversionTest):
         (500, VolumeUnits.MILLILITER.value, VolumeUnits.CUBIC_METER.value, 0.0005, 4),
         (10, VolumeUnits.CUBIC_FOOT.value, VolumeUnits.CUBIC_METER.value, 0.283168, 6),
         (3, VolumeUnits.CUBIC_YARD.value, VolumeUnits.CUBIC_METER.value, 2.293665, 6),
-        (5, VolumeUnits.GALLON_US.value, VolumeUnits.CUBIC_METER.value, 0.01892705, 8),
+        (5, VolumeUnits.GALLON_US.value, VolumeUnits.CUBIC_METER.value, 0.01892705892, 8),
     ]
 
 

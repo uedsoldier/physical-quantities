@@ -3,7 +3,7 @@ from core.physical_quantities import BaseConversionManager
 from core.unit import EnergyUnits
 from .base_converter_test import BaseConversionTest
 
-class TestEnergyConverter(BaseConversionTest):
+class TestEnergyConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('energy')

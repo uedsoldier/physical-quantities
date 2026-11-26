@@ -3,7 +3,7 @@ from core.physical_quantities import BaseConversionManager
 from core.unit import TimeUnits
 from .base_converter_test import BaseConversionTest
 
-class TestTimeConverter(BaseConversionTest):
+class TestTimeConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('time')

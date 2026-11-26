@@ -4,7 +4,7 @@ from math import pi
 from core.unit import FrequencyUnits
 from .base_converter_test import BaseConversionTest
 
-class TestFrequencyConverter(BaseConversionTest):
+class TestFrequencyConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('frequency')

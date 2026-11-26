@@ -5,7 +5,7 @@ from math import pi
 from core.unit import AngleUnits
 from .base_converter_test import BaseConversionTest
 
-class TestAngleConverter(BaseConversionTest):
+class TestAngleConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('angle')

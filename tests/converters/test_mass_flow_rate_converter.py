@@ -3,7 +3,7 @@ from core.physical_quantities import BaseConversionManager
 from core.unit import MassFlowRateUnits
 from .base_converter_test import BaseConversionTest
 
-class TestMassFlowRateConverter(BaseConversionTest):
+class TestMassFlowRateConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.conversion_manager = BaseConversionManager('mass_flow_rate')
@@ -32,9 +32,9 @@ class TestMassFlowRateConverter(BaseConversionTest):
         # Kilograms per second to pounds per second
         (0.45359237, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, MassFlowRateUnits.POUND_PER_SECOND.value, 1.0, 6),
         # Ounces per second to kilograms per second
-        (1, MassFlowRateUnits.OUNCE_PER_SECOND.value, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, 0.0283495, 6),
+        (1, MassFlowRateUnits.OUNCE_PER_SECOND.value, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, 0.028349523125, 6),
         # Kilograms per second to ounces per second
-        (0.0283495, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, MassFlowRateUnits.OUNCE_PER_SECOND.value, 1.0, 6),
+        (0.028349523125, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, MassFlowRateUnits.OUNCE_PER_SECOND.value, 1.0, 6),
         
         # Kilograms per minute to kilograms per second
         (1, MassFlowRateUnits.KILOGRAM_PER_MINUTE.value, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, 0.016666666666666666, 6),
@@ -57,9 +57,15 @@ class TestMassFlowRateConverter(BaseConversionTest):
         (0.007559872833333333, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, MassFlowRateUnits.POUND_PER_MINUTE.value, 1.0, 6),
         
         # Ounces per minute to kilograms per second
-        (1, MassFlowRateUnits.OUNCE_PER_MINUTE.value, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, 0.00047249166666666665, 6),
+        (1, MassFlowRateUnits.OUNCE_PER_MINUTE.value, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, 0.00047249205208333335, 6),
         # Kilograms per second to ounces per minute
-        (0.00047249166666666665, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, MassFlowRateUnits.OUNCE_PER_MINUTE.value, 1.0, 6)
+        (0.00047249205208333335, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, MassFlowRateUnits.OUNCE_PER_MINUTE.value, 1.0, 6),
+
+        # Kilograms per hour to kilograms per second (regression: unit was missing in the table)
+        (3600, MassFlowRateUnits.KILOGRAM_PER_HOUR.value, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, 1.0, 6),
+        # Metric tons per second / per hour to kilograms per second
+        (1, MassFlowRateUnits.TON_PER_SECOND.value, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, 1000.0, 6),
+        (3.6, MassFlowRateUnits.TON_PER_HOUR.value, MassFlowRateUnits.KILOGRAM_PER_SECOND.value, 1.0, 6),
     ]
 
 if __name__ == '__main__':
