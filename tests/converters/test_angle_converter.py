@@ -1,8 +1,8 @@
 import unittest
 
-from core.physical_quantities import BaseConversionManager
+from physical_quantities.conversion import BaseConversionManager
 from math import pi
-from core.unit import AngleUnits
+from physical_quantities.units import AngleUnits
 from .base_converter_test import BaseConversionTest
 
 class TestAngleConverter(BaseConversionTest, unittest.TestCase):

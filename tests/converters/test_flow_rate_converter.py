@@ -1,7 +1,7 @@
 import unittest
 
-from core.physical_quantities import BaseConversionManager
-from core.unit import FlowRateUnits
+from physical_quantities.conversion import BaseConversionManager
+from physical_quantities.units import FlowRateUnits
 from .base_converter_test import BaseConversionTest
 
 

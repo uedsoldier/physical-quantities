@@ -1,6 +1,6 @@
 import unittest
-from core.physical_quantities import BaseConversionManager
-from core.unit import ThermalResistanceUnits
+from physical_quantities.conversion import BaseConversionManager
+from physical_quantities.units import ThermalResistanceUnits
 from .base_converter_test import BaseConversionTest
 
 class TestThermalConductivityConverter(BaseConversionTest, unittest.TestCase):

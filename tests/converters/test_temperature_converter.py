@@ -1,6 +1,6 @@
 import unittest
-from core.physical_quantities import TemperatureConversionManager
-from core.unit import TemperatureUnits
+from physical_quantities.quantities import TemperatureConversionManager
+from physical_quantities.units import TemperatureUnits
 from .base_converter_test import BaseConversionTest
 
 class TestTemperatureConverter(BaseConversionTest, unittest.TestCase):

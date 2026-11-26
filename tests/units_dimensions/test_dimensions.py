@@ -1,6 +1,6 @@
 import unittest
 
-from core.unit import *
+from physical_quantities.units import *
 
 class TestDimensions(unittest.TestCase):
 

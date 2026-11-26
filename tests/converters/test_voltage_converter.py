@@ -1,6 +1,6 @@
 import unittest
-from core.physical_quantities import BaseConversionManager
-from core.unit import VoltageUnits
+from physical_quantities.conversion import BaseConversionManager
+from physical_quantities.units import VoltageUnits
 from .base_converter_test import BaseConversionTest
 
 class TestVoltageConverter(BaseConversionTest, unittest.TestCase):

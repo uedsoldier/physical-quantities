@@ -1,7 +1,7 @@
 import unittest
 from typing import TYPE_CHECKING, Any, List, Tuple
 
-from core.unit import MockUnits
+from physical_quantities.units import MockUnits
 
 if TYPE_CHECKING:
     _TestCaseBase = unittest.TestCase

@@ -1,9 +1,9 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import List
-from .physical_quantities import ElectricCurrentQuantity, PowerQuantity, VoltageQuantity, TimeQuantity, EnergyQuantity, ElectricChargeQuantity
-from .utilities.json_utilities import json_to_dict
-from .unit import ElectricCurrentUnits, PowerUnits, VoltageUnits, TimeUnits, EnergyUnits, ElectricChargeUnits
+from physical_quantities.quantities import ElectricCurrentQuantity, PowerQuantity, VoltageQuantity, TimeQuantity, EnergyQuantity, ElectricChargeQuantity
+from physical_quantities._json import json_to_dict
+from physical_quantities.units import ElectricCurrentUnits, PowerUnits, VoltageUnits, TimeUnits, EnergyUnits, ElectricChargeUnits
 import os
 
 

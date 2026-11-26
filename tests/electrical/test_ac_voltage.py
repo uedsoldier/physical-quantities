@@ -1,9 +1,9 @@
 import unittest
 from math import pi
 
-from core.electrical_quantitites import AC_Voltage, normalize_phase
-from core.physical_quantities import AngleQuantity, FrequencyQuantity, VoltageQuantity
-from core.unit import AngleUnits
+from physical_quantities.electrical import AC_Voltage, normalize_phase
+from physical_quantities.quantities import AngleQuantity, FrequencyQuantity, VoltageQuantity
+from physical_quantities.units import AngleUnits
 
 
 class TestNormalizePhase(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from core.physical_quantities import (
+from physical_quantities.quantities import (
     ElectricCurrentQuantity,
     FrequencyQuantity,
     LengthQuantity,
@@ -8,7 +8,7 @@ from core.physical_quantities import (
     TemperatureQuantity,
     VoltageQuantity,
 )
-from core.unit import (
+from physical_quantities.units import (
     FrequencyUnits,
     LengthUnits,
     ResistanceUnits,

@@ -1,7 +1,7 @@
 import unittest
 from fractions import Fraction
 # Asegúrate de importar tu clase Dimension
-from core.unit import Dimensions 
+from physical_quantities.units import Dimensions 
 
 class TestFractionalDimensions(unittest.TestCase):
 

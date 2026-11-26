@@ -12,10 +12,9 @@ dev = [
     "mypy",
 ]
 
-[tool.uv]
-# Virtual project for now: `core/` is imported from the repo root.
-# Becomes an installable package (uv_build) when moved to src/physical_quantities/.
-package = false
+[build-system]
+requires = ["uv_build>=0.8,<0.12"]
+build-backend = "uv_build"
 
 [tool.ruff]
 target-version = "py314"
@@ -24,5 +23,5 @@ extend-exclude = ["other-tests"]
 
 [tool.mypy]
 python_version = "3.14"
-files = ["core"]
+files = ["src"]
 ignore_missing_imports = true

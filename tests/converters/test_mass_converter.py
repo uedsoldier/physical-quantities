@@ -1,6 +1,6 @@
 import unittest
-from core.physical_quantities import BaseConversionManager
-from core.unit import MassUnits
+from physical_quantities.conversion import BaseConversionManager
+from physical_quantities.units import MassUnits
 from .base_converter_test import BaseConversionTest
 
 class TestMassConverter(BaseConversionTest, unittest.TestCase):

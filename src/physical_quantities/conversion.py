@@ -1,7 +1,16 @@
-import os
 import json
-from .utilities.json_utilities import json_to_dict, dict_to_json_string
-from .unit import Unit
+from functools import cache
+from importlib.resources import files
+
+from ._json import json_string_to_dict
+from .units import Unit
+
+
+@cache
+def _load_table(quantity_type: str) -> dict:
+    resource = files(__package__) / 'conversion_tables' / f'{quantity_type}.json'
+    return json_string_to_dict(resource.read_text(encoding='utf-8'))
+
 
 class BaseConversionManager:
     
@@ -14,17 +23,15 @@ class BaseConversionManager:
     
     def __init__(self, quantity_type: str):
         self._quantity_type = quantity_type
-        filename: str = f'../conversion_tables/{self._quantity_type}.json'
-        conversions_filepath: str = os.path.join(os.path.dirname(__file__), filename)
-        try: 
-            self._conversion_table = json_to_dict(conversions_filepath)
+        try:
+            self._conversion_table = _load_table(quantity_type)
         except FileNotFoundError:
-            raise Exception(f'File "{conversions_filepath}" does not exist')
+            raise Exception(f'Conversion table "{quantity_type}" does not exist')
         except json.JSONDecodeError:
-            raise Exception(f'Error decoding JSON from file "{conversions_filepath}"')
+            raise Exception(f'Error decoding JSON from table "{quantity_type}"')
         except Exception as e:
-            raise Exception(f'An error occurred while loading "{filename}": {str(e)}')
-            
+            raise Exception(f'An error occurred while loading "{quantity_type}": {e}')
+
     def convert(self, value: float, from_unit: Unit, to_unit: Unit) -> float :
         if from_unit.symbol not in self._conversion_table:
             raise ValueError(f'Unknown from unit: {from_unit.symbol}')

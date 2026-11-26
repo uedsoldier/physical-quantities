@@ -1,7 +1,7 @@
 from math import isclose, pi, remainder, tau
 
-from .physical_quantities import AngleQuantity, FrequencyQuantity, VoltageQuantity
-from .unit import AngleUnits
+from .quantities import AngleQuantity, FrequencyQuantity, VoltageQuantity
+from .units import AngleUnits
 
 ABS_TOLERANCE_FROM_ZERO: float = 1e-6
 SQRT_2: float = 1.4142135623730950488

@@ -1,7 +1,7 @@
 from core.power_budget import *
 from core.baseDAO import BaseDAO
-from core.unit import *
-from core.utilities.json_utilities import *
+from physical_quantities.units import *
+from physical_quantities._json import *
 from core.dao_db_schema import (
     POWER_SUPPLIES_TABLE_NAME,
     COLUMN_POWER_SUPPLY_ID,

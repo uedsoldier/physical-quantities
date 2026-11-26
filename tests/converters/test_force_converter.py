@@ -1,6 +1,6 @@
 import unittest
-from core.physical_quantities import BaseConversionManager
-from core.unit import ForceUnits
+from physical_quantities.conversion import BaseConversionManager
+from physical_quantities.units import ForceUnits
 from .base_converter_test import BaseConversionTest
 
 class TestForceConverter(BaseConversionTest, unittest.TestCase):

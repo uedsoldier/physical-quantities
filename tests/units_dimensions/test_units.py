@@ -1,5 +1,5 @@
 import unittest
-from core.unit import *
+from physical_quantities.units import *
 
 class TestUnits(unittest.TestCase):
 

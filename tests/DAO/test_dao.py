@@ -8,13 +8,13 @@ from pathlib import Path
 from core.component_DAO import ComponentDAO
 from core.power_budget import BuckConverter, Component, LeadAcidBattery
 from core.power_supply_DAO import PowerSupplyDAO
-from core.physical_quantities import (
+from physical_quantities.quantities import (
     ElectricChargeQuantity,
     ElectricCurrentQuantity,
     PowerQuantity,
     VoltageQuantity,
 )
-from core.unit import ElectricChargeUnits
+from physical_quantities.units import ElectricChargeUnits
 
 SQL_SCRIPT = Path(__file__).with_name("create_mock_database.sql")
 

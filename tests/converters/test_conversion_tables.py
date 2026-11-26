@@ -2,13 +2,13 @@ import json
 import unittest
 from pathlib import Path
 
-from core.unit import (
+from physical_quantities.units import (
     UNIT_ENUM_BY_QUANTITY,
     find_unit_by_symbol,
     find_unit_type_by_symbol,
 )
 
-TABLES_DIR = Path(__file__).resolve().parents[2] / "conversion_tables"
+TABLES_DIR = Path(__file__).resolve().parents[2] / "src" / "physical_quantities" / "conversion_tables"
 # MockUnits only exists to test error handling; it has no conversion table by design.
 QUANTITY_TYPES = [name for name in UNIT_ENUM_BY_QUANTITY if name != "mock"]
 

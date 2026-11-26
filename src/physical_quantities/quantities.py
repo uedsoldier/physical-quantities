@@ -1,9 +1,7 @@
-import os
-import json
 
-from core.utilities.json_utilities import json_string_to_dict, dict_to_json_string
-from core.conversion_managers import BaseConversionManager, TemperatureConversionManager
-from core.unit import *
+from ._json import json_string_to_dict, dict_to_json_string
+from .conversion import BaseConversionManager, TemperatureConversionManager
+from .units import *
 from functools import total_ordering
 
 @total_ordering

@@ -1,6 +1,6 @@
 import unittest
 
-from core.physical_quantities import (
+from physical_quantities.quantities import (
     ElectricChargeQuantity,
     ElectricCurrentQuantity,
     VoltageQuantity,
@@ -12,7 +12,7 @@ from core.power_budget import (
     LinearRegulator,
     PowerBudget,
 )
-from core.unit import ElectricChargeUnits, ElectricCurrentUnits, PowerUnits
+from physical_quantities.units import ElectricChargeUnits, ElectricCurrentUnits, PowerUnits
 
 
 def make_battery() -> LeadAcidBattery:

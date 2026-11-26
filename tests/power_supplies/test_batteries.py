@@ -2,8 +2,8 @@ import unittest
 from typing import List, Tuple
 
 
-from core.physical_quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity, ElectricChargeQuantity
-from core.unit import VoltageUnits, ElectricCurrentUnits, PowerUnits, ElectricChargeUnits
+from physical_quantities.quantities import VoltageQuantity, ElectricCurrentQuantity, PowerQuantity, ElectricChargeQuantity
+from physical_quantities.units import VoltageUnits, ElectricCurrentUnits, PowerUnits, ElectricChargeUnits
 from core.power_budget import LeadAcidBattery, LithiumBattery
 
 class LeadAcidBatteriesTester(unittest.TestCase):
