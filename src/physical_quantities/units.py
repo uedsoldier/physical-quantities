@@ -122,7 +122,7 @@ class Dimensions:
             new_dimensions[key] = new_dimensions.get(key, 0) - value
         return Dimensions(new_dimensions)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.dimensions_dict}"
 
     @property
@@ -259,7 +259,7 @@ class Unit:
         """Return a more detailed representation of the unit."""
         return f"Unit(name={self._name}, symbol={self._symbol}, dimensions={self._dimensions})"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self._symbol
 
     def __mul__(self, other: Unit) -> Unit:

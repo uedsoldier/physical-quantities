@@ -1,6 +1,7 @@
 
+from collections.abc import Callable
 from functools import total_ordering
-from typing import Self
+from typing import Any, Self
 
 from ._json import dict_to_json_string, json_string_to_dict
 from .conversion import BaseConversionManager, TemperatureConversionManager
@@ -35,7 +36,7 @@ class BaseQuantity:
     def __abs__(self) -> Self:
         return self._new(abs(self._value), self._unit)
     
-    def __round__(self, ndigits=None) -> Self:
+    def __round__(self, ndigits: int | None = None) -> Self:
         new_value = round(self._value, ndigits)
         return self._new(new_value, self._unit)
     
@@ -65,7 +66,7 @@ class BaseQuantity:
         new_value = self.value - other_converted.value
         return self._new(new_value, self.unit)
     
-    def __truediv__(self, other: BaseQuantity):
+    def __truediv__(self, other: BaseQuantity) -> Self:
         if not isinstance(other, BaseQuantity):
             return NotImplemented
         
@@ -76,7 +77,7 @@ class BaseQuantity:
         # Return a new instance of the appropriate type
         return self._new(new_value, new_unit)
     
-    def __mul__(self, other: BaseQuantity):
+    def __mul__(self, other: BaseQuantity) -> Self:
         if not isinstance(other, BaseQuantity):
             return NotImplemented
         
@@ -87,7 +88,7 @@ class BaseQuantity:
         # Return a new instance of the appropriate type
         return self._new(new_value, new_unit)
     
-    def _compare(self,other: BaseQuantity,method):
+    def _compare(self, other: object, method: Callable[[float, float], bool]) -> bool:
         if not isinstance(other, BaseQuantity):
             return NotImplemented
         if type(self) is not type(other):
@@ -100,14 +101,14 @@ class BaseQuantity:
 
         return method(self.value, other_value_in_self_unit)
     
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         return self._compare(other, lambda x, y: x == y)
         
     
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: object) -> bool:
         return self._compare(other, lambda x, y: x < y)
     
-    def __gt__(self, other) -> bool:
+    def __gt__(self, other: object) -> bool:
         return self._compare(other, lambda x, y: x > y)
     
     def __init__(self, value: float, unit: Unit, quantity_type: str) -> None:
@@ -125,7 +126,7 @@ class BaseQuantity:
     def __str__(self) -> str:
         return f'{self._value} [{self._unit}]'
     
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             'value': self._value,
             'unit': str(self._unit)
@@ -135,7 +136,7 @@ class BaseQuantity:
         return dict_to_json_string(self.to_dict())
     
     @classmethod
-    def from_json_string(cls, json_string: str) -> BaseQuantity:
+    def from_json_string(cls, json_string: str) -> Self:
         """
         Crea una instancia de BaseQuantity a partir de un JSON string.
 

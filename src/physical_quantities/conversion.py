@@ -1,6 +1,7 @@
 import json
 from functools import cache
 from importlib.resources import files
+from typing import Self
 
 from ._json import json_string_to_dict
 from .units import Unit
@@ -19,7 +20,7 @@ class ConversionTableError(Exception):
 class BaseConversionManager:
 
     @classmethod
-    def change_quantity_type(cls, quantity_type: str):
+    def change_quantity_type(cls, quantity_type: str) -> Self:
         return cls(quantity_type=quantity_type)
 
     def __str__(self) -> str:
@@ -54,7 +55,7 @@ class TemperatureConversionManager(BaseConversionManager):
     ``kelvin = (x + pre_offset) * num / den + post_offset``.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('temperature')
 
     def convert(self, value: float, from_unit: Unit, to_unit: Unit) -> float:

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class BaseDAO(ABC):
         
-    def __init__(self, filepath: str):
+    def __init__(self, filepath: str) -> None:
         full_database_filepath: str = os.path.abspath(filepath)
         if not os.path.exists(full_database_filepath):
             pass
@@ -22,26 +22,26 @@ class BaseDAO(ABC):
             logger.error('Could not open database: %s', e)
     
     @abstractmethod
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
     
-    def open(self, db: str):
+    def open(self, db: str) -> None:
         self.connection: sqlite3.Connection = sqlite3.connect(db)
         self.cursor = self.connection.cursor()
     
-    def close(self):
+    def close(self) -> None:
         self.cursor.close()
         self.connection.close()
     
     @abstractmethod
-    def create_table(self):
+    def create_table(self) -> None:
         pass
     
     @abstractmethod
-    def truncate_table(self):
+    def truncate_table(self) -> None:
         pass
 
     @abstractmethod
-    def create_triggers(self):
+    def create_triggers(self) -> None:
         pass
     

@@ -21,7 +21,7 @@ class BasePowerSupply(ABC):
         self._name = name
         self._nominal_voltage = nominal_voltage
         self._max_output_current = max_output_current
-        self._components: list[list[Component,int]] = []
+        self._components: list[tuple[Component, int]] = []
         self._total_current: ElectricCurrentQuantity = ElectricCurrentQuantity(0.0, ElectricCurrentUnits.MILLIAMPERE.value)
         self._total_power: PowerQuantity = PowerQuantity(0.0, PowerUnits.MILLIWATT.value)
         self._total_components: int = 0
@@ -31,7 +31,7 @@ class BasePowerSupply(ABC):
         return self._name
     
     @name.setter
-    def name(self,new_name: str):
+    def name(self,new_name: str) -> None:
         self._name = new_name
     
     @property
@@ -42,37 +42,37 @@ class BasePowerSupply(ABC):
         return cnt
     
     @property
-    def components(self) -> list[list[Component,int]]:
+    def components(self) -> list[tuple[Component, int]]:
         return self._components
     
     @property
-    def nominal_voltage(self):
+    def nominal_voltage(self) -> VoltageQuantity:
         return self._nominal_voltage
 
     @nominal_voltage.setter
-    def nominal_voltage(self,new_nominal_voltage: VoltageQuantity):
+    def nominal_voltage(self,new_nominal_voltage: VoltageQuantity) -> None:
         self._nominal_voltage = new_nominal_voltage
     
     @property
-    def max_output_current(self):
+    def max_output_current(self) -> ElectricCurrentQuantity:
         return self._max_output_current
 
     @max_output_current.setter
-    def max_output_current(self,new_max_output_current: ElectricCurrentQuantity):
+    def max_output_current(self,new_max_output_current: ElectricCurrentQuantity) -> None:
         self._max_output_current = new_max_output_current
     
-    def add_component(self, component: Component, quantity: int = 1):
+    def add_component(self, component: Component, quantity: int = 1) -> None:
         self._components.append((component,quantity))
         self.compute_power_budget()
     
-    def remove_component(self,index: int):
+    def remove_component(self,index: int) -> None:
         if(len(self.components) > 0):
             self.components.pop(index)
             self.compute_power_budget()
         else:
             raise ValueError('Component index not found')
     
-    def modify_component_quantity(self,index: int, new_qty: int):
+    def modify_component_quantity(self,index: int, new_qty: int) -> None:
         # Check if the index is valid
         if 0 <= index < len(self.components):
             if new_qty == 0:
@@ -85,7 +85,7 @@ class BasePowerSupply(ABC):
         else:
             raise IndexError("Component index out of range.")
         
-    def compute_power_budget(self):
+    def compute_power_budget(self) -> None:
         """Recompute total current (mA) and power (mW) from the attached components."""
         nominal_voltage_volts: float = self.nominal_voltage.convert_to(VoltageUnits.VOLT.value).value
         total_current_ma: float = 0.0
@@ -106,7 +106,7 @@ class BasePowerSupply(ABC):
         return self._total_power
     
     @abstractmethod
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
 
 class Battery(BasePowerSupply):
@@ -133,7 +133,7 @@ class Battery(BasePowerSupply):
         return self._cell_count
 
     @cell_count.setter
-    def cell_count(self,new_cell_count: int):
+    def cell_count(self,new_cell_count: int) -> None:
         self._cell_count = new_cell_count
     
     @property
@@ -141,7 +141,7 @@ class Battery(BasePowerSupply):
         return self._cell_voltage
 
     @cell_voltage.setter
-    def cell_voltage(self,new_cell_voltage: VoltageQuantity):
+    def cell_voltage(self,new_cell_voltage: VoltageQuantity) -> None:
         self._cell_voltage = new_cell_voltage
 
     @property
@@ -149,11 +149,11 @@ class Battery(BasePowerSupply):
         return self._capacity
 
     @capacity.setter
-    def capacity(self,new_capacity: ElectricChargeQuantity):
+    def capacity(self,new_capacity: ElectricChargeQuantity) -> None:
         self._capacity = new_capacity
 
     @abstractmethod
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
     
     @property
@@ -161,7 +161,7 @@ class Battery(BasePowerSupply):
         return self._chemistry
 
     @chemistry.setter
-    def chemistry(self,new_chemistry: str):
+    def chemistry(self,new_chemistry: str) -> None:
         self._chemistry = new_chemistry
     
     @property
@@ -169,7 +169,7 @@ class Battery(BasePowerSupply):
         return self._subchemistry
 
     @subchemistry.setter
-    def subchemistry(self,new_subchemistry: str):
+    def subchemistry(self,new_subchemistry: str) -> None:
         self._subchemistry = new_subchemistry
         
     def __str__(self) -> str:
@@ -184,7 +184,7 @@ class VoltageRegulator(BasePowerSupply):
     MAX_EFFICIENCY: float = 1.0
     MIN_EFFICIENCY: float = 0.0
     
-    def __init__(self, name: str,nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity ,efficiency: float):
+    def __init__(self, name: str,nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity ,efficiency: float) -> None:
         if(min_input_voltage > max_input_voltage):
             raise ValueError('Minimum input voltage must be less or equal than maximum input voltage.')
         if( efficiency < self.MIN_EFFICIENCY or efficiency > self.MAX_EFFICIENCY):
@@ -199,7 +199,7 @@ class VoltageRegulator(BasePowerSupply):
         return self._efficiency
     
     @efficiency.setter
-    def efficiency(self,new_efficiency: float):
+    def efficiency(self,new_efficiency: float) -> None:
         self._efficiency = new_efficiency
     
     @property
@@ -208,7 +208,7 @@ class VoltageRegulator(BasePowerSupply):
     
 
     @min_input_voltage.setter
-    def min_input_voltage(self,new_min_input_voltage: VoltageQuantity):
+    def min_input_voltage(self,new_min_input_voltage: VoltageQuantity) -> None:
         self._min_input_voltage = new_min_input_voltage
         
     @property
@@ -216,20 +216,20 @@ class VoltageRegulator(BasePowerSupply):
         return self._max_input_voltage
 
     @max_input_voltage.setter
-    def max_input_voltage(self,new_max_input_voltage: VoltageQuantity):
+    def max_input_voltage(self,new_max_input_voltage: VoltageQuantity) -> None:
         self._max_input_voltage = new_max_input_voltage
 
     @abstractmethod
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
 
 class DCDCConverter(VoltageRegulator):
     
     @abstractmethod
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
     
-    def __init__(self, name: str, dcdc_type: str,nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity ,efficiency: float):
+    def __init__(self, name: str, dcdc_type: str,nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity ,efficiency: float) -> None:
         self._dcdc_type = dcdc_type
         super().__init__(name, nominal_voltage, max_output_current, min_input_voltage, max_input_voltage, efficiency)
     
@@ -237,7 +237,7 @@ class DCDCConverter(VoltageRegulator):
     def dcdc_type(self) -> str:
         return self._dcdc_type
 
-    def __str__(self):
+    def __str__(self) -> str:
         ret_str: str = f'{self.dcdc_type} converter name: {self.name}\n\t\n\t* Nominal voltage = {self.nominal_voltage}\n\t' \
         f'* Min. input voltage = {self._min_input_voltage}\n\t* Max. input voltage = {self._max_input_voltage}'\
             f'\n\t* Efficiency = {self._efficiency * 100.0}%'
@@ -248,10 +248,10 @@ class DCDCConverter(VoltageRegulator):
 
 class BuckConverter(DCDCConverter):
     # This method is required to fulfill the abstractmethod contract
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
     
-    def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity, efficiency: float = DCDCConverter.MAX_EFFICIENCY):
+    def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity, efficiency: float = DCDCConverter.MAX_EFFICIENCY) -> None:
         if(nominal_voltage > min_input_voltage):
             raise ValueError('Nominal voltage must be lower than min. input voltage')
         dcdc_type: str = 'Buck'
@@ -259,10 +259,10 @@ class BuckConverter(DCDCConverter):
 
 class BoostConverter(DCDCConverter):
     # This method is required to fulfill the abstractmethod contract
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
     
-    def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity, efficiency: float = DCDCConverter.MAX_EFFICIENCY):
+    def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity, efficiency: float = DCDCConverter.MAX_EFFICIENCY) -> None:
         if(nominal_voltage < max_input_voltage):
             raise ValueError('Nominal voltage must be greater than max. input voltage')
         dcdc_type: str = 'Boost'
@@ -270,10 +270,10 @@ class BoostConverter(DCDCConverter):
 
 class BuckBoostConverter(DCDCConverter):
     # This method is required to fulfill the abstractmethod contract
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
     
-    def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity, efficiency: float = DCDCConverter.MAX_EFFICIENCY):
+    def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity, efficiency: float = DCDCConverter.MAX_EFFICIENCY) -> None:
         dcdc_type: str = 'Buck-Boost'
         super().__init__(name,dcdc_type,nominal_voltage, max_output_current, min_input_voltage, max_input_voltage,efficiency)
 
@@ -282,18 +282,19 @@ class LithiumBattery(Battery):
     LITHIUM_CHEMISTRIES =   ('LiPo','Li-ion','LiFePO4','LiMn2O4','LiCoO2','Other')
     
     # This method is required to fulfill the abstractmethod contract
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
     
-    def __init__(self, name: str, max_output_current: ElectricCurrentQuantity, capacity: ElectricChargeQuantity, cell_voltage: VoltageQuantity = None ,cell_count: int = 1, subchemistry: str = 'Other') -> None:
+    def __init__(self, name: str, max_output_current: ElectricCurrentQuantity, capacity: ElectricChargeQuantity, cell_voltage: VoltageQuantity | None = None, cell_count: int = 1, subchemistry: str = 'Other') -> None:
         if(subchemistry is None):
             subchemistry = self.LITHIUM_CHEMISTRIES[0]
         elif (subchemistry not in self.LITHIUM_CHEMISTRIES):
             raise ValueError(f'Invalid chemistry, must be in {self.LITHIUM_CHEMISTRIES} range')
-        if(cell_voltage is None):
-            if(subchemistry == 'Other'):
+        if subchemistry == 'Other':
+            if cell_voltage is None:
                 raise ValueError('Cell voltage must be provided if using custom chemistry')
-        cell_voltage = cell_voltage if subchemistry == 'Other' else VoltageQuantity(self.LITHIUM_CELL_VOLTAGES[self.LITHIUM_CHEMISTRIES.index(subchemistry)])
+        else:
+            cell_voltage = VoltageQuantity(self.LITHIUM_CELL_VOLTAGES[self.LITHIUM_CHEMISTRIES.index(subchemistry)])
         super().__init__(name,chemistry='Lithium',cell_voltage=cell_voltage, max_output_current=max_output_current, capacity=capacity, subchemistry=subchemistry,cell_count=cell_count)
 
 class LeadAcidBattery(Battery):
@@ -302,7 +303,7 @@ class LeadAcidBattery(Battery):
     LEAD_ACID_SUBCHEMISTRY = 'Undefined'
     
     # This method is required to fulfill the abstractmethod contract
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass  
     
     def __init__(self, name: str, max_output_current: ElectricCurrentQuantity, capacity: ElectricChargeQuantity, cell_count: int = 1) -> None:
@@ -312,10 +313,10 @@ class LeadAcidBattery(Battery):
 class LinearRegulator(VoltageRegulator):
 
     # This method is required to fulfill the abstractmethod contract
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
 
-    def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity, efficiency: float | None = None):
+    def __init__(self, name: str, nominal_voltage: VoltageQuantity, max_output_current: ElectricCurrentQuantity, min_input_voltage: VoltageQuantity, max_input_voltage: VoltageQuantity, efficiency: float | None = None) -> None:
         if efficiency is None:
             # A linear regulator dissipates (Vin - Vout) * I, so its worst-case efficiency is Vout / Vin_max.
             vout: float = nominal_voltage.convert_to(VoltageUnits.VOLT.value).value

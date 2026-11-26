@@ -18,16 +18,16 @@ from .supplies import BasePowerSupply, Battery, DCDCConverter
 
 class PowerSupplyDAO(BaseDAO):
 
-    def __init__(self, filepath):
+    def __init__(self, filepath: str) -> None:
         super().__init__(filepath)
         self.create_table()
         self.create_triggers()
 
     # This method is required to fulfill the abstractmethod contract
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
 
-    def create_triggers(self):
+    def create_triggers(self) -> None:
         # Trigger to update power supply id in components table if a power supply is deleted
         self.cursor.execute(
             f"""
@@ -43,7 +43,7 @@ class PowerSupplyDAO(BaseDAO):
             (),
         )
 
-    def create_table(self):
+    def create_table(self) -> None:
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -60,7 +60,7 @@ class PowerSupplyDAO(BaseDAO):
                 (),
             )
 
-    def truncate_table(self):
+    def truncate_table(self) -> None:
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -92,7 +92,7 @@ class PowerSupplyDAO(BaseDAO):
             info = {}  # Unknown power supply type: nothing extra to persist
         return dict_to_json_string(info)
 
-    def add_power_supply(self, power_supply: BasePowerSupply):
+    def add_power_supply(self, power_supply: BasePowerSupply) -> None:
         name: str = power_supply.name
         nominal_voltage: str = power_supply.nominal_voltage.to_json_string()
         max_output_current: str = power_supply.max_output_current.to_json_string()
@@ -122,7 +122,7 @@ class PowerSupplyDAO(BaseDAO):
                 raise ValueError("Invalid id")
             return query
 
-    def get_power_supply_voltage(self, power_supply_id: int):
+    def get_power_supply_voltage(self, power_supply_id: int) -> VoltageQuantity:
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -138,7 +138,7 @@ class PowerSupplyDAO(BaseDAO):
             voltage = VoltageQuantity(0)
             return voltage.from_json_string(query)
 
-    def get_power_supply_output_current(self, power_supply_id: int):
+    def get_power_supply_output_current(self, power_supply_id: int) -> ElectricCurrentQuantity:
         with self.connection:
             self.cursor.execute(
                 f"""

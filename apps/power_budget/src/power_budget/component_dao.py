@@ -21,16 +21,16 @@ logger = logging.getLogger(__name__)
 
 class ComponentDAO(BaseDAO):
 
-    def __init__(self, filepath):
+    def __init__(self, filepath: str) -> None:
         super().__init__(filepath)
         self.create_table()
         self.create_triggers()
 
     # This method is required to fulfill the abstractmethod contract
-    def _restrict_instantiation(self):
+    def _restrict_instantiation(self) -> None:
         pass
 
-    def create_triggers(self):
+    def create_triggers(self) -> None:
         # Create triggers to automatically update component counts in PowerSupply table.
         with self.connection:
 
@@ -85,7 +85,7 @@ class ComponentDAO(BaseDAO):
                 (),
             )
 
-    def create_table(self):
+    def create_table(self) -> None:
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -103,7 +103,7 @@ class ComponentDAO(BaseDAO):
                 (),
             )
 
-    def truncate_table(self):
+    def truncate_table(self) -> None:
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -112,7 +112,7 @@ class ComponentDAO(BaseDAO):
                 (),
             )
 
-    def get_component_by_id(self, component_id: int):
+    def get_component_by_id(self, component_id: int) -> tuple | None:
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -125,12 +125,12 @@ class ComponentDAO(BaseDAO):
                 raise ValueError("Invalid id")
             return query
 
-    def add_component(self, component: Component):
+    def add_component(self, component: Component) -> None:
         name: str = component.name
-        voltage: VoltageQuantity = component.voltage.to_json_string()
-        current: ElectricCurrentQuantity = component.current.to_json_string()
-        power: PowerQuantity = component.power.to_json_string()
-        power_supply_id: int = None
+        voltage: str = component.voltage.to_json_string()
+        current: str = component.current.to_json_string()
+        power: str = component.power.to_json_string()
+        power_supply_id: int | None = None
         with self.connection:
             self.cursor.execute(
                 f"""
@@ -185,7 +185,7 @@ class ComponentDAO(BaseDAO):
             count = self.cursor.fetchone()[0]
             return count > 0  # Returns True if assigned, False otherwise
 
-    def assign_power_supply_to_component(self, component_id: int, power_supply_id: int):
+    def assign_power_supply_to_component(self, component_id: int, power_supply_id: int) -> None:
         if self.is_component_assigned_to_power_supply(component_id, power_supply_id):
             logger.info(
                 "Component %s is already assigned to Power Supply %s.",

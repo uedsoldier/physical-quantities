@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Self
+
 from physical_quantities.quantities import (
     ElectricCurrentQuantity,
     EnergyQuantity,
@@ -15,25 +17,27 @@ from .supplies import BasePowerSupply
 class Component:
     
     @classmethod
-    def from_voltage_current(cls, name: str, voltage: VoltageQuantity, current: ElectricCurrentQuantity):
+    def from_voltage_current(cls, name: str, voltage: VoltageQuantity, current: ElectricCurrentQuantity) -> Self:
         return cls(name, voltage=voltage, current=current)
 
     @classmethod
-    def from_voltage_power(cls, name: str, voltage: VoltageQuantity, power: PowerQuantity):
+    def from_voltage_power(cls, name: str, voltage: VoltageQuantity, power: PowerQuantity) -> Self:
         return cls(name, voltage=voltage, power=power)
 
     @classmethod
-    def from_current_power(cls, name: str, current: ElectricCurrentQuantity, power: PowerQuantity):
+    def from_current_power(cls, name: str, current: ElectricCurrentQuantity, power: PowerQuantity) -> Self:
         return cls(name, current=current, power=power)
     
     """_summary_
     """
-    def __init__(self, name: str, voltage:VoltageQuantity = None, current:ElectricCurrentQuantity = None, power:PowerQuantity = None, power_supply: BasePowerSupply = None) -> None:
+    def __init__(self, name: str, voltage: VoltageQuantity | None = None, current: ElectricCurrentQuantity | None = None, power: PowerQuantity | None = None, power_supply: BasePowerSupply | None = None) -> None:
         self._name: str = name
-        self._voltage: VoltageQuantity = voltage
-        self._current: ElectricCurrentQuantity = current
-        self._power: PowerQuantity = power
-        self._power_supply: BasePowerSupply = power_supply
+        # Two of voltage/current/power are required below and the third is computed, so after
+        # __init__ all three are set; power_supply is genuinely optional.
+        self._voltage: VoltageQuantity = voltage  # type: ignore[assignment]
+        self._current: ElectricCurrentQuantity = current  # type: ignore[assignment]
+        self._power: PowerQuantity = power  # type: ignore[assignment]
+        self._power_supply: BasePowerSupply | None = power_supply
         
         if (voltage is not None and current is not None):
             self.compute_power()
@@ -48,13 +52,13 @@ class Component:
     def energy_consumption(self, t: TimeQuantity) -> EnergyQuantity:
         return EnergyQuantity( self.power.convert_to(PowerUnits.WATT.value).value * t.convert_to(TimeUnits.SECOND.value).value )
     
-    def compute_power(self):
+    def compute_power(self) -> None:
         self.power =  PowerQuantity(self.voltage.convert_to(VoltageUnits.VOLT.value).value * self.current.convert_to(ElectricCurrentUnits.AMPERE.value).value )
     
-    def compute_current(self):
+    def compute_current(self) -> None:
         self.current = ElectricCurrentQuantity(self.power.convert_to(PowerUnits.WATT.value).value / self.voltage.convert_to(VoltageUnits.VOLT.value).value)
         
-    def compute_voltage(self):
+    def compute_voltage(self) -> None:
         self.voltage = VoltageQuantity(self.power.convert_to(PowerUnits.WATT.value).value / self.current.convert_to(ElectricCurrentUnits.AMPERE.value).value)
     
     @property
