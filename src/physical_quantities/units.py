@@ -753,11 +753,6 @@ class ThermalResistanceUnits(Enum):
     )
 
 
-# Mock Unit (for testing/mock)
-class MockUnits(Enum):
-    MOCK_UNIT = Unit("mock unit", "mock", Dimensions({}))
-
-
 UNIT_ENUM_BY_QUANTITY = {
     "length": LengthUnits,
     "time": TimeUnits,
@@ -789,7 +784,6 @@ UNIT_ENUM_BY_QUANTITY = {
     "acceleration": AccelerationUnits,
     "thermal_conductivity": ThermalConductivityUnits,
     "thermal_resistance": ThermalResistanceUnits,
-    "mock": MockUnits,
 }
 
 # =========================================================

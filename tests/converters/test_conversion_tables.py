@@ -9,8 +9,7 @@ from physical_quantities.units import (
 )
 
 TABLES_DIR = Path(__file__).resolve().parents[2] / "src" / "physical_quantities" / "conversion_tables"
-# MockUnits only exists to test error handling; it has no conversion table by design.
-QUANTITY_TYPES = [name for name in UNIT_ENUM_BY_QUANTITY if name != "mock"]
+QUANTITY_TYPES = list(UNIT_ENUM_BY_QUANTITY)
 
 
 def load_table(quantity_type: str) -> dict:

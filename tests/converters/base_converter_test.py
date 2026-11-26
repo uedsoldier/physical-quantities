@@ -1,7 +1,15 @@
 import unittest
 from typing import TYPE_CHECKING, Any, List, Tuple
 
-from physical_quantities.units import MockUnits
+from enum import Enum
+
+from physical_quantities.units import Dimensions, Unit
+
+
+class MockUnits(Enum):
+    """Unit unknown to the library, used to test error handling."""
+
+    MOCK_UNIT = Unit("mock unit", "mock", Dimensions({}))
 
 if TYPE_CHECKING:
     _TestCaseBase = unittest.TestCase
