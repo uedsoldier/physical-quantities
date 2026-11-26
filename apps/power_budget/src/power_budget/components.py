@@ -15,9 +15,10 @@ from .supplies import BasePowerSupply
 
 
 class Component:
-    
     @classmethod
-    def from_voltage_current(cls, name: str, voltage: VoltageQuantity, current: ElectricCurrentQuantity) -> Self:
+    def from_voltage_current(
+        cls, name: str, voltage: VoltageQuantity, current: ElectricCurrentQuantity
+    ) -> Self:
         return cls(name, voltage=voltage, current=current)
 
     @classmethod
@@ -25,12 +26,22 @@ class Component:
         return cls(name, voltage=voltage, power=power)
 
     @classmethod
-    def from_current_power(cls, name: str, current: ElectricCurrentQuantity, power: PowerQuantity) -> Self:
+    def from_current_power(
+        cls, name: str, current: ElectricCurrentQuantity, power: PowerQuantity
+    ) -> Self:
         return cls(name, current=current, power=power)
-    
+
     """_summary_
     """
-    def __init__(self, name: str, voltage: VoltageQuantity | None = None, current: ElectricCurrentQuantity | None = None, power: PowerQuantity | None = None, power_supply: BasePowerSupply | None = None) -> None:
+
+    def __init__(
+        self,
+        name: str,
+        voltage: VoltageQuantity | None = None,
+        current: ElectricCurrentQuantity | None = None,
+        power: PowerQuantity | None = None,
+        power_supply: BasePowerSupply | None = None,
+    ) -> None:
         self._name: str = name
         # Two of voltage/current/power are required below and the third is computed, so after
         # __init__ all three are set; power_supply is genuinely optional.
@@ -38,29 +49,40 @@ class Component:
         self._current: ElectricCurrentQuantity = current  # type: ignore[assignment]
         self._power: PowerQuantity = power  # type: ignore[assignment]
         self._power_supply: BasePowerSupply | None = power_supply
-        
-        if (voltage is not None and current is not None):
+
+        if voltage is not None and current is not None:
             self.compute_power()
-        elif(voltage is not None and power is not None):
+        elif voltage is not None and power is not None:
             self.compute_current()
-        elif(current is not None and power is not None):
+        elif current is not None and power is not None:
             self.compute_voltage()
         else:
-            raise ValueError('At least two parameters (voltage, current, power) must be provided.')
-        
-        
+            raise ValueError("At least two parameters (voltage, current, power) must be provided.")
+
     def energy_consumption(self, t: TimeQuantity) -> EnergyQuantity:
-        return EnergyQuantity( self.power.convert_to(PowerUnits.WATT.value).value * t.convert_to(TimeUnits.SECOND.value).value )
-    
+        return EnergyQuantity(
+            self.power.convert_to(PowerUnits.WATT.value).value
+            * t.convert_to(TimeUnits.SECOND.value).value
+        )
+
     def compute_power(self) -> None:
-        self.power =  PowerQuantity(self.voltage.convert_to(VoltageUnits.VOLT.value).value * self.current.convert_to(ElectricCurrentUnits.AMPERE.value).value )
-    
+        self.power = PowerQuantity(
+            self.voltage.convert_to(VoltageUnits.VOLT.value).value
+            * self.current.convert_to(ElectricCurrentUnits.AMPERE.value).value
+        )
+
     def compute_current(self) -> None:
-        self.current = ElectricCurrentQuantity(self.power.convert_to(PowerUnits.WATT.value).value / self.voltage.convert_to(VoltageUnits.VOLT.value).value)
-        
+        self.current = ElectricCurrentQuantity(
+            self.power.convert_to(PowerUnits.WATT.value).value
+            / self.voltage.convert_to(VoltageUnits.VOLT.value).value
+        )
+
     def compute_voltage(self) -> None:
-        self.voltage = VoltageQuantity(self.power.convert_to(PowerUnits.WATT.value).value / self.current.convert_to(ElectricCurrentUnits.AMPERE.value).value)
-    
+        self.voltage = VoltageQuantity(
+            self.power.convert_to(PowerUnits.WATT.value).value
+            / self.current.convert_to(ElectricCurrentUnits.AMPERE.value).value
+        )
+
     @property
     def name(self) -> str:
         return self._name
@@ -100,7 +122,7 @@ class Component:
         if not isinstance(value, PowerQuantity) and value is not None:
             raise ValueError("Power must be of type Power")
         self._power = value
-    
+
     @property
     def power_supply(self) -> BasePowerSupply | None:
         return self._power_supply
@@ -110,7 +132,6 @@ class Component:
         if not isinstance(new_power_supply, BasePowerSupply):
             raise ValueError("new_power_supply must be a BasePowerSupply")
         self._power_supply = new_power_supply
-    
+
     def __str__(self) -> str:
-        return f'Component name: {self.name} V={self.voltage} I={self.current} P={self.power}'
-    
+        return f"Component name: {self.name} V={self.voltage} I={self.current} P={self.power}"

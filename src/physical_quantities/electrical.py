@@ -28,7 +28,7 @@ def normalize_phase(phase_angle: AngleQuantity) -> AngleQuantity:
     return normalized_angle.convert_to(original_unit)
 
 
-class AC_Voltage:
+class AC_Voltage:  # noqa: N801 (public name kept for compatibility)
     def __init__(
         self,
         rms_value: VoltageQuantity,
@@ -52,9 +52,7 @@ class AC_Voltage:
         if phase_angle is None:
             phase_angle = AngleQuantity(0)
         self._rms_value = rms_value
-        self._amplitude: VoltageQuantity = VoltageQuantity(
-            rms_value.value * SQRT_2, rms_value.unit
-        )
+        self._amplitude: VoltageQuantity = VoltageQuantity(rms_value.value * SQRT_2, rms_value.unit)
         self._frequency = frequency
         self._phase_angle = normalize_phase(phase_angle)
 

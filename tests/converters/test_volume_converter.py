@@ -9,10 +9,10 @@ from .base_converter_test import BaseConversionTest
 class TestVolumeConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.conversion_manager = BaseConversionManager('volume')
+        cls.conversion_manager = BaseConversionManager("volume")
 
     standard_unit = VolumeUnits.CUBIC_METER.value
-    
+
     test_cases = [
         (1000, VolumeUnits.CUBIC_CENTIMETER.value, VolumeUnits.CUBIC_METER.value, 0.001, 3),
         (2, VolumeUnits.LITER.value, VolumeUnits.CUBIC_METER.value, 0.002, 3),

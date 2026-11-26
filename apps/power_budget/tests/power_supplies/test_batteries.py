@@ -14,39 +14,73 @@ class LeadAcidBatteriesTester(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         pass
-    
+
     def setUp(self):
         return super().setUp()
-    
+
     def test_voltages(self):
-        TEST_LEAD_ACID_BATTERIES: list[tuple[ElectricCurrentQuantity,ElectricChargeUnits,int,VoltageQuantity]] = [
-            (ElectricCurrentQuantity(2), ElectricChargeQuantity(5000,ElectricChargeUnits.MILLIAMPERE_HOUR.value), 6, VoltageQuantity(12.0)),
-            (ElectricCurrentQuantity(1), ElectricChargeQuantity(2000,ElectricChargeUnits.MILLIAMPERE_HOUR.value), 3, VoltageQuantity(6.0))
+        TEST_LEAD_ACID_BATTERIES: list[
+            tuple[ElectricCurrentQuantity, ElectricChargeUnits, int, VoltageQuantity]
+        ] = [
+            (
+                ElectricCurrentQuantity(2),
+                ElectricChargeQuantity(5000, ElectricChargeUnits.MILLIAMPERE_HOUR.value),
+                6,
+                VoltageQuantity(12.0),
+            ),
+            (
+                ElectricCurrentQuantity(1),
+                ElectricChargeQuantity(2000, ElectricChargeUnits.MILLIAMPERE_HOUR.value),
+                3,
+                VoltageQuantity(6.0),
+            ),
         ]
 
-        for current,charge,cell_count,voltage in TEST_LEAD_ACID_BATTERIES:
-            battery = LeadAcidBattery('test_leadAcid_battery',current,charge,cell_count)
+        for current, charge, cell_count, voltage in TEST_LEAD_ACID_BATTERIES:
+            battery = LeadAcidBattery("test_leadAcid_battery", current, charge, cell_count)
             with self.subTest(voltage=voltage):
-                self.assertEqual(voltage,battery.nominal_voltage)
-                
+                self.assertEqual(voltage, battery.nominal_voltage)
+
+
 class LithiumBatteriesTester(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         pass
-    
+
     def setUp(self):
         return super().setUp()
-    
+
     def test_voltages(self):
-        TEST_LITHIUM_BATTERIES: list[tuple[ElectricCurrentQuantity,ElectricChargeUnits,int,str,VoltageQuantity]] = [
-            (ElectricCurrentQuantity(2), ElectricChargeQuantity(5000,ElectricChargeUnits.MILLIAMPERE_HOUR.value), 1, 'LiPo',VoltageQuantity(3.7)),
-            (ElectricCurrentQuantity(1), ElectricChargeQuantity(2000,ElectricChargeUnits.MILLIAMPERE_HOUR.value), 2, 'Li-ion',VoltageQuantity(7.2))
+        TEST_LITHIUM_BATTERIES: list[
+            tuple[ElectricCurrentQuantity, ElectricChargeUnits, int, str, VoltageQuantity]
+        ] = [
+            (
+                ElectricCurrentQuantity(2),
+                ElectricChargeQuantity(5000, ElectricChargeUnits.MILLIAMPERE_HOUR.value),
+                1,
+                "LiPo",
+                VoltageQuantity(3.7),
+            ),
+            (
+                ElectricCurrentQuantity(1),
+                ElectricChargeQuantity(2000, ElectricChargeUnits.MILLIAMPERE_HOUR.value),
+                2,
+                "Li-ion",
+                VoltageQuantity(7.2),
+            ),
         ]
 
-        for current,charge,cell_count,subchemistry,voltage in TEST_LITHIUM_BATTERIES:
-            battery = LithiumBattery('test_lithium_battery',current,charge,cell_count=cell_count,subchemistry=subchemistry)
+        for current, charge, cell_count, subchemistry, voltage in TEST_LITHIUM_BATTERIES:
+            battery = LithiumBattery(
+                "test_lithium_battery",
+                current,
+                charge,
+                cell_count=cell_count,
+                subchemistry=subchemistry,
+            )
             with self.subTest(voltage=voltage):
-                self.assertEqual(voltage,battery.nominal_voltage)
-                
-if __name__ == '__main__':
+                self.assertEqual(voltage, battery.nominal_voltage)
+
+
+if __name__ == "__main__":
     unittest.main()

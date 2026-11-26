@@ -10,6 +10,7 @@ class MockUnits(Enum):
 
     MOCK_UNIT = Unit("mock unit", "mock", Dimensions({}))
 
+
 if TYPE_CHECKING:
     _TestCaseBase = unittest.TestCase
 else:

@@ -9,10 +9,10 @@ from .base_converter_test import BaseConversionTest
 class TestPressureConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.conversion_manager = BaseConversionManager('pressure')
-    
+        cls.conversion_manager = BaseConversionManager("pressure")
+
     standard_unit = PressureUnits.PASCAL.value
-    
+
     test_cases = [
         # Pascal to Kilopascal
         (1.0, PressureUnits.PASCAL.value, PressureUnits.KILOPASCAL.value, 1e-3, 6),
@@ -39,26 +39,47 @@ class TestPressureConverter(BaseConversionTest, unittest.TestCase):
         # Pascal to Atmosphere
         (101325, PressureUnits.PASCAL.value, PressureUnits.ATMOSPHERE.value, 1.0, 6),
         # Millimeter of Mercury to Pascal
-        (1, PressureUnits.MILLIMETER_OF_MERCURY.value, PressureUnits.PASCAL.value, 133.322387415, 6),
+        (
+            1,
+            PressureUnits.MILLIMETER_OF_MERCURY.value,
+            PressureUnits.PASCAL.value,
+            133.322387415,
+            6,
+        ),
         # Pascal to Millimeter of Mercury
-        (133.322387415, PressureUnits.PASCAL.value, PressureUnits.MILLIMETER_OF_MERCURY.value, 1.0, 6),
+        (
+            133.322387415,
+            PressureUnits.PASCAL.value,
+            PressureUnits.MILLIMETER_OF_MERCURY.value,
+            1.0,
+            6,
+        ),
         # Inch of Mercury to Pascal
         (1, PressureUnits.INCH_OF_MERCURY.value, PressureUnits.PASCAL.value, 3386.388640341, 6),
         # Pascal to Inch of Mercury
         (3386.388640341, PressureUnits.PASCAL.value, PressureUnits.INCH_OF_MERCURY.value, 1.0, 6),
-        
         # Pound per Square Inch (psi) to Pascal
         (1, PressureUnits.POUND_SQUARE_INCH.value, PressureUnits.PASCAL.value, 6894.757293168, 6),
-        
         # Pascal to Pound per Square Inch (psi)
         (6894.757293168, PressureUnits.PASCAL.value, PressureUnits.POUND_SQUARE_INCH.value, 1.0, 6),
-        
         # Kilogram per Square Centimeter (kgf/cm²) to Pascal
-        (1, PressureUnits.KILOGRAM_FORCE_PER_CENTIMETER_SQUARED.value, PressureUnits.PASCAL.value, 98066.5, 6),
-        
+        (
+            1,
+            PressureUnits.KILOGRAM_FORCE_PER_CENTIMETER_SQUARED.value,
+            PressureUnits.PASCAL.value,
+            98066.5,
+            6,
+        ),
         # Pascal to Kilogram per Square Centimeter (kgf/cm²)
-        (98066.5, PressureUnits.PASCAL.value, PressureUnits.KILOGRAM_FORCE_PER_CENTIMETER_SQUARED.value, 1.0, 6)
+        (
+            98066.5,
+            PressureUnits.PASCAL.value,
+            PressureUnits.KILOGRAM_FORCE_PER_CENTIMETER_SQUARED.value,
+            1.0,
+            6,
+        ),
     ]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

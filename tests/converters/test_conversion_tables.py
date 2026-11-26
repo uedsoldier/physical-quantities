@@ -8,7 +8,9 @@ from physical_quantities.units import (
     find_unit_type_by_symbol,
 )
 
-TABLES_DIR = Path(__file__).resolve().parents[2] / "src" / "physical_quantities" / "conversion_tables"
+TABLES_DIR = (
+    Path(__file__).resolve().parents[2] / "src" / "physical_quantities" / "conversion_tables"
+)
 QUANTITY_TYPES = list(UNIT_ENUM_BY_QUANTITY)
 
 
@@ -17,7 +19,6 @@ def load_table(quantity_type: str) -> dict:
 
 
 class TestConversionTablesConsistency(unittest.TestCase):
-
     def test_every_quantity_type_has_a_table(self):
         for quantity_type in QUANTITY_TYPES:
             with self.subTest(quantity_type=quantity_type):
@@ -63,7 +64,6 @@ class TestConversionTablesConsistency(unittest.TestCase):
 
 
 class TestUnitSymbols(unittest.TestCase):
-
     def test_enums_have_no_aliased_members(self):
         # Enum silently turns two members with equal values into aliases (one hides the other).
         for quantity_type, enum_class in UNIT_ENUM_BY_QUANTITY.items():
@@ -92,9 +92,7 @@ class TestUnitSymbols(unittest.TestCase):
             for member in enum_class:
                 with self.subTest(symbol=member.value.symbol):
                     self.assertIs(member.value, find_unit_by_symbol(member.value.symbol))
-                    self.assertEqual(
-                        quantity_type, find_unit_type_by_symbol(member.value.symbol)
-                    )
+                    self.assertEqual(quantity_type, find_unit_type_by_symbol(member.value.symbol))
 
 
 if __name__ == "__main__":

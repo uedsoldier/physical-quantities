@@ -7,36 +7,34 @@ from abc import ABC, abstractmethod
 logger = logging.getLogger(__name__)
 
 
-
 class BaseDAO(ABC):
-        
     def __init__(self, filepath: str) -> None:
         full_database_filepath: str = os.path.abspath(filepath)
         if not os.path.exists(full_database_filepath):
             pass
         try:
             self.open(full_database_filepath)
-            
-            logger.info('Connected to sqlite database at: %s', full_database_filepath)
+
+            logger.info("Connected to sqlite database at: %s", full_database_filepath)
         except FileNotFoundError as e:
-            logger.error('Could not open database: %s', e)
-    
+            logger.error("Could not open database: %s", e)
+
     @abstractmethod
     def _restrict_instantiation(self) -> None:
         pass
-    
+
     def open(self, db: str) -> None:
         self.connection: sqlite3.Connection = sqlite3.connect(db)
         self.cursor = self.connection.cursor()
-    
+
     def close(self) -> None:
         self.cursor.close()
         self.connection.close()
-    
+
     @abstractmethod
     def create_table(self) -> None:
         pass
-    
+
     @abstractmethod
     def truncate_table(self) -> None:
         pass
@@ -44,4 +42,3 @@ class BaseDAO(ABC):
     @abstractmethod
     def create_triggers(self) -> None:
         pass
-    

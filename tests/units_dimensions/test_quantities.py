@@ -18,7 +18,6 @@ from physical_quantities.units import (
 
 
 class TestTemperatureQuantity(unittest.TestCase):
-
     def test_default_unit_is_kelvin(self):
         self.assertEqual(TemperatureUnits.KELVIN.value, TemperatureQuantity(10).unit)
 
@@ -46,7 +45,6 @@ class TestTemperatureQuantity(unittest.TestCase):
 
 
 class TestResistanceQuantity(unittest.TestCase):
-
     def test_can_be_created_and_converted(self):
         resistance = ResistanceQuantity(1000)
         converted = resistance.convert_to(ResistanceUnits.KILOHM.value)
@@ -55,7 +53,6 @@ class TestResistanceQuantity(unittest.TestCase):
 
 
 class TestQuantityComparison(unittest.TestCase):
-
     def test_equal_across_compatible_units(self):
         self.assertEqual(
             LengthQuantity(1000, LengthUnits.MILLIMETER.value),
@@ -86,7 +83,6 @@ class TestQuantityComparison(unittest.TestCase):
 
 
 class TestQuantityJsonSerialization(unittest.TestCase):
-
     def test_round_trip(self):
         original = VoltageQuantity(5, VoltageUnits.MILLIVOLT.value)
         restored = VoltageQuantity.from_json_string(original.to_json_string())

@@ -9,10 +9,10 @@ from .base_converter_test import BaseConversionTest
 class TestForceConverter(BaseConversionTest, unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.conversion_manager = BaseConversionManager('force')
-    
+        cls.conversion_manager = BaseConversionManager("force")
+
     standard_unit = ForceUnits.NEWTON.value
-    
+
     test_cases = [
         # Kilonewtons to Newtons
         (0.5, ForceUnits.KILONEWTON.value, ForceUnits.NEWTON.value, 500, 6),
@@ -43,7 +43,8 @@ class TestForceConverter(BaseConversionTest, unittest.TestCase):
         (16, ForceUnits.OUNCE_FORCE.value, ForceUnits.POUND_FORCE.value, 1, 2),
         # Pound-force to Ounce-force
         (1, ForceUnits.POUND_FORCE.value, ForceUnits.OUNCE_FORCE.value, 16, 2),
-]
+    ]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

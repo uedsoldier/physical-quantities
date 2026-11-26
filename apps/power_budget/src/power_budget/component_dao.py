@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 
 class ComponentDAO(BaseDAO):
-
     def __init__(self, filepath: str) -> None:
         super().__init__(filepath)
         self.create_table()
@@ -33,7 +32,6 @@ class ComponentDAO(BaseDAO):
     def create_triggers(self) -> None:
         # Create triggers to automatically update component counts in PowerSupply table.
         with self.connection:
-
             # Trigger to increment component count on insert
             self.cursor.execute(
                 f"""
@@ -197,7 +195,7 @@ class ComponentDAO(BaseDAO):
             self.cursor.execute(
                 f"""
                 UPDATE {COMPONENTS_TABLE_NAME}
-                SET {COLUMN_POWER_SUPPLY_ID} = ? 
+                SET {COLUMN_POWER_SUPPLY_ID} = ?
                 WHERE {COLUMN_COMPONENT_ID} = ?
                 """,
                 (power_supply_id, component_id),

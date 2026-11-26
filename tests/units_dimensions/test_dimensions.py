@@ -4,114 +4,115 @@ from physical_quantities.units import *
 
 
 class TestDimensions(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls) -> None:
         pass
-    
+
     def test_div_dimension1(self):
         test_dim = LENGTH_DIMENSIONS / TIME_DIMENSIONS
-        self.assertEqual(test_dim,SPEED_DIMENSIONS)
-    
+        self.assertEqual(test_dim, SPEED_DIMENSIONS)
+
     def test_div_dimension2(self):
         test_dim = MASS_DIMENSIONS / TIME_DIMENSIONS
-        self.assertEqual(test_dim,MASS_FLOW_RATE_DIMENSIONS)
-    
+        self.assertEqual(test_dim, MASS_FLOW_RATE_DIMENSIONS)
+
     def test_div_dimension3(self):
         test_dim = VOLUME_DIMENSIONS / TIME_DIMENSIONS
-        self.assertEqual(test_dim,FLOW_RATE_DIMENSIONS)
-    
+        self.assertEqual(test_dim, FLOW_RATE_DIMENSIONS)
+
     def test_mul_dimension1(self):
         test_dim = LENGTH_DIMENSIONS * LENGTH_DIMENSIONS
-        self.assertEqual(test_dim,AREA_DIMENSIONS)
-    
+        self.assertEqual(test_dim, AREA_DIMENSIONS)
+
     def test_mul_dimension2(self):
         test_dim = LENGTH_DIMENSIONS * LENGTH_DIMENSIONS * LENGTH_DIMENSIONS
-        self.assertEqual(test_dim,VOLUME_DIMENSIONS)
-    
+        self.assertEqual(test_dim, VOLUME_DIMENSIONS)
+
     def test_pow_dimension1(self):
         test_dim = LENGTH_DIMENSIONS**1
-        self.assertEqual(test_dim,LENGTH_DIMENSIONS)
-    
+        self.assertEqual(test_dim, LENGTH_DIMENSIONS)
+
     def test_pow_dimension2(self):
         test_dim = LENGTH_DIMENSIONS**2
-        self.assertEqual(test_dim,AREA_DIMENSIONS)
-    
+        self.assertEqual(test_dim, AREA_DIMENSIONS)
+
     def test_str_dimension1(self):
         test_str = str(MASS_DIMENSIONS)
-        self.assertEqual(test_str,'M')
-    
+        self.assertEqual(test_str, "M")
+
     def test_str_dimension2(self):
         test_str = str(MASS_FLOW_RATE_DIMENSIONS)
-        self.assertEqual(test_str,'M*T^-1')
-    
+        self.assertEqual(test_str, "M*T^-1")
+
     def test_str_dimension3(self):
         test_str = str(VOLTAGE_DIMENSIONS)
-        self.assertEqual(test_str,'M*L^2*T^-3*I^-1')
-    
+        self.assertEqual(test_str, "M*L^2*T^-3*I^-1")
+
     def test_dimensionless1(self):
-        test_dim = FORCE_DIMENSIONS/FORCE_DIMENSIONS
-        self.assertEqual(test_dim.is_dimensionless,True)
-        
+        test_dim = FORCE_DIMENSIONS / FORCE_DIMENSIONS
+        self.assertEqual(test_dim.is_dimensionless, True)
+
     def test_dimensionless2(self):
-        test_dim = CAPACITANCE_DIMENSIONS * FORCE_DIMENSIONS * LENGTH_DIMENSIONS * TIME_DIMENSIONS / (FORCE_DIMENSIONS * LENGTH_DIMENSIONS * TIME_DIMENSIONS * CAPACITANCE_DIMENSIONS)
-        self.assertEqual(test_dim.is_dimensionless,True)
-    
+        test_dim = (
+            CAPACITANCE_DIMENSIONS
+            * FORCE_DIMENSIONS
+            * LENGTH_DIMENSIONS
+            * TIME_DIMENSIONS
+            / (FORCE_DIMENSIONS * LENGTH_DIMENSIONS * TIME_DIMENSIONS * CAPACITANCE_DIMENSIONS)
+        )
+        self.assertEqual(test_dim.is_dimensionless, True)
+
     def test_str_follows_physical_priority_order(self):
-        self.assertEqual('M*L^2*T^-2*I^-2', str(INDUCTANCE_DIMENSIONS))
-        self.assertEqual('M*L^-1*T^-2*I^-1', str(MAGNETIC_FIELD_DIMENSIONS))
-        self.assertEqual('M*L*T^-3*Θ^-1', str(THERMAL_CONDUCTIVITY_DIMENSIONS))
+        self.assertEqual("M*L^2*T^-2*I^-2", str(INDUCTANCE_DIMENSIONS))
+        self.assertEqual("M*L^-1*T^-2*I^-1", str(MAGNETIC_FIELD_DIMENSIONS))
+        self.assertEqual("M*L*T^-3*Θ^-1", str(THERMAL_CONDUCTIVITY_DIMENSIONS))
 
     def test_thermal_resistance_is_inverse_of_thermal_conductivity_times_length(self):
         # R_th [K/W] = 1 / (k [W/(m·K)] · L [m]) per unit length² -> M^-1 L^-2 T^3 Θ
-        self.assertEqual('M^-1*L^-2*T^3*Θ', str(THERMAL_RESISTANCE_DIMENSIONS))
-        self.assertEqual(
-            THERMAL_RESISTANCE_DIMENSIONS, TEMPERATURE_DIMENSIONS / POWER_DIMENSIONS
-        )
+        self.assertEqual("M^-1*L^-2*T^3*Θ", str(THERMAL_RESISTANCE_DIMENSIONS))
+        self.assertEqual(THERMAL_RESISTANCE_DIMENSIONS, TEMPERATURE_DIMENSIONS / POWER_DIMENSIONS)
 
     def test_illumination_is_luminous_intensity_per_area(self):
-        self.assertEqual(
-            ILLUMINATION_DIMENSIONS, LUMINOUS_INTENSITY_DIMENSIONS / AREA_DIMENSIONS
-        )
+        self.assertEqual(ILLUMINATION_DIMENSIONS, LUMINOUS_INTENSITY_DIMENSIONS / AREA_DIMENSIONS)
 
     def test_hash_is_consistent_with_eq(self):
-        self.assertEqual(hash(Dimensions({'L': 1, 'T': -1})), hash(Dimensions({'T': -1, 'L': 1})))
-        self.assertEqual(hash(Dimensions({'L': 1})), hash(Dimensions({'L': 1, 'M': 0})))
+        self.assertEqual(hash(Dimensions({"L": 1, "T": -1})), hash(Dimensions({"T": -1, "L": 1})))
+        self.assertEqual(hash(Dimensions({"L": 1})), hash(Dimensions({"L": 1, "M": 0})))
         self.assertIn(SPEED_DIMENSIONS, {SPEED_DIMENSIONS})
 
     def test_in_all_dimensions1(self):
-        test_dim = LENGTH_DIMENSIONS/TIME_DIMENSIONS
-        self.assertIn(test_dim,ALL_DIMENSIONS)
-    
+        test_dim = LENGTH_DIMENSIONS / TIME_DIMENSIONS
+        self.assertIn(test_dim, ALL_DIMENSIONS)
+
     def test_in_all_dimensions2(self):
-        test_dim = VOLTAGE_DIMENSIONS/ELECTRIC_CURRENT_DIMENSIONS
-        self.assertIn(test_dim,ALL_DIMENSIONS)
+        test_dim = VOLTAGE_DIMENSIONS / ELECTRIC_CURRENT_DIMENSIONS
+        self.assertIn(test_dim, ALL_DIMENSIONS)
 
     def test_validate_dimension1(self):
-        test_dim = VOLTAGE_DIMENSIONS**2/RESISTANCE_DIMENSIONS
+        test_dim = VOLTAGE_DIMENSIONS**2 / RESISTANCE_DIMENSIONS
         expected_dim = POWER_DIMENSIONS
-        self.assertEqual(test_dim,expected_dim)
-    
+        self.assertEqual(test_dim, expected_dim)
+
     def test_validate_dimension2(self):
         test_dim = MASS_DIMENSIONS * SPEED_DIMENSIONS / TIME_DIMENSIONS
         expected_dim = FORCE_DIMENSIONS
-        self.assertEqual(test_dim,expected_dim)
-    
+        self.assertEqual(test_dim, expected_dim)
+
     def test_validate_dimension3(self):
-        test_dim = RESISTANCE_DIMENSIONS*CAPACITANCE_DIMENSIONS
+        test_dim = RESISTANCE_DIMENSIONS * CAPACITANCE_DIMENSIONS
         expected_dim = TIME_DIMENSIONS
-        self.assertEqual(test_dim,expected_dim)
-    
+        self.assertEqual(test_dim, expected_dim)
+
     def test_validate_dimension4(self):
         test_dim = INDUCTANCE_DIMENSIONS / RESISTANCE_DIMENSIONS
         expected_dim = TIME_DIMENSIONS
-        self.assertEqual(test_dim,expected_dim)
-    
+        self.assertEqual(test_dim, expected_dim)
+
     def test_validate_dimension5(self):
         test_dim = POWER_DIMENSIONS / (LENGTH_DIMENSIONS * TEMPERATURE_DIMENSIONS)
         expected_dim = THERMAL_CONDUCTIVITY_DIMENSIONS
-        self.assertEqual(test_dim,expected_dim)
-    
+        self.assertEqual(test_dim, expected_dim)
+
         # # Test cases: (input value, input unit, output unit,expected value, decimal places)
         # test_cases = [
         #     # Degrees to Radians
@@ -145,14 +146,14 @@ class TestDimensions(unittest.TestCase):
         #             self.assertAlmostEqual(float(result), expected, places=decimal_places)
         #         except AssertionError as e:
         #             self.fail(f"Conversion failed for {value} {from_unit} to {to_unit}. Expected {expected}, got {result}. Error: {e}")
-    
-    
+
     # def test_invalid_units(self):
     #     with self.assertRaises(ValueError):
     #         self.converter.convert(1, MockUnits.MOCK_UNIT.value, AngleUnits.DEGREE.value)
-        
+
     #     with self.assertRaises(ValueError):
     #         self.converter.convert(1, AngleUnits.DEGREE.value, MockUnits.MOCK_UNIT.value)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

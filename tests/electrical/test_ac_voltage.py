@@ -7,7 +7,6 @@ from physical_quantities.units import AngleUnits
 
 
 class TestNormalizePhase(unittest.TestCase):
-
     def test_degrees_are_wrapped_to_half_open_range(self):
         # (input degrees, expected degrees) -> the range is (-180, 180]
         cases = [
@@ -38,7 +37,6 @@ class TestNormalizePhase(unittest.TestCase):
 
 
 class TestAcVoltage(unittest.TestCase):
-
     def test_default_phase_is_zero(self):
         ac_voltage = AC_Voltage(VoltageQuantity(120), FrequencyQuantity(60))
         self.assertEqual(0, ac_voltage._phase_angle.value)

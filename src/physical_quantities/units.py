@@ -8,7 +8,6 @@ Numeric = int | float | Fraction
 
 
 class Dimensions:
-
     def __init__(self, dimensions_dict: Mapping[str, Numeric] | None = None) -> None:
         self.__dimensions_dict: dict[str, Fraction] = {}
         if dimensions_dict:
@@ -98,9 +97,7 @@ class Dimensions:
         if not isinstance(other, Dimensions):
             raise TypeError("Can only multiply with another Dimensions instance.")
 
-        new_dimensions = (
-            self.__dimensions_dict.copy()
-        )  # Start with the current dimensions
+        new_dimensions = self.__dimensions_dict.copy()  # Start with the current dimensions
 
         for key, value in other.__dimensions_dict.items():
             # Add the exponents of matching dimension symbols
@@ -113,9 +110,7 @@ class Dimensions:
         if not isinstance(other, Dimensions):
             raise TypeError("Can only divide with another Dimensions instance.")
 
-        new_dimensions = (
-            self.__dimensions_dict.copy()
-        )  # Start with the current dimensions
+        new_dimensions = self.__dimensions_dict.copy()  # Start with the current dimensions
 
         for key, value in other.__dimensions_dict.items():
             # Subtract the exponents of matching dimension symbols
@@ -127,9 +122,7 @@ class Dimensions:
 
     @property
     def dimensions_dict(self) -> dict[str, Fraction]:
-        return (
-            self.__dimensions_dict.copy()
-        )  # Retornar copia para proteger inmutabilidad
+        return self.__dimensions_dict.copy()  # Retornar copia para proteger inmutabilidad
 
 
 LENGTH_DIMENSIONS = Dimensions({"L": 1})
@@ -203,7 +196,6 @@ ALL_DIMENSIONS = (
 
 
 class Unit:
-
     # Mapping of equivalent unit symbols
     EQUIVALENT_UNITS: ClassVar[dict[str, str]] = {
         "N": "kg*m/s²",  # Newton is equivalent to kilogram meter per square second
@@ -474,12 +466,8 @@ class PowerUnits(Enum):
     REFRIGERATION_TON = Unit("refrigeration ton", "RT", POWER_DIMENSIONS)
     VOLT_AMPERE = Unit("volt ampere", "VA", POWER_DIMENSIONS)
     VOLT_AMPERE_REACTIVE = Unit("volt ampere reactive", "VAR", POWER_DIMENSIONS)
-    KILOVOLT_AMPERE_REACTIVE = Unit(
-        "kilovolt ampere reactive", "kVAR", POWER_DIMENSIONS
-    )
-    MEGAVOLT_AMPERE_REACTIVE = Unit(
-        "megavolt ampere reactive", "MVAR", POWER_DIMENSIONS
-    )
+    KILOVOLT_AMPERE_REACTIVE = Unit("kilovolt ampere reactive", "kVAR", POWER_DIMENSIONS)
+    MEGAVOLT_AMPERE_REACTIVE = Unit("megavolt ampere reactive", "MVAR", POWER_DIMENSIONS)
 
 
 # Voltage (Electrical Potential) Unit
@@ -589,12 +577,8 @@ class AngleUnits(Enum):
     DEGREE = Unit("degree", "°", ANGLE_DIMENSIONS)  # Degrees
     RADIAN = Unit("radian", "rad", ANGLE_DIMENSIONS)  # Radians
     GRADIAN = Unit("gradian", "gon", ANGLE_DIMENSIONS)  # Gradians
-    ARC_MINUTE = Unit(
-        "arcminute", "'", ANGLE_DIMENSIONS
-    )  # Arcminutes (1/60 of a degree)
-    ARC_SECOND = Unit(
-        "arcsecond", "″", ANGLE_DIMENSIONS
-    )  # Arcseconds (1/3600 of a degree)
+    ARC_MINUTE = Unit("arcminute", "'", ANGLE_DIMENSIONS)  # Arcminutes (1/60 of a degree)
+    ARC_SECOND = Unit("arcsecond", "″", ANGLE_DIMENSIONS)  # Arcseconds (1/3600 of a degree)
 
 
 # Area Unit
@@ -630,23 +614,15 @@ class VolumeUnits(Enum):
 
 # Flow Rate Unit (Volume/Time)
 class FlowRateUnits(Enum):
-    CUBIC_METER_PER_SECOND = Unit(
-        "cubic meter per second", "m³/s", FLOW_RATE_DIMENSIONS
-    )
+    CUBIC_METER_PER_SECOND = Unit("cubic meter per second", "m³/s", FLOW_RATE_DIMENSIONS)
     LITER_PER_SECOND = Unit("liter per second", "L/s", FLOW_RATE_DIMENSIONS)
     GALLON_PER_MINUTE = Unit("gallon per minute", "gal/min", FLOW_RATE_DIMENSIONS)
     MILLILITER_PER_SECOND = Unit("milliliter per second", "ml/s", FLOW_RATE_DIMENSIONS)
-    CUBIC_CENTIMETER_PER_SECOND = Unit(
-        "cubic centimeter per second", "cm³/s", FLOW_RATE_DIMENSIONS
-    )
+    CUBIC_CENTIMETER_PER_SECOND = Unit("cubic centimeter per second", "cm³/s", FLOW_RATE_DIMENSIONS)
     CUBIC_INCH_PER_SECOND = Unit("cubic inch per second", "in³/s", FLOW_RATE_DIMENSIONS)
-    CUBIC_KILOMETER_PER_SECOND = Unit(
-        "cubic kilometer per second", "km³/s", FLOW_RATE_DIMENSIONS
-    )
+    CUBIC_KILOMETER_PER_SECOND = Unit("cubic kilometer per second", "km³/s", FLOW_RATE_DIMENSIONS)
     CUBIC_METER_PER_HOUR = Unit("cubic meter per hour", "m³/h", FLOW_RATE_DIMENSIONS)
-    CUBIC_METER_PER_MINUTE = Unit(
-        "cubic meter per minute", "m³/min", FLOW_RATE_DIMENSIONS
-    )
+    CUBIC_METER_PER_MINUTE = Unit("cubic meter per minute", "m³/min", FLOW_RATE_DIMENSIONS)
 
 
 # Mass Flow Rate Unit (Mass/Time)
@@ -654,24 +630,16 @@ class MassFlowRateUnits(Enum):
     KILOGRAM_PER_SECOND = Unit("kilogram per second", "kg/s", MASS_FLOW_RATE_DIMENSIONS)
     GRAM_PER_SECOND = Unit("gram per second", "g/s", MASS_FLOW_RATE_DIMENSIONS)
     TON_PER_SECOND = Unit("ton per second", "ton/s", MASS_FLOW_RATE_DIMENSIONS)
-    MILLIGRAM_PER_SECOND = Unit(
-        "milligram per second", "mg/s", MASS_FLOW_RATE_DIMENSIONS
-    )
-    MICROGRAM_PER_SECOND = Unit(
-        "microgram per second", "μg/s", MASS_FLOW_RATE_DIMENSIONS
-    )
+    MILLIGRAM_PER_SECOND = Unit("milligram per second", "mg/s", MASS_FLOW_RATE_DIMENSIONS)
+    MICROGRAM_PER_SECOND = Unit("microgram per second", "μg/s", MASS_FLOW_RATE_DIMENSIONS)
     NANOGRAM_PER_SECOND = Unit("nanogram per second", "ng/s", MASS_FLOW_RATE_DIMENSIONS)
     KILOGRAM_PER_HOUR = Unit("kilogram per hour", "kg/h", MASS_FLOW_RATE_DIMENSIONS)
     TON_PER_HOUR = Unit("ton per hour", "ton/h", MASS_FLOW_RATE_DIMENSIONS)
     POUND_PER_SECOND = Unit("pound per second", "lb/s", MASS_FLOW_RATE_DIMENSIONS)
     OUNCE_PER_SECOND = Unit("ounce per second", "oz/s", MASS_FLOW_RATE_DIMENSIONS)
-    KILOGRAM_PER_MINUTE = Unit(
-        "kilogram per minute", "kg/min", MASS_FLOW_RATE_DIMENSIONS
-    )
+    KILOGRAM_PER_MINUTE = Unit("kilogram per minute", "kg/min", MASS_FLOW_RATE_DIMENSIONS)
     GRAM_PER_MINUTE = Unit("gram per minute", "g/min", MASS_FLOW_RATE_DIMENSIONS)
-    MILLIGRAM_PER_MINUTE = Unit(
-        "milligram per minute", "mg/min", MASS_FLOW_RATE_DIMENSIONS
-    )
+    MILLIGRAM_PER_MINUTE = Unit("milligram per minute", "mg/min", MASS_FLOW_RATE_DIMENSIONS)
     POUND_PER_MINUTE = Unit("pound per minute", "lb/min", MASS_FLOW_RATE_DIMENSIONS)
     OUNCE_PER_MINUTE = Unit("ounce per minute", "oz/min", MASS_FLOW_RATE_DIMENSIONS)
 
@@ -691,15 +659,11 @@ class SpeedUnits(Enum):
 
 # Acceleration Unit (Distance/Time^2)
 class AccelerationUnits(Enum):
-    METER_PER_SECOND_SQUARED = Unit(
-        "meter per second squared", "m/s²", ACCELERATION_DIMENSIONS
-    )
+    METER_PER_SECOND_SQUARED = Unit("meter per second squared", "m/s²", ACCELERATION_DIMENSIONS)
     KILOMETER_PER_HOUR_SQUARED = Unit(
         "kilometer per hour squared", "km/h²", ACCELERATION_DIMENSIONS
     )
-    MILE_PER_HOUR_SQUARED = Unit(
-        "mile per hour squared", "mph²", ACCELERATION_DIMENSIONS
-    )
+    MILE_PER_HOUR_SQUARED = Unit("mile per hour squared", "mph²", ACCELERATION_DIMENSIONS)
     CENTIMETER_PER_SECOND_SQUARED = Unit(
         "centimeter per second squared", "cm/s²", ACCELERATION_DIMENSIONS
     )
@@ -737,21 +701,11 @@ class ThermalConductivityUnits(Enum):
 # Thermal Resistance Unit
 class ThermalResistanceUnits(Enum):
     KELVIN_PER_WATT = Unit("kelvin per watt", "K/W", THERMAL_RESISTANCE_DIMENSIONS)
-    MILLIKELVIN_PER_WATT = Unit(
-        "millikelvin per watt", "mK/W", THERMAL_RESISTANCE_DIMENSIONS
-    )
-    MICROKELVIN_PER_WATT = Unit(
-        "microkelvin per watt", "μK/W", THERMAL_RESISTANCE_DIMENSIONS
-    )
-    KILOKELVIN_PER_WATT = Unit(
-        "kilokelvin per watt", "kK/W", THERMAL_RESISTANCE_DIMENSIONS
-    )
-    MEGAKELVIN_PER_WATT = Unit(
-        "megakelvin per watt", "MK/W", THERMAL_RESISTANCE_DIMENSIONS
-    )
-    GIGAKELVIN_PER_WATT = Unit(
-        "gigakelvin per watt", "GK/W", THERMAL_RESISTANCE_DIMENSIONS
-    )
+    MILLIKELVIN_PER_WATT = Unit("millikelvin per watt", "mK/W", THERMAL_RESISTANCE_DIMENSIONS)
+    MICROKELVIN_PER_WATT = Unit("microkelvin per watt", "μK/W", THERMAL_RESISTANCE_DIMENSIONS)
+    KILOKELVIN_PER_WATT = Unit("kilokelvin per watt", "kK/W", THERMAL_RESISTANCE_DIMENSIONS)
+    MEGAKELVIN_PER_WATT = Unit("megakelvin per watt", "MK/W", THERMAL_RESISTANCE_DIMENSIONS)
+    GIGAKELVIN_PER_WATT = Unit("gigakelvin per watt", "GK/W", THERMAL_RESISTANCE_DIMENSIONS)
 
 
 UNIT_ENUM_BY_QUANTITY = {
@@ -790,7 +744,7 @@ UNIT_ENUM_BY_QUANTITY = {
 # =========================================================
 # OPTIMIZACIÓN: Mapas de Búsqueda (Caché)
 # =========================================================
-# Llenamos estos diccionarios una sola vez para que las búsquedas 
+# Llenamos estos diccionarios una sola vez para que las búsquedas
 # sean instantáneas (O(1)) en lugar de recorrer bucles (O(N)).
 
 _SYMBOL_TO_UNIT: dict[str, Unit] = {}
@@ -801,16 +755,16 @@ _NAME_TO_TYPE: dict[str, str] = {}
 for quantity_type, enum_class in UNIT_ENUM_BY_QUANTITY.items():
     for member in enum_class:
         unit_obj = member.value
-        
+
         # 1. Mapeo de Símbolo -> Objeto Unit
         _SYMBOL_TO_UNIT[unit_obj.symbol] = unit_obj
-        
+
         # 2. Mapeo de Nombre -> Objeto Unit
         _NAME_TO_UNIT[unit_obj.name] = unit_obj
-        
+
         # 3. Mapeo de Símbolo -> Tipo (ej. "length")
         _SYMBOL_TO_TYPE[unit_obj.symbol] = quantity_type
-        
+
         # 4. Mapeo de Nombre -> Tipo
         _NAME_TO_TYPE[unit_obj.name] = quantity_type
 
@@ -818,6 +772,7 @@ for quantity_type, enum_class in UNIT_ENUM_BY_QUANTITY.items():
 # =========================================================
 # Funciones de Búsqueda (Las 6 Refactorizadas)
 # =========================================================
+
 
 def find_unit_by_symbol(symbol: str) -> Unit | None:
     """
@@ -848,12 +803,12 @@ def find_name_by_unit(target_unit: Unit) -> str | None:
     """
     # Paso 1: Búsqueda rápida por símbolo (O(1))
     candidate = find_unit_by_symbol(target_unit.symbol)
-    
+
     # Paso 2: Verificación de igualdad (O(1))
     # Verificamos si el candidato encontrado es equivalente a nuestra unidad
     if candidate and candidate == target_unit:
         return candidate.name
-        
+
     return None
 
 

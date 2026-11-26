@@ -43,7 +43,6 @@ def make_buck(efficiency: float | None = None) -> BuckConverter:
 
 
 class TestComponent(unittest.TestCase):
-
     def test_power_supply_defaults_to_none(self):
         self.assertIsNone(make_component().power_supply)
 
@@ -64,7 +63,6 @@ class TestComponent(unittest.TestCase):
 
 
 class TestPowerSupplyBudget(unittest.TestCase):
-
     def test_totals_start_at_zero(self):
         battery = make_battery()
         self.assertEqual(0.0, battery.total_current.value)
@@ -113,7 +111,6 @@ class TestPowerSupplyBudget(unittest.TestCase):
 
 
 class TestRegulators(unittest.TestCase):
-
     def test_linear_regulator_can_be_instantiated(self):
         regulator = LinearRegulator(
             "ldo",
@@ -148,7 +145,6 @@ class TestRegulators(unittest.TestCase):
 
 
 class TestPowerBudget(unittest.TestCase):
-
     def test_add_and_remove(self):
         budget = PowerBudget("system")
         budget.add_component(make_component(), 2)

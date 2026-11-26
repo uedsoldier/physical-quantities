@@ -178,10 +178,15 @@ class PowerSuppliesComponentsDAOTester(unittest.TestCase):
 
         ids = self.power_supplies_dao.get_power_supply_ids_by_name("testBattery")
         self.assertEqual(2, len(ids))
-        self.assertEqual(VoltageQuantity(12.0), self.power_supplies_dao.get_power_supply_voltage(ids[0]))
-        self.assertEqual(VoltageQuantity(6.0), self.power_supplies_dao.get_power_supply_voltage(ids[1]))
         self.assertEqual(
-            ElectricCurrentQuantity(2), self.power_supplies_dao.get_power_supply_output_current(ids[0])
+            VoltageQuantity(12.0), self.power_supplies_dao.get_power_supply_voltage(ids[0])
+        )
+        self.assertEqual(
+            VoltageQuantity(6.0), self.power_supplies_dao.get_power_supply_voltage(ids[1])
+        )
+        self.assertEqual(
+            ElectricCurrentQuantity(2),
+            self.power_supplies_dao.get_power_supply_output_current(ids[0]),
         )
 
     def test_additional_information_is_valid_json(self):

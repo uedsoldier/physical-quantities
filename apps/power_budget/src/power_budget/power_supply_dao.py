@@ -1,4 +1,3 @@
-
 from physical_quantities._json import dict_to_json_string
 from physical_quantities.quantities import ElectricCurrentQuantity, VoltageQuantity
 
@@ -17,7 +16,6 @@ from .supplies import BasePowerSupply, Battery, DCDCConverter
 
 
 class PowerSupplyDAO(BaseDAO):
-
     def __init__(self, filepath: str) -> None:
         super().__init__(filepath)
         self.create_table()
@@ -96,9 +94,7 @@ class PowerSupplyDAO(BaseDAO):
         name: str = power_supply.name
         nominal_voltage: str = power_supply.nominal_voltage.to_json_string()
         max_output_current: str = power_supply.max_output_current.to_json_string()
-        additional_information: str = self.get_power_supply_additional_information(
-            power_supply
-        )
+        additional_information: str = self.get_power_supply_additional_information(power_supply)
 
         with self.connection:
             self.cursor.execute(
@@ -165,5 +161,5 @@ class PowerSupplyDAO(BaseDAO):
             )
             query: list[int] = []
             raw_query = self.cursor.fetchall()
-            query = [i[0] for i in raw_query ]
+            query = [i[0] for i in raw_query]
             return query

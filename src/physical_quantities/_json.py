@@ -5,7 +5,7 @@ from typing import Any
 type StrPath = str | PathLike[str]
 
 
-def json_to_dict(json_file: StrPath, encoding: str = 'utf-8') -> dict[str, Any]:
+def json_to_dict(json_file: StrPath, encoding: str = "utf-8") -> dict[str, Any]:
     """Load a JSON file into a dict.
 
     Args:
@@ -23,9 +23,10 @@ def json_string_to_dict(json_string: str) -> dict[str, Any]:
     return json.loads(json_string)
 
 
-def dict_to_json(data: dict[str, Any], json_file: StrPath, ensure_ascii: bool = False,
-                 encoding: str = 'utf-8') -> None:
-    with open(json_file, 'w', encoding=encoding) as file:
+def dict_to_json(
+    data: dict[str, Any], json_file: StrPath, ensure_ascii: bool = False, encoding: str = "utf-8"
+) -> None:
+    with open(json_file, "w", encoding=encoding) as file:
         json.dump(data, file, ensure_ascii=ensure_ascii)
 
 

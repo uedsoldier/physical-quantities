@@ -9,8 +9,8 @@ from .units import Unit
 
 @cache
 def _load_table(quantity_type: str) -> dict:
-    resource = files(__package__) / 'conversion_tables' / f'{quantity_type}.json'
-    return json_string_to_dict(resource.read_text(encoding='utf-8'))
+    resource = files(__package__) / "conversion_tables" / f"{quantity_type}.json"
+    return json_string_to_dict(resource.read_text(encoding="utf-8"))
 
 
 class ConversionTableError(Exception):
@@ -18,13 +18,12 @@ class ConversionTableError(Exception):
 
 
 class BaseConversionManager:
-
     @classmethod
     def change_quantity_type(cls, quantity_type: str) -> Self:
         return cls(quantity_type=quantity_type)
 
     def __str__(self) -> str:
-        return f'Conversion manager type: {self._quantity_type}'
+        return f"Conversion manager type: {self._quantity_type}"
 
     def __init__(self, quantity_type: str):
         self._quantity_type = quantity_type
@@ -37,9 +36,9 @@ class BaseConversionManager:
 
     def _check_units(self, from_unit: Unit, to_unit: Unit) -> None:
         if from_unit.symbol not in self._conversion_table:
-            raise ValueError(f'Unknown from unit: {from_unit.symbol}')
+            raise ValueError(f"Unknown from unit: {from_unit.symbol}")
         if to_unit.symbol not in self._conversion_table:
-            raise ValueError(f'Unknown to unit: {to_unit.symbol}')
+            raise ValueError(f"Unknown to unit: {to_unit.symbol}")
 
     def convert(self, value: float, from_unit: Unit, to_unit: Unit) -> float:
         self._check_units(from_unit, to_unit)
@@ -56,11 +55,11 @@ class TemperatureConversionManager(BaseConversionManager):
     """
 
     def __init__(self) -> None:
-        super().__init__('temperature')
+        super().__init__("temperature")
 
     def convert(self, value: float, from_unit: Unit, to_unit: Unit) -> float:
         self._check_units(from_unit, to_unit)
         src = self._conversion_table[from_unit.symbol]
         dst = self._conversion_table[to_unit.symbol]
-        kelvin = (value + src['pre_offset']) * src['num'] / src['den'] + src['post_offset']
-        return (kelvin - dst['post_offset']) * dst['den'] / dst['num'] - dst['pre_offset']
+        kelvin = (value + src["pre_offset"]) * src["num"] / src["den"] + src["post_offset"]
+        return (kelvin - dst["post_offset"]) * dst["den"] / dst["num"] - dst["pre_offset"]
